@@ -4,8 +4,10 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<NoWarn>CA1062</NoWarn>
-		<NoWarn>CA1812</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<NoWarn>CA1062,CA1812</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

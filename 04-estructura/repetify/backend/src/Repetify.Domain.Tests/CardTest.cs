@@ -16,7 +16,7 @@ public class CardTests
 		var translatedWord = "Hola";
 
 		// Act
-		var card = new Card(originalWord, translatedWord);
+		var card = new Card(Guid.NewGuid(), originalWord, translatedWord);
 
 		// Assert
 		Assert.Equal(originalWord, card.OriginalWord);
@@ -33,7 +33,7 @@ public class CardTests
 	{
 		// Act & Assert
 		Assert.Throws<ArgumentNullException>(() =>
-			new Card(Guid.NewGuid(), null!, "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+			new Card(Guid.NewGuid(), Guid.NewGuid(), null!, "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
 	}
 
 	[Fact]
@@ -41,7 +41,7 @@ public class CardTests
 	{
 		// Act & Assert
 		Assert.Throws<ArgumentException>(() =>
-			new Card(Guid.NewGuid(), "", "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+			new Card(Guid.NewGuid(), Guid.NewGuid(), "", "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
 	}
 
 	[Fact]
@@ -49,7 +49,7 @@ public class CardTests
 	{
 		// Act & Assert
 		Assert.Throws<ArgumentException>(() =>
-			new Card(Guid.NewGuid(), "   ", "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+			new Card(Guid.NewGuid(), Guid.NewGuid(), "   ", "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
 	}
 
 	[Fact]
@@ -57,7 +57,7 @@ public class CardTests
 	{
 		// Act & Assert
 		Assert.Throws<ArgumentNullException>(() =>
-			new Card(Guid.NewGuid(), "Hola", null!, 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+			new Card(Guid.NewGuid(), Guid.NewGuid(), "Hola", null!, 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
 	}
 
 	[Fact]
@@ -65,7 +65,7 @@ public class CardTests
 	{
 		// Act & Assert
 		Assert.Throws<ArgumentException>(() =>
-			new Card(Guid.NewGuid(), "Hola", "", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+			new Card(Guid.NewGuid(), Guid.NewGuid(), "Hola", "", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
 	}
 
 	[Fact]
@@ -73,6 +73,6 @@ public class CardTests
 	{
 		// Act & Assert
 		Assert.Throws<ArgumentException>(() =>
-			new Card(Guid.NewGuid(), "Hola", "   ", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+			new Card(Guid.NewGuid(), Guid.NewGuid(), "Hola", "   ", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
 	}
 }

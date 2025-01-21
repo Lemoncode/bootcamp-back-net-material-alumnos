@@ -14,6 +14,7 @@ public class CardExtensionsTests
 		// Arrange
 		var card = new Card(
 			id: Guid.NewGuid(),
+			deckId: Guid.NewGuid(),
 			originalWord: "Hola",
 			translatedWord: "Hello",
 			correctReviewStreak: 5,
@@ -21,15 +22,13 @@ public class CardExtensionsTests
 			previousCorrectReview: DateTime.UtcNow.AddDays(-1)
 		);
 
-		var deckId = Guid.NewGuid();
-
 		// Act
-		var entity = card.ToEntity(deckId);
+		var entity = card.ToEntity();
 
 		// Assert
 		Assert.NotNull(entity);
 		Assert.Equal(card.Id, entity.Id);
-		Assert.Equal(deckId, entity.DeckId);
+		Assert.Equal(card.DeckId, entity.DeckId);
 		Assert.Equal(card.OriginalWord, entity.OriginalWord);
 		Assert.Equal(card.TranslatedWord, entity.TranslatedWord);
 		Assert.Equal(card.CorrectReviewStreak, entity.CorrectReviewStreak);
@@ -73,7 +72,7 @@ public class CardExtensionsTests
 		var deckId = Guid.NewGuid();
 
 		// Act & Assert
-		Assert.Throws<ArgumentNullException>(() => nullCard!.ToEntity(deckId));
+		Assert.Throws<ArgumentNullException>(() => nullCard!.ToEntity());
 	}
 
 	[Fact]
@@ -84,43 +83,5 @@ public class CardExtensionsTests
 
 		// Act & Assert
 		Assert.Throws<ArgumentNullException>(() => nullEntity!.ToDomain());
-	}
-	[Fact]
-	public void ToEntity_ShouldHandleValidInputs()
-	{
-		// Arrange
-		var card = new Card("Hello", "Hola");
-		var deckId = Guid.NewGuid();
-
-		// Act
-		var entity = card.ToEntity(deckId);
-
-		// Assert
-		Assert.Equal(card.OriginalWord, entity.OriginalWord);
-		Assert.Equal(card.TranslatedWord, entity.TranslatedWord);
-		Assert.Equal(deckId, entity.DeckId);
-	}
-
-	[Fact]
-	public void ToDomain_ShouldHandleValidInputs()
-	{
-		// Arrange
-		var cardEntity = new CardEntity
-		{
-			Id = Guid.NewGuid(),
-			DeckId = Guid.NewGuid(),
-			OriginalWord = "Goodbye",
-			TranslatedWord = "Adiós",
-			CorrectReviewStreak = 1,
-			NextReviewDate = DateTime.UtcNow,
-			PreviousCorrectReview = DateTime.UtcNow.AddDays(-1)
-		};
-
-		// Act
-		var domain = cardEntity.ToDomain();
-
-		// Assert
-		Assert.Equal(cardEntity.OriginalWord, domain.OriginalWord);
-		Assert.Equal(cardEntity.TranslatedWord, domain.TranslatedWord);
 	}
 }

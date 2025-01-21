@@ -14,14 +14,14 @@ public static class CardExtensions
 	/// <param name="cardDomain">The Card domain object to map.</param>
 	/// <param name="deckId">The ID of the deck to associate with the card.</param>
 	/// <returns>A CardEntity data object.</returns>
-	public static CardEntity ToEntity(this Card cardDomain, Guid deckId)
+	public static CardEntity ToEntity(this Card cardDomain)
 	{
 		ArgumentNullException.ThrowIfNull(cardDomain);
 
 		return new CardEntity
 		{
 			Id = cardDomain.Id,
-			DeckId = deckId,
+			DeckId = cardDomain.DeckId,
 			OriginalWord = cardDomain.OriginalWord,
 			TranslatedWord = cardDomain.TranslatedWord,
 			CorrectReviewStreak = cardDomain.CorrectReviewStreak,
@@ -41,6 +41,7 @@ public static class CardExtensions
 
 		return new Card(
 			id: cardEntity.Id,
+			deckId: cardEntity.DeckId,
 			originalWord: cardEntity.OriginalWord,
 			translatedWord: cardEntity.TranslatedWord,
 			correctReviewStreak: cardEntity.CorrectReviewStreak,

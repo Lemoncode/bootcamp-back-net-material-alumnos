@@ -37,5 +37,35 @@ public static class CardExtensions
 	{
 		return cards.Select(card => card.ToDto());
 	}
-}
 
+	/// <summary>
+	/// Converts a CardDto object to a Card domain entity.
+	/// </summary>
+	/// <param name="cardDto">The CardDto object to convert.</param>
+	/// <returns>A Card domain entity representing the CardDto object.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when the cardDto is null.</exception>
+	public static Card ToEntity(this CardDto cardDto)
+	{
+		ArgumentNullException.ThrowIfNull(cardDto);
+
+		return new Card(
+			id: cardDto.Id,
+			deckId: cardDto.DeckId,
+			originalWord: cardDto.OriginalWord,
+			translatedWord: cardDto.TranslatedWord,
+			correctReviewStreak: cardDto.CorrectReviewStreak,
+			nextReviewDate: cardDto.NextReviewDate,
+			previousCorrectReview: cardDto.PreviousCorrectReview
+		);
+	}
+
+	/// <summary>
+	/// Converts a collection of CardDto objects to a collection of Card domain entities.
+	/// </summary>
+	/// <param name="cardDtos">The collection of CardDto objects to convert.</param>
+	/// <returns>A collection of Card domain entities representing the CardDto objects.</returns>
+	public static IEnumerable<Card> ToEntityList(this IEnumerable<CardDto> cardDtos)
+	{
+		return cardDtos.Select(cardDto => cardDto.ToEntity());
+	}
+}

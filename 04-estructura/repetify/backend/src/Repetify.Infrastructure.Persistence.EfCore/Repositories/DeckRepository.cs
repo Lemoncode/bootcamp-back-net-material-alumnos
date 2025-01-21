@@ -17,28 +17,19 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 	private readonly RepetifyDbContext _dbContext = dbContext;
 
 	/// <inheritdoc />
-	public async Task<Deck?> GetByIdAsync(Guid deckId)
-	{
-		return
-			(await _dbContext.Decks
-				.AsNoTracking()
-				.FirstOrDefaultAsync(d => d.Id == deckId).ConfigureAwait(false))?.ToDomain();
-	}
-
-	/// <inheritdoc />
-	public async Task AddAsync(Deck deck)
+	public async Task AddDeckAsync(Deck deck)
 	{
 		await _dbContext.Decks.AddAsync(deck.ToEntity()).ConfigureAwait(false);
 	}
 
 	/// <inheritdoc />
-	public void UpdateAsync(Deck deck)
+	public void UpdateDeck(Deck deck)
 	{
 		_dbContext.Decks.Update(deck.ToEntity());
 	}
 
 	/// <inheritdoc />
-	public async Task<bool> DeleteAsync(Guid deckId)
+	public async Task<bool> DeleteDeckAsync(Guid deckId)
 	{
 		if (!await _dbContext.Decks.AnyAsync(d => d.Id == deckId).ConfigureAwait(false))
 		{
@@ -60,6 +51,65 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 	}
 
 	/// <inheritdoc />
+	public async Task<Deck?> GetDeckByIdAsync(Guid deckId)
+	{
+		return
+			(await _dbContext.Decks
+				.AsNoTracking()
+				.FirstOrDefaultAsync(d => d.Id == deckId).ConfigureAwait(false))?.ToDomain();
+	}
+
+	/// <inheritdoc />
+	public async Task<IEnumerable<Deck>> GetDecksByUserIdAsync(Guid userId)
+	{
+		return await _dbContext.Decks
+			.Where(d => d.UserId == userId)
+			.AsNoTracking()
+			.Select(d => d.ToDomain())
+			.ToListAsync().ConfigureAwait(false);
+	}
+
+	/// <inheritdoc />
+	public async Task AddCardAsync(Card card)
+	{
+		ArgumentNullException.ThrowIfNull(card);
+
+		var cardEntity = CardExtensions.ToEntity(card);
+		await _dbContext.Cards.AddAsync(cardEntity).ConfigureAwait(false);
+	}
+
+	/// <inheritdoc />
+	public void UpdateCard(Card card)
+	{
+		var cardEntity = CardExtensions.ToEntity(card);
+		_dbContext.Cards.Update(cardEntity);
+	}
+
+	/// <inheritdoc />
+	public async Task<bool> DeleteCardAsync(Guid deckId, Guid cardId)
+	{
+		if (!await _dbContext.Cards.AnyAsync(c => c.DeckId == deckId && c.Id == cardId).ConfigureAwait(false))
+		{
+			return false;
+		}
+
+		if (IsInMemoryDb())
+		{
+			var card = await _dbContext.Cards
+				.FirstOrDefaultAsync(c => c.DeckId == deckId && c.Id == cardId).ConfigureAwait(false);
+			_dbContext.Cards.Remove(card!);
+		}
+		else
+		{
+			await _dbContext.Cards
+				.Where(c => c.DeckId == deckId && c.Id == cardId)
+				.ExecuteDeleteAsync().ConfigureAwait(false);
+		}
+
+		return true;
+	}
+
+	///  <inheritdoc/>
 	public async Task<IEnumerable<Card>> GetCardsAsync(Guid deckId, int page, int pageSize)
 	{
 		return await _dbContext.Cards
@@ -100,56 +150,6 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 			.AsNoTracking()
 			.Select(d => d.ToDomain())
 			.ToListAsync().ConfigureAwait(false);
-	}
-
-	/// <inheritdoc />
-	public async Task<IEnumerable<Deck>> GetDecksByUserIdAsync(Guid userId)
-	{
-		return await _dbContext.Decks
-			.Where(d => d.UserId == userId)
-			.AsNoTracking()
-			.Select(d => d.ToDomain())
-			.ToListAsync().ConfigureAwait(false);
-	}
-
-	/// <inheritdoc />
-	public async Task AddCardAsync(Card card, Guid deckId)
-	{
-		ArgumentNullException.ThrowIfNull(card);
-
-		var cardEntity = CardExtensions.ToEntity(card, deckId);
-		await _dbContext.Cards.AddAsync(cardEntity).ConfigureAwait(false);
-	}
-
-	/// <inheritdoc />
-	public void UpdateCardAsync(Card card, Guid deckId)
-	{
-		var cardEntity = CardExtensions.ToEntity(card, deckId);
-		_dbContext.Cards.Update(cardEntity);
-	}
-
-	/// <inheritdoc />
-	public async Task<bool> DeleteCardAsync(Guid deckId, Guid cardId)
-	{
-		if (!await _dbContext.Cards.AnyAsync(c => c.DeckId == deckId && c.Id == cardId).ConfigureAwait(false))
-		{
-			return false;
-		}
-
-		if (IsInMemoryDb())
-		{
-			var card = await _dbContext.Cards
-				.FirstOrDefaultAsync(c => c.DeckId == deckId && c.Id == cardId).ConfigureAwait(false);
-			_dbContext.Cards.Remove(card!);
-		}
-		else
-		{
-			await _dbContext.Cards
-				.Where(c => c.DeckId == deckId && c.Id == cardId)
-				.ExecuteDeleteAsync().ConfigureAwait(false);
-		}
-
-		return true;
 	}
 
 	/// <inheritdoc />

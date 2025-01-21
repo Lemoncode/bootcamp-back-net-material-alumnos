@@ -11,6 +11,11 @@ public class Card
 	public Guid Id { get; private set; }
 
 	/// <summary>
+	///  Gets or sets the unique identifier for the deck.
+	/// </summary>
+	public Guid DeckId { get; private set; }
+
+	/// <summary>
 	/// Gets the original word on the card.
 	/// </summary>
 	public string OriginalWord { get; private set; }
@@ -38,10 +43,12 @@ public class Card
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Card"/> class with specified original and translated words.
 	/// </summary>
+	/// <param name="deckId">The unique identifier for the deck.</param>
 	/// <param name="originalWord">The original word on the card.</param>
 	/// <param name="translatedWord">The translated word on the card.</param>
-	public Card(string originalWord, string translatedWord)
+	public Card(Guid deckId, string originalWord, string translatedWord)
 		: this(Guid.NewGuid(),
+			  deckId,
 			  originalWord,
 			  translatedWord,
 			  correctReviewStreak: 0,
@@ -54,18 +61,20 @@ public class Card
 	/// Initializes a new instance of the <see cref="Card"/> class with specified parameters.
 	/// </summary>
 	/// <param name="id">The unique identifier for the card.</param>
+	/// <param name="deckId">The unique identifier for the deck.</param>
 	/// <param name="originalWord">The original word on the card.</param>
 	/// <param name="translatedWord">The translated word on the card.</param>
 	/// <param name="correctReviewStreak">The number of consecutive correct reviews.</param>
 	/// <param name="nextReviewDate">The date when the card should be reviewed next.</param>
 	/// <param name="previousCorrectReview">The date of the previous correct review.</param>
-	public Card(Guid id, string originalWord, string translatedWord, int correctReviewStreak,
+	public Card(Guid id, Guid deckId, string originalWord, string translatedWord, int correctReviewStreak,
 				DateTime nextReviewDate, DateTime previousCorrectReview)
 	{
 		ArgumentNullException.ThrowIfNullOrWhiteSpace(originalWord);
 		ArgumentNullException.ThrowIfNullOrWhiteSpace(translatedWord);
 
 		Id = id;
+		DeckId = deckId;
 		OriginalWord = originalWord;
 		TranslatedWord = translatedWord;
 		CorrectReviewStreak = correctReviewStreak;
