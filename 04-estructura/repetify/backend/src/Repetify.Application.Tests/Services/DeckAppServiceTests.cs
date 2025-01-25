@@ -107,13 +107,11 @@ public class DeckAppServiceTests
 	[Fact]
 	public async Task ReviewCardAsync_Should_Update_Card_And_SaveChanges_When_Card_Exists()
 	{
-		var cardId = Guid.NewGuid();
 		var deckId = Guid.NewGuid();
-		var card = new Card(cardId, deckId, "Hola", "Hello", 3, DateTime.UtcNow, DateTime.UtcNow);
+		var card = new Card(deckId, "Hola", "Hello", 3, DateTime.UtcNow, DateTime.UtcNow);
+		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, card.Id)).ReturnsAsync(card);
 
-		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, cardId)).ReturnsAsync(card);
-
-		await _deckAppService.ReviewCardAsync(deckId, cardId, true);
+		await _deckAppService.ReviewCardAsync(deckId, card.Id, true);
 
 		_reviewCardServiceMock.Verify(r => r.UpdateReview(card, true), Times.Once);
 		_deckRepositoryMock.Verify(r => r.UpdateCard(card), Times.Once);
@@ -142,7 +140,7 @@ public class DeckAppServiceTests
 		var pageSize = 10;
 		var cards = new List<Card>
 		{
-			new Card(Guid.NewGuid(), deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
+			new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
 		};
 
 		_deckRepositoryMock.Setup(r => r.GetCardsToReview(deckId, untilDate, pageSize, null)).ReturnsAsync(cards);
