@@ -4,7 +4,6 @@ using Repetify.Application.Dtos;
 using Repetify.Application.Exceptions;
 using Repetify.Application.Extensions.Mappings;
 using Repetify.Domain.Abstractions.Services;
-using Repetify.Domain.Entities;
 
 namespace Repetify.Application.Services;
 
@@ -29,11 +28,12 @@ public class DeckAppService : IDeckAppService
 	}
 
 	/// <inheritdoc />
-	public async Task AddDeckAsync(DeckDto deck)
+	public async Task<Guid> AddDeckAsync(DeckDto deck)
 	{
 		var deckDomain = deck.ToEntity();
 		await _deckRepository.AddDeckAsync(deckDomain).ConfigureAwait(false);
 		await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+		return deckDomain.Id;
 	}
 
 	/// <inheritdoc />
@@ -71,10 +71,12 @@ public class DeckAppService : IDeckAppService
 	}
 
 	/// <inheritdoc />
-	public async Task AddCardAsync(CardDto card)
+	public async Task<Guid> AddCardAsync(CardDto card)
 	{
-		await _deckRepository.AddCardAsync(card.ToEntity()).ConfigureAwait(false);
+		var cardDomain = card.ToEntity();
+		await _deckRepository.AddCardAsync(cardDomain).ConfigureAwait(false);
 		await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+		return cardDomain.Id;
 	}
 
 	/// <inheritdoc />
@@ -118,6 +120,11 @@ public class DeckAppService : IDeckAppService
 	/// <inheritdoc />
 	public async Task<IEnumerable<CardDto>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
 	{
+		if (pageSize < 1)
+		{
+			throw new ArgumentOutOfRangeException(nameof(pageSize), "Page size must be greater than 0.");
+		}
+
 		var cards = await _deckRepository.GetCardsToReview(deckId, until, pageSize, cursor).ConfigureAwait(false);
 		return cards.ToDtoList();
 	}

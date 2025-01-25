@@ -13,8 +13,8 @@ public interface IDeckAppService
 	/// Adds a new deck.
 	/// </summary>
 	/// <param name="deck">The deck to add.</param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	Task AddDeckAsync(DeckDto deck);
+	/// <returns>A task representing the asynchronous operation, with the new Id as the result.</returns>
+	Task<Guid> AddDeckAsync(DeckDto deck);
 
 	/// <summary>
 	/// Updates an existing deck.
@@ -48,8 +48,8 @@ public interface IDeckAppService
 	/// Adds a card to the specified deck.
 	/// </summary>
 	/// <param name="card">The card to be updated.</param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	Task AddCardAsync(CardDto card);
+	/// <returns>A task representing the asynchronous operation, with the new Id as the result.</returns>
+	Task<Guid> AddCardAsync(CardDto card);
 
 	/// <summary>
 	/// Updates a card in the specified deck.
@@ -89,6 +89,15 @@ public interface IDeckAppService
 	/// <param name="pageSize">The size of the page.</param>
 	/// <returns>A task representing the asynchronous operation, with a result of an enumerable of card DTOs.</returns>
 	Task<IEnumerable<CardDto>> GetCardsAsync(Guid deckId, int page, int pageSize);
+
+	/// <summary>
+	/// Reviews a card in the specified deck.
+	/// </summary>
+	/// <param name="deckId">The ID of the deck.</param>
+	/// <param name="cardId">The ID of the card.</param>
+	/// <param name="isCorrect">Indicates whether the review was correct or not.</param>
+	/// <returns>A task representing the asynchronous operation.</returns>
+	Task ReviewCardAsync(Guid deckId, Guid cardId, bool isCorrect);
 
 	/// <summary>
 	/// Gets a list of cards to review from the specified deck until a certain date.

@@ -49,7 +49,6 @@ public static class DeckExtensions
 		ArgumentNullException.ThrowIfNull(deckDto);
 
 		return new Deck(
-			id: deckDto.Id,
 			name: deckDto.Name,
 			description: deckDto.Description,
 			userId: deckDto.UserId,

@@ -20,6 +20,7 @@ public static class CardExtensions
 
 		return new CardDto(
 			id: card.Id,
+			deckId: card.DeckId,
 			originalWord: card.OriginalWord,
 			translatedWord: card.TranslatedWord,
 			correctReviewStreak: card.CorrectReviewStreak,
@@ -49,7 +50,6 @@ public static class CardExtensions
 		ArgumentNullException.ThrowIfNull(cardDto);
 
 		return new Card(
-			id: cardDto.Id,
 			deckId: cardDto.DeckId,
 			originalWord: cardDto.OriginalWord,
 			translatedWord: cardDto.TranslatedWord,

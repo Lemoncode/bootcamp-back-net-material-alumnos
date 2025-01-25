@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Repetify.Application\Repetify.Application.csproj" />
     <ProjectReference Include="..\Repetify.Infrastructure.Persistence.EfCore\Repetify.Infrastructure.Persistence.EfCore.csproj" />
     <ProjectReference Include="..\Repetify.Domain\Repetify.Domain.csproj" />

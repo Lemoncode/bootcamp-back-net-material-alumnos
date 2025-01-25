@@ -39,6 +39,22 @@ public class Deck
 	/// </summary>
 	public string TranslatedLanguage { get; private set; }
 
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Deck"/> class.
+	/// </summary>
+	/// <param name="name">The name of the deck.</param>
+	/// <param name="description">The description of the deck.</param>
+	/// <param name="userId">The unique identifier of the user who owns the deck.</param>
+	/// <param name="originalLanguage">The original language of the deck.</param>
+	/// <param name="translatedLanguage">The translated language of the deck.</param>
+	public Deck(string name, string? description, Guid userId, string originalLanguage, string translatedLanguage)
+		: this(Guid.NewGuid(), name, description, userId, originalLanguage, translatedLanguage)
+	{
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Deck"/> class.
+	/// </summary>	
 	/// <param name="id">The unique identifier for the deck.</param>
 	/// <param name="name">The name of the deck.</param>
 	/// <param name="description">The description of the deck.</param>
