@@ -71,4 +71,16 @@ public class CardDto
 		NextReviewDate = nextReviewDate;
 		PreviousCorrectReview = previousCorrectReview;
 	}
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="CardDto"/> class.
+	/// </summary>
+	/// <param name="id">The unique identifier for the card.</param>
+	/// <param name="deckId">The unique identifier for the deck.</param>
+	/// <param name="originalWord">The original word.</param>
+	/// <param name="translatedWord">The translated word.</param>
+	/// <exception cref="ArgumentException">Thrown when originalWord or translatedWord is null or whitespace.</exception>
+	public CardDto(Guid id, Guid deckId, string originalWord, string translatedWord) : this(id, deckId, originalWord, translatedWord, 0, default(DateTime), default(DateTime))
+	{
+	}
 }

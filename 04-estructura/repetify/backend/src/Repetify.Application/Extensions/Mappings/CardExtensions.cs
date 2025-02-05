@@ -60,6 +60,23 @@ public static class CardExtensions
 	}
 
 	/// <summary>
+	/// Converts a AddOrUpdateCardDto object to a Card domain entity.
+	/// </summary>
+	/// <param name="cardDto">The AddOrUpdateCardDto object to convert.</param>
+	/// <returns>A Card domain entity representing the CardDto object.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when the cardDto is null.</exception>
+	public static Card ToEntity(this AddOrUpdateCardDto cardDto)
+	{
+		ArgumentNullException.ThrowIfNull(cardDto);
+
+		return new Card(
+			deckId: cardDto.DeckId,
+			originalWord: cardDto.OriginalWord,
+			translatedWord: cardDto.TranslatedWord
+		);
+	}
+
+	/// <summary>
 	/// Converts a collection of CardDto objects to a collection of Card domain entities.
 	/// </summary>
 	/// <param name="cardDtos">The collection of CardDto objects to convert.</param>

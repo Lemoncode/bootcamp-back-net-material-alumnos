@@ -58,6 +58,26 @@ public static class DeckExtensions
 	}
 
 	/// <summary>
+	/// Converts a AddOrUpdateDeckDto to a Deck domain entity.
+	/// </summary>
+	/// <param name="deckDto">The DeckDto to convert.</param>
+	/// <param name="userId">The ID of the user associated with the deck.</param>
+	/// <returns>A Deck domain entity representing the DeckDto.</returns>
+	/// <exception cref="ArgumentNullException">Thrown when the deckDto is null.</exception>
+	public static Deck ToEntity(this AddOrUpdateDeckDto deckDto, Guid userId)
+	{
+		ArgumentNullException.ThrowIfNull(deckDto);
+
+		return new Deck(
+			name: deckDto.Name,
+			description: deckDto.Description,
+			userId: userId,
+			originalLanguage: deckDto.OriginalLanguage,
+			translatedLanguage: deckDto.TranslatedLanguage
+		);
+	}
+
+	/// <summary>
 	/// Converts a collection of DeckDto objects to a collection of Deck domain entities.
 	/// </summary>
 	/// <param name="deckDtos">The collection of DeckDto objects to convert.</param>

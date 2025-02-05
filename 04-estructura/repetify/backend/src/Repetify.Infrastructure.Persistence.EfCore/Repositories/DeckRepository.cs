@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using Repetify.Application.Abstractions.Repositories;
+using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Infrastructure.Persistence.EfCore.Context;
 using Repetify.Infrastructure.Persistence.EfCore.Extensions.Mappers;
 using Repetify.Domain.Entities;
@@ -67,6 +67,14 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 			.AsNoTracking()
 			.Select(d => d.ToDomain())
 			.ToListAsync().ConfigureAwait(false);
+	}
+
+	///  <inheritdoc/>
+	public Task<bool> DeckNameExistsForUser(string name, Guid userId)
+	{
+		ArgumentNullException.ThrowIfNull(name);
+
+		return _dbContext.Decks.AnyAsync(d => d.Name == name && d.UserId == userId);
 	}
 
 	/// <inheritdoc />

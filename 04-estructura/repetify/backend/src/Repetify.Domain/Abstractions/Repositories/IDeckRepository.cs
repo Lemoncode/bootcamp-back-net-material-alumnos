@@ -1,6 +1,6 @@
 ﻿using Repetify.Domain.Entities;
 
-namespace Repetify.Application.Abstractions.Repositories;
+namespace Repetify.Domain.Abstractions.Repositories;
 
 /// <summary>
 /// Interface for deck repository operations.
@@ -40,6 +40,14 @@ public interface IDeckRepository
 	/// <param name="userId">The identifier of the user.</param>
 	/// <returns>A task representing the asynchronous operation, with a list of decks as the result.</returns>
 	Task<IEnumerable<Deck>> GetDecksByUserIdAsync(Guid userId);
+
+	/// <summary>
+	/// Checks if a deck with the specified name exists for a specific user.
+	/// </summary>
+	/// <param name="name">The name of the deck.</param>
+	/// <param name="userId">The identifier of the user.</param>
+	/// <returns>The Task with the async operation. The result will be True if a deck with the specified name exists for the user; otherwise, false.</returns>
+	Task<bool> DeckNameExistsForUser(string name, Guid userId);
 
 	/// <summary>
 	/// Gets the count of cards in a deck asynchronously.

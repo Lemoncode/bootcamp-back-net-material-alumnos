@@ -2,34 +2,38 @@
 
 using Moq;
 
-using Repetify.Application.Abstractions.Repositories;
+using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Application.Dtos;
 using Repetify.Application.Exceptions;
 using Repetify.Application.Services;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
+using Repetify.Application.Enums;
 
 namespace Repetify.Application.Tests.Services;
 
 public class DeckAppServiceTests
 {
+	private readonly Mock<IDeckValidator> _deckValidatorMock;
 	private readonly Mock<IDeckRepository> _deckRepositoryMock;
 	private readonly Mock<ICardReviewService> _reviewCardServiceMock;
 	private readonly DeckAppService _deckAppService;
 
 	public DeckAppServiceTests()
 	{
-		_deckRepositoryMock = new Mock<IDeckRepository>();
+		_deckValidatorMock = new Mock<IDeckValidator>();
 		_reviewCardServiceMock = new Mock<ICardReviewService>();
-		_deckAppService = new DeckAppService(_deckRepositoryMock.Object, _reviewCardServiceMock.Object);
+		_deckValidatorMock.Setup(m => m.EnsureIsValid(It.IsAny<Deck>())).Returns(Task.CompletedTask);
+		_deckRepositoryMock = new Mock<IDeckRepository>();
+		_deckAppService = new DeckAppService(_deckValidatorMock.Object, _reviewCardServiceMock.Object, _deckRepositoryMock.Object);
 	}
 
 	[Fact]
 	public async Task AddDeckAsync_Should_Call_Repository_And_SaveChanges()
 	{
-		var deckDto = CreateFakeDeck();
+		var deckDto = CreateFakeAddOrUpdateDeck();
 
-		await _deckAppService.AddDeckAsync(deckDto);
+		await _deckAppService.AddDeckAsync(deckDto, Guid.NewGuid());
 
 		_deckRepositoryMock.Verify(r => r.AddDeckAsync(It.IsAny<Deck>()), Times.Once);
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
@@ -38,9 +42,9 @@ public class DeckAppServiceTests
 	[Fact]
 	public async Task UpdateDeckAsync_Should_Call_Repository_And_SaveChanges()
 	{
-		var deckDto = CreateFakeDeck();
+		var deckDto = CreateFakeAddOrUpdateDeck();
 
-		await _deckAppService.UpdateDeckAsync(deckDto);
+		await _deckAppService.UpdateDeckAsync(deckDto, Guid.NewGuid());
 
 		_deckRepositoryMock.Verify(r => r.UpdateDeck(It.IsAny<Deck>()), Times.Once);
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
@@ -54,7 +58,8 @@ public class DeckAppServiceTests
 
 		var result = await _deckAppService.DeleteDeckAsync(deckId);
 
-		result.Should().BeTrue();
+		result.Value.Should()
+			.BeTrue();
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
 	}
 
@@ -66,7 +71,7 @@ public class DeckAppServiceTests
 
 		var result = await _deckAppService.DeleteDeckAsync(deckId);
 
-		result.Should().BeFalse();
+		result.Value.Should().BeFalse();
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Never);
 	}
 
@@ -80,7 +85,7 @@ public class DeckAppServiceTests
 		var result = await _deckAppService.GetDeckByIdAsync(deckId);
 
 		result.Should().NotBeNull();
-		result!.Id.Should().Be(deckId);
+		result.Value!.Id.Should().Be(deckId);
 	}
 
 	[Fact]
@@ -90,13 +95,13 @@ public class DeckAppServiceTests
 
 		var result = await _deckAppService.GetDeckByIdAsync(Guid.NewGuid());
 
-		result.Should().BeNull();
+		result.Value.Should().BeNull();
 	}
 
 	[Fact]
 	public async Task AddCardAsync_Should_Call_Repository_And_SaveChanges()
 	{
-		var cardDto = new CardDto(Guid.NewGuid(), Guid.NewGuid(), "Hola", "Hello", 3, DateTime.UtcNow, DateTime.UtcNow);
+		var cardDto = new AddOrUpdateCardDto(Guid.NewGuid(), "Hola", "Hello");
 
 		await _deckAppService.AddCardAsync(cardDto);
 
@@ -119,17 +124,16 @@ public class DeckAppServiceTests
 	}
 
 	[Fact]
-	public async Task ReviewCardAsync_Should_Throw_EntityNotFoundException_When_Card_Not_Found()
+	public async Task ReviewCardAsync_Returns_NotFoundStatusResult_When_Card_Not_Found()
 	{
 		var deckId = Guid.NewGuid();
 		var cardId = Guid.NewGuid();
 
 		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, cardId)).ReturnsAsync((Card?)null);
 
-		Func<Task> act = async () => await _deckAppService.ReviewCardAsync(deckId, cardId, true).ConfigureAwait(false);
+		var result = await _deckAppService.ReviewCardAsync(deckId, cardId, true);
 
-		await act.Should().ThrowAsync<EntityNotFoundException>()
-			.WithMessage($"*Card*{cardId}*");
+		result.Status.Should().Be(ResultStatus.NotFound);
 	}
 
 	[Fact]
@@ -147,8 +151,8 @@ public class DeckAppServiceTests
 
 		var result = await _deckAppService.GetCardsToReview(deckId, untilDate, pageSize, null);
 
-		result.Should().HaveCount(1);
-		result.First().OriginalWord.Should().Be("Hola");
+		result.Value.Should().HaveCount(1);
+		result.Value.First().OriginalWord.Should().Be("Hola");
 	}
 
 	[Fact]
@@ -171,11 +175,17 @@ public class DeckAppServiceTests
 
 		var result = await _deckAppService.GetCardCountAsync(deckId);
 
-		result.Should().Be(5);
+		result.Value.Should().Be(5);
 	}
 
 	private static DeckDto CreateFakeDeck()
 	{
 		return new DeckDto(Guid.NewGuid(), "Test Deck", "Description", Guid.NewGuid(), "english", "spanish");
 	}
+
+	private static AddOrUpdateDeckDto CreateFakeAddOrUpdateDeck()
+	{
+		return new AddOrUpdateDeckDto("Test Deck", "Description", "english", "spanish");
+	}
+
 }
