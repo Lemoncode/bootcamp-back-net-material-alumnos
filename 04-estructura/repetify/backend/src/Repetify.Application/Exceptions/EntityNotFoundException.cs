@@ -22,7 +22,7 @@ public class EntityNotFoundException : Exception
 		: base($"Entity of type {entityType} with ID {entityId} was not found.")
 	{
 	}
-	
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="EntityNotFoundException"/> class with a specified error message.
 	/// </summary>

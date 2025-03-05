@@ -1,5 +1,5 @@
-﻿using Repetify.Infrastructure.Persistence.EfCore.Entities;
-using Repetify.Domain.Entities;
+﻿using Repetify.Domain.Entities;
+using Repetify.Infrastructure.Persistence.EfCore.Entities;
 
 namespace Repetify.Infrastructure.Persistence.EfCore.Extensions.Mappers;
 

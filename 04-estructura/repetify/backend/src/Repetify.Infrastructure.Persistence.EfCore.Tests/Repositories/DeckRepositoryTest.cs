@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+
+using Repetify.Domain.Entities;
 using Repetify.Infrastructure.Persistence.EfCore.Context;
 using Repetify.Infrastructure.Persistence.EfCore.Repositories;
-using Repetify.Domain.Entities;
-using Xunit;
-using System;
-using System.Threading.Tasks;
 
 
 namespace Repetify.Infrastructure.Persistence.EfCore.Tests.Repositories;

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using Repetify.Domain.Abstractions.Repositories;
+using Repetify.Domain.Entities;
 using Repetify.Infrastructure.Persistence.EfCore.Context;
 using Repetify.Infrastructure.Persistence.EfCore.Extensions.Mappers;
-using Repetify.Domain.Entities;
 
 namespace Repetify.Infrastructure.Persistence.EfCore.Repositories;
 
@@ -153,11 +153,11 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 			result = result.Where(c => c.NextReviewDate > cursor);
 		}
 
-			return await result.OrderBy(c => c.NextReviewDate)
-			.Take(pageSize)
-			.AsNoTracking()
-			.Select(d => d.ToDomain())
-			.ToListAsync().ConfigureAwait(false);
+		return await result.OrderBy(c => c.NextReviewDate)
+		.Take(pageSize)
+		.AsNoTracking()
+		.Select(d => d.ToDomain())
+		.ToListAsync().ConfigureAwait(false);
 	}
 
 	/// <inheritdoc />

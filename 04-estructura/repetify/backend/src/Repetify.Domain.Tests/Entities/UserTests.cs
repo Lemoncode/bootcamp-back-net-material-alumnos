@@ -1,9 +1,5 @@
 ﻿using Repetify.Domain.Entities;
 
-using System;
-
-using Xunit;
-
 namespace Repetify.Tests.Domain.Entities;
 
 public class UserTests

@@ -2,13 +2,12 @@
 
 using Moq;
 
-using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Application.Dtos;
-using Repetify.Application.Exceptions;
+using Repetify.Application.Enums;
 using Repetify.Application.Services;
+using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
-using Repetify.Application.Enums;
 
 namespace Repetify.Application.Tests.Services;
 

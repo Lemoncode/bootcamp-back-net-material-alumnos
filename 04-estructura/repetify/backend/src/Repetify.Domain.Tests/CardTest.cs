@@ -1,7 +1,4 @@
-﻿using Moq;
-
-using Repetify.Domain.Abstractions;
-using Repetify.Domain.Entities;
+﻿using Repetify.Domain.Entities;
 
 namespace Repetify.Tests.Domain.Entities;
 

@@ -7,7 +7,7 @@
 		<Company>Lemoncode</Company>
 		<Product>Repetify</Product>
 		<LangVersion>13.0</LangVersion>
-						<Nullable>enable</Nullable>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -1,10 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-
 using Repetify.Web.Extensions.DI;
 
 namespace Repetify.Web;
 
-internal class Program
+internal sealed class Program
 {
 	public static void Main(string[] args)
 	{
@@ -39,5 +37,5 @@ internal class Program
 		app.MapControllers();
 
 		app.Run();
-	} 
+	}
 }

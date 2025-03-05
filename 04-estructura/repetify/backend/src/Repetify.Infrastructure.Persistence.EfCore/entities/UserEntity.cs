@@ -26,5 +26,5 @@ public class UserEntity
 	/// <summary>
 	/// Gets or sets the collection of decks associated with the user.
 	/// </summary>
-	public ICollection<DeckEntity> Decks{ get; set; } = new List<DeckEntity>();
+	public ICollection<DeckEntity> Decks { get; set; } = new List<DeckEntity>();
 }

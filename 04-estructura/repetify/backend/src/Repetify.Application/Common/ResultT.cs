@@ -1,7 +1,5 @@
 ﻿using Repetify.Application.Enums;
 
-using System.Data.SqlTypes;
-
 namespace Repetify.Application.Common;
 
 /// <summary>
@@ -19,7 +17,7 @@ public class Result<T>
 	/// Gets the status of the result.
 	/// </summary>
 	public ResultStatus Status { get; }
-	
+
 	/// <summary>
 	///  Gets the error message associated to the result
 	/// </summary>

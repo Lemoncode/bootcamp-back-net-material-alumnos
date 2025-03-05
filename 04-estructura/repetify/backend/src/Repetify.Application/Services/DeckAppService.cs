@@ -14,7 +14,7 @@ namespace Repetify.Application.Services;
 public class DeckAppService : IDeckAppService
 {
 	private readonly IDeckValidator _deckValidator;
-	private readonly ICardReviewService _reviewCardService;
+	private readonly ICardReviewService _cardReviewService;
 	private readonly IDeckRepository _deckRepository;
 
 	/// <summary>
@@ -29,7 +29,7 @@ public class DeckAppService : IDeckAppService
 		IDeckRepository deckRepository)
 	{
 		_deckValidator = deckValidator;
-		_reviewCardService = cardReviewService;
+		_cardReviewService = cardReviewService;
 		_deckRepository = deckRepository;
 	}
 
@@ -311,7 +311,7 @@ public class DeckAppService : IDeckAppService
 				return NotFound("The card to review was not found.");
 			}
 
-			_reviewCardService.UpdateReview(card, isCorrect);
+			_cardReviewService.UpdateReview(card, isCorrect);
 			_deckRepository.UpdateCard(card);
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return Success();

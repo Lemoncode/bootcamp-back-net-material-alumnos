@@ -97,23 +97,46 @@ public class Card
 		DeckId = deckId;
 		OriginalWord = originalWord;
 		TranslatedWord = translatedWord;
+		if (correctReviewStreak < 0)
+		{
+			throw new ArgumentOutOfRangeException(nameof(correctReviewStreak), "The number of hits must be a number greater than or equal to zero.");
+		}
+
 		CorrectReviewStreak = correctReviewStreak;
 		NextReviewDate = nextReviewDate;
 		PreviousCorrectReview = previousCorrectReview;
 	}
 
-	internal void SetNextReviewDate(DateTime nextReview)
+	/// <summary>
+	/// Sets the date when the card should be reviewed next.
+	/// </summary>
+	/// <param name="nextReview">The date for the next review.</param>
+	public void SetNextReviewDate(DateTime nextReview)
 	{
 		NextReviewDate = nextReview;
 	}
 
-	internal void SetPreviousCorrectReview(DateTime previousCorrectReview)
+	/// <summary>
+	/// Sets the date of the previous correct review.
+	/// </summary>
+	/// <param name="previousCorrectReview">The date of the previous correct review.</param>
+	public void SetPreviousCorrectReview(DateTime previousCorrectReview)
 	{
 		PreviousCorrectReview = previousCorrectReview;
 	}
 
-	internal void SetCorrectReviewStreak(int streak)
+	/// <summary>
+	/// Sets the number of consecutive correct reviews.
+	/// </summary>
+	/// <param name="streak">The number of consecutive correct reviews.</param>
+	/// <exception cref="ArgumentOutOfRangeException">Thrown when the streak is less than 0.</exception>
+	public void SetCorrectReviewStreak(int streak)
 	{
+		if (streak < 0)
+		{
+			throw new ArgumentOutOfRangeException(nameof(streak), "Streak must be greater than or equal to 0.");
+		}
+
 		CorrectReviewStreak = streak;
 	}
 }

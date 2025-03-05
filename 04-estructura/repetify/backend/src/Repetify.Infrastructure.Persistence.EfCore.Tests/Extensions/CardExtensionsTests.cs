@@ -1,8 +1,6 @@
 ﻿using Repetify.Domain.Entities;
 using Repetify.Infrastructure.Persistence.EfCore.Entities;
 using Repetify.Infrastructure.Persistence.EfCore.Extensions.Mappers;
-using Xunit;
-using System;
 
 namespace Repetify.Infrastructure.Persistence.EfCore.Tests.Extensions;
 

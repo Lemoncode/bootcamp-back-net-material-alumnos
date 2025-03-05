@@ -1,9 +1,5 @@
 ﻿using Repetify.Domain.Entities;
 
-using System;
-
-using Xunit;
-
 namespace Repetify.Tests.Domain.Entities;
 
 public class DeckTests
@@ -19,7 +15,7 @@ public class DeckTests
 		var translatedLanguage = "Spanish";
 
 		// Act
-		var deck = new Deck(Guid.NewGuid(),name, description, userId, originalLanguage, translatedLanguage);
+		var deck = new Deck(Guid.NewGuid(), name, description, userId, originalLanguage, translatedLanguage);
 
 		// Assert
 		Assert.Equal(name, deck.Name);
