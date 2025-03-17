@@ -63,26 +63,19 @@ public static class CardExtensions
 	/// Converts a AddOrUpdateCardDto object to a Card domain entity.
 	/// </summary>
 	/// <param name="cardDto">The AddOrUpdateCardDto object to convert.</param>
+	/// <param name="deckId">The unique identifier for the deck.</param></param>
+	/// <param name="cardId">The unique identifier for the card (optional).</param>
 	/// <returns>A Card domain entity representing the CardDto object.</returns>
 	/// <exception cref="ArgumentNullException">Thrown when the cardDto is null.</exception>
-	public static Card ToEntity(this AddOrUpdateCardDto cardDto)
+	public static Card ToEntity(this AddOrUpdateCardDto cardDto, Guid deckId, Guid? cardId = null)
 	{
 		ArgumentNullException.ThrowIfNull(cardDto);
 
 		return new Card(
-			deckId: cardDto.DeckId,
+			id: cardId,
+			deckId: deckId,
 			originalWord: cardDto.OriginalWord,
 			translatedWord: cardDto.TranslatedWord
 		);
-	}
-
-	/// <summary>
-	/// Converts a collection of CardDto objects to a collection of Card domain entities.
-	/// </summary>
-	/// <param name="cardDtos">The collection of CardDto objects to convert.</param>
-	/// <returns>A collection of Card domain entities representing the CardDto objects.</returns>
-	public static IEnumerable<Card> ToEntityList(this IEnumerable<CardDto> cardDtos)
-	{
-		return cardDtos.Select(cardDto => cardDto.ToEntity());
 	}
 }

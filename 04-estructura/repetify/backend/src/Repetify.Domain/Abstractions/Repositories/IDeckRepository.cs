@@ -44,10 +44,11 @@ public interface IDeckRepository
 	/// <summary>
 	/// Checks if a deck with the specified name exists for a specific user.
 	/// </summary>
+	/// <param name="deckId">The identifier of the deck.</param>
 	/// <param name="name">The name of the deck.</param>
 	/// <param name="userId">The identifier of the user.</param>
 	/// <returns>The Task with the async operation. The result will be True if a deck with the specified name exists for the user; otherwise, false.</returns>
-	Task<bool> DeckNameExistsForUser(string name, Guid userId);
+	Task<bool> DeckNameExistsForUserAsync(Guid deckId, string name, Guid userId);
 
 	/// <summary>
 	/// Gets the count of cards in a deck asynchronously.

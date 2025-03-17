@@ -1,6 +1,6 @@
 ﻿using Repetify.Domain.Entities;
 
-namespace Repetify.Tests.Domain.Entities;
+namespace Repetify.Domain.Tests.Entities;
 
 public class CardTests
 {
@@ -13,7 +13,7 @@ public class CardTests
 		var translatedWord = "Hola";
 
 		// Act
-		var card = new Card(Guid.NewGuid(), originalWord, translatedWord);
+		var card = new Card(Guid.NewGuid(), Guid.NewGuid(), originalWord, translatedWord);
 
 		// Assert
 		Assert.Equal(originalWord, card.OriginalWord);

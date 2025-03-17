@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Crosscutting", "05. Cro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Domain", "Repetify.Domain\Repetify.Domain.csproj", "{5441D461-0567-451E-A579-8F50C47578D8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06. Test", "06. Test", "{C3E63C45-74B7-471B-B902-E3633D943572}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06. Tests", "06. Tests", "{C3E63C45-74B7-471B-B902-E3633D943572}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. UnitTests", "01. UnitTests", "{D6E0924A-DD98-4412-93BC-9715BBC17875}"
 EndProject
@@ -29,14 +29,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Application", "Rep
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Infrastructure.Persistence.EfCore.Tests", "Repetify.Infrastructure.Persistence.EfCore.Tests\Repetify.Infrastructure.Persistence.EfCore.Tests.csproj", "{B1851CDD-0566-4502-A359-6EC38D5A176F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4612A87F-FA52-4F57-A5B6-EAE4C37D04A9}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Infrastructure", "Repetify.Infrastructure\Repetify.Infrastructure.csproj", "{32F7E9AD-1DED-44A5-8888-56E1DF91B4E4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Application.Tests", "Repetify.Application.Tests\Repetify.Application.Tests.csproj", "{0A99739D-7749-470E-88A8-B995FA967373}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".default", ".default", "{1A4AA235-1C57-439C-A78C-10621A580DF5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

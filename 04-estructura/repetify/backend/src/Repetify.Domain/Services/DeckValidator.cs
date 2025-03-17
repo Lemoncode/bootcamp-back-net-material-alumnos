@@ -38,7 +38,7 @@ public class DeckValidator : IDeckValidator
 	{
 		ArgumentNullException.ThrowIfNull(deck);
 
-		if (await _deckRepository.DeckNameExistsForUser(deck.Name, deck.UserId).ConfigureAwait(false))
+		if (await _deckRepository.DeckNameExistsForUserAsync(deck.Id, deck.Name, deck.UserId).ConfigureAwait(false))
 		{
 			throw new EntityExistsException("Deck", "Name", deck.Name);
 		}

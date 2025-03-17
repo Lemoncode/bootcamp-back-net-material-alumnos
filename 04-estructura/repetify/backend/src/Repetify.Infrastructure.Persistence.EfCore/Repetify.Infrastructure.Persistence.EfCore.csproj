@@ -19,7 +19,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Repetify.Application\Repetify.Application.csproj" />
 		<ProjectReference Include="..\Repetify.Domain\Repetify.Domain.csproj" />
 	</ItemGroup>
 </Project>

@@ -44,10 +44,12 @@ public class Card
 	/// Initializes a new instance of the <see cref="Card"/> class with specified original and translated words.
 	/// </summary>
 	/// <param name="deckId">The unique identifier for the deck.</param>
+	/// <param name="id">The unique identifier for the card (optional).</param>
 	/// <param name="originalWord">The original word on the card.</param>
 	/// <param name="translatedWord">The translated word on the card.</param>
-	public Card(Guid deckId, string originalWord, string translatedWord)
-		: this(deckId,
+	public Card(Guid? id, Guid deckId, string originalWord, string translatedWord)
+		: this(id ?? Guid.NewGuid(),
+			  deckId,
 			  originalWord,
 			  translatedWord,
 			  correctReviewStreak: 0,

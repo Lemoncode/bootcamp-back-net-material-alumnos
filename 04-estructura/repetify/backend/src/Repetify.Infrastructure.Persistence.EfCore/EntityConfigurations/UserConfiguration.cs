@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 using Repetify.Infrastructure.Persistence.EfCore.Entities;
 
-namespace Repetify.Infrastructure.Persistence.EfCore.EntityConfiguration;
+namespace Repetify.Infrastructure.Persistence.EfCore.EntityConfigurations;
 
 /// <summary>
 /// Configures the UserEntity model.

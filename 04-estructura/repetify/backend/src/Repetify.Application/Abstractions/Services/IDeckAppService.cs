@@ -49,15 +49,18 @@ public interface IDeckAppService
 	/// Adds a card to the specified deck.
 	/// </summary>
 	/// <param name="card">The card to add.</param>
+	/// <param name="deckId">The ID of the deck to which the card will be added.</param>
 	/// <returns>A task representing the asynchronous operation, with the new Id as the result.</returns>
-	Task<Result<Guid>> AddCardAsync(AddOrUpdateCardDto card);
+	Task<Result<Guid>> AddCardAsync(AddOrUpdateCardDto card, Guid deckId);
 
 	/// <summary>
 	/// Updates a card in the specified deck.
 	/// </summary>
 	/// <param name="card">The card to be updated.</param>
+	/// <param name="deckId">The ID of the deck to which the card belongs.</param>
+	/// <param name="cardId">The ID of the card to be updated.</param>
 	/// <returns>A task representing the asynchronous operation.</returns>
-	Task<Result> UpdateCardAsync(AddOrUpdateCardDto card);
+	Task<Result> UpdateCardAsync(AddOrUpdateCardDto card, Guid deckId, Guid cardId);
 
 	/// <summary>
 	/// Deletes a card from the specified deck.

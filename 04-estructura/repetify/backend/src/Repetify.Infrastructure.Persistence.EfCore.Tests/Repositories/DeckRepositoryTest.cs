@@ -220,8 +220,8 @@ public class DeckRepositoryTests
 		await repository.AddDeckAsync(deck);
 		await repository.SaveChangesAsync();
 
-		var card1 = new Card(deck.Id, "Word1", "Translation1");
-		var card2 = new Card(deck.Id, "Word2", "Translation2");
+		var card1 = new Card(Guid.NewGuid(), deck.Id, "Word1", "Translation1");
+		var card2 = new Card(Guid.NewGuid(), deck.Id, "Word2", "Translation2");
 
 		await repository.AddCardAsync(card1);
 		await repository.AddCardAsync(card2);
@@ -246,8 +246,8 @@ public class DeckRepositoryTests
 		await repository.AddDeckAsync(deck);
 		await repository.SaveChangesAsync();
 
-		await repository.AddCardAsync(new Card(deck.Id, "Word1", "Translation1"));
-		await repository.AddCardAsync(new Card(deck.Id, "Word2", "Translation2"));
+		await repository.AddCardAsync(new Card(Guid.NewGuid(), deck.Id, "Word1", "Translation1"));
+		await repository.AddCardAsync(new Card(Guid.NewGuid(), deck.Id, "Word2", "Translation2"));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -267,7 +267,7 @@ public class DeckRepositoryTests
 		await repository.AddDeckAsync(deck);
 		await repository.SaveChangesAsync();
 
-		var card = new Card(deck.Id, "Hola", "Hello");
+		var card = new Card(Guid.NewGuid(), deck.Id, "Hola", "Hello");
 
 		await repository.AddCardAsync(card);
 		await repository.SaveChangesAsync();
@@ -287,7 +287,7 @@ public class DeckRepositoryTests
 		await repository.AddDeckAsync(deck);
 		await repository.SaveChangesAsync();
 
-		var card = new Card(deck.Id, "Chat", "Cat");
+		var card = new Card(Guid.NewGuid(), deck.Id, "Chat", "Cat");
 		await repository.AddCardAsync(card);
 		await repository.SaveChangesAsync();
 
@@ -324,7 +324,7 @@ public class DeckRepositoryTests
 		await repository.AddDeckAsync(deck);
 		await repository.SaveChangesAsync();
 
-		var card = new Card(deck.Id, "Auto", "Car");
+		var card = new Card(Guid.NewGuid(), deck.Id, "Auto", "Car");
 		await repository.AddCardAsync(card);
 		await repository.SaveChangesAsync();
 
@@ -332,5 +332,83 @@ public class DeckRepositoryTests
 
 		Assert.NotNull(retrievedCard);
 		Assert.Equal("Auto", retrievedCard.OriginalWord);
+	}
+
+	[Fact]
+	public async Task DeckNameExistsForUser_ShouldReturnTrue_WhenDeckNameExistsForUser()
+	{
+		// Arrange
+		using var dbContext = GetInMemoryDbContext();
+		var repository = new DeckRepository(dbContext);
+
+		var userId = Guid.NewGuid();
+		var name = "should be unique";
+		var deck = new Deck(Guid.NewGuid(), name, "Description", userId, "EN", "ES");
+		var deckToTest = new Deck(Guid.NewGuid(), name, "Description", userId, "EN", "ES");
+		await repository.AddDeckAsync(deck);
+		await repository.SaveChangesAsync();
+
+		// Act
+		var exists = await repository.DeckNameExistsForUserAsync(deckToTest.Id, name, userId);
+
+		// Assert
+		Assert.True(exists);
+	}
+
+	[Fact]
+	public async Task DeckNameExistsForUser_ShouldReturnFalse_WhenDeckNameExistsForOtherUser()
+	{
+		// Arrange
+		using var dbContext = GetInMemoryDbContext();
+		var repository = new DeckRepository(dbContext);
+
+		var name = "should be unique";
+		var deck = new Deck(Guid.NewGuid(), name, "Description", Guid.NewGuid(), "EN", "ES");
+		var deckToTest = new Deck(Guid.NewGuid(), name, "Description", Guid.NewGuid(), "EN", "ES");
+		await repository.AddDeckAsync(deck);
+		await repository.SaveChangesAsync();
+
+		// Act
+		var exists = await repository.DeckNameExistsForUserAsync(deckToTest.Id, name, deckToTest.UserId);
+
+		// Assert
+		Assert.False(exists);
+	}
+
+	[Fact]
+	public async Task DeckNameExistsForUser_ShouldReturnFalse_WhenDeckNameDoesNotExistForUser()
+	{
+		// Arrange
+		using var dbContext = GetInMemoryDbContext();
+		var userId = Guid.NewGuid();
+		var repository = new DeckRepository(dbContext);
+		var deck = new Deck(Guid.NewGuid(), "Existing Deck", "Description", userId, "EN", "ES");
+		await repository.AddDeckAsync(deck);
+		await repository.SaveChangesAsync();
+
+		// Act
+		var exists = await repository.DeckNameExistsForUserAsync(deck.Id, "Non-Existing Deck", userId);
+
+		// Assert
+		Assert.False(exists);
+	}
+
+	[Fact]
+	public async Task DeckNameExistsForUser_ShouldReturnFalse_WhenDeckNameExistsForSameDeck()
+	{
+		// Arrange
+		using var dbContext = GetInMemoryDbContext();
+		var repository = new DeckRepository(dbContext);
+
+		var userId = Guid.NewGuid();
+		var deck = new Deck(Guid.NewGuid(), "Existing Deck", "Description", userId, "EN", "ES");
+		await repository.AddDeckAsync(deck);
+		await repository.SaveChangesAsync();
+
+		// Act
+		var exists = await repository.DeckNameExistsForUserAsync(deck.Id, deck.Name, userId);
+
+		// Assert
+		Assert.False(exists);
 	}
 }

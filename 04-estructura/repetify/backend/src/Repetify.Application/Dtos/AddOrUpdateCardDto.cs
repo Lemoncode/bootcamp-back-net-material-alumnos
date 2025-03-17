@@ -8,12 +8,6 @@ namespace Repetify.Application.Dtos;
 public class AddOrUpdateCardDto
 {
 	/// <summary>
-	/// Gets or sets the unique identifier for the deck.
-	/// </summary>
-	[Required(ErrorMessage = "The deck ID is required.")]
-	public Guid DeckId { get; set; }
-
-	/// <summary>
 	/// Gets or sets the original word.
 	/// </summary>
 	[Required(ErrorMessage = "The original word is required.")]
@@ -30,16 +24,14 @@ public class AddOrUpdateCardDto
 	/// <summary>
 	/// Initializes a new instance of the <see cref="AddOrUpdateCardDto"/> class.
 	/// </summary>
-	/// <param name="deckId">The unique identifier for the deck.</param>
 	/// <param name="originalWord">The original word.</param>
 	/// <param name="translatedWord">The translated word.</param>
 	/// <exception cref="ArgumentException">Thrown when originalWord or translatedWord is null or whitespace.</exception>
-	public AddOrUpdateCardDto(Guid deckId, string originalWord, string translatedWord)
+	public AddOrUpdateCardDto(string originalWord, string translatedWord)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(originalWord);
 		ArgumentException.ThrowIfNullOrWhiteSpace(translatedWord);
 
-		DeckId = deckId;
 		OriginalWord = originalWord;
 		TranslatedWord = translatedWord;
 	}

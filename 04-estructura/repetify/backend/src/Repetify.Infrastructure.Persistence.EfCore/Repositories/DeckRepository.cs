@@ -70,11 +70,11 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 	}
 
 	///  <inheritdoc/>
-	public Task<bool> DeckNameExistsForUser(string name, Guid userId)
+	public Task<bool> DeckNameExistsForUserAsync(Guid deckId, string name, Guid userId)
 	{
 		ArgumentNullException.ThrowIfNull(name);
 
-		return _dbContext.Decks.AnyAsync(d => d.Name == name && d.UserId == userId);
+		return _dbContext.Decks.AnyAsync(d => d.Name == name && d.UserId == userId && d.Id != deckId);
 	}
 
 	/// <inheritdoc />

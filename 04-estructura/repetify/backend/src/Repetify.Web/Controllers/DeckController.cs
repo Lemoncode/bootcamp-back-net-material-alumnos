@@ -107,17 +107,17 @@ public class DeckController : ControllerBase
 	/// </summary>
 	/// <param name="card">The DTO of the card to add.</param>
 	/// <returns>Created (201) if added successfully.</returns>
-	[HttpPost("cards")]
-	public async Task<IActionResult> AddCard([FromBody] AddOrUpdateCardDto card)
+	[HttpPost("decks/{deckId}/cards")]
+	public async Task<IActionResult> AddCard([FromRoute]Guid deckId, [FromBody]AddOrUpdateCardDto card)
 	{
 		ArgumentNullException.ThrowIfNull(card);
 
-		var result = await _deckAppService.AddCardAsync(card).ConfigureAwait(false);
+		var result = await _deckAppService.AddCardAsync(card, deckId).ConfigureAwait(false);
 		return result.ToActionResult(cardId =>
 		{
 			var createdCard = new CardDto(
 				cardId,
-				card.DeckId,
+				deckId,
 				card.OriginalWord,
 				card.TranslatedWord
 				);
@@ -130,10 +130,10 @@ public class DeckController : ControllerBase
 	/// </summary>
 	/// <param name="card">The DTO with the updated information of the card.</param>
 	/// <returns>NoContent on success.</returns>
-	[HttpPut("cards")]
-	public async Task<IActionResult> UpdateCard([FromBody] AddOrUpdateCardDto card)
+	[HttpPut("decks/{deckId}/cards/{cardId}")]
+	public async Task<IActionResult> UpdateCard([FromRoute]Guid deckId, [FromRoute]Guid cardId, [FromBody] AddOrUpdateCardDto card)
 	{
-		var result = await _deckAppService.UpdateCardAsync(card).ConfigureAwait(false);
+		var result = await _deckAppService.UpdateCardAsync(card, deckId, cardId).ConfigureAwait(false);
 		return result.ToActionResult(() => NoContent());
 	}
 

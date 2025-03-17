@@ -21,7 +21,7 @@ public class CardReviewServiceTests
 	public void UpdateReview_Should_Increment_Streak_And_Adjust_NextReviewDate_When_Correct()
 	{
 		// Arrange
-		var card = new Card(Guid.NewGuid(), "Hello", "Hola");
+		var card = new Card(Guid.NewGuid(), Guid.NewGuid(), "Hello", "Hola");
 		var cardReviewService = new CardReviewService(_clockMock.Object);
 
 		// Act
@@ -37,7 +37,7 @@ public class CardReviewServiceTests
 	public void UpdateReview_Should_Reset_Streak_And_Set_NextReviewDate_When_Incorrect()
 	{
 		// Arrange
-		var card = new Card(Guid.NewGuid(), "Hello", "Hola");
+		var card = new Card(Guid.NewGuid(), Guid.NewGuid(), "Hello", "Hola");
 		var cardReviewService = new CardReviewService(_clockMock.Object);
 
 		cardReviewService.UpdateReview(card, true);
@@ -54,7 +54,7 @@ public class CardReviewServiceTests
 	public void UpdateReview_Should_Use_Streak_For_NextReviewDate_Calculation()
 	{
 		// Arrange
-		var card = new Card(Guid.NewGuid(), "Hello", "Hola");
+		var card = new Card(Guid.NewGuid(), Guid.NewGuid(), "Hello", "Hola");
 		var cardReviewService = new CardReviewService(_clockMock.Object);
 		var today = _clockMock.Object.UtcNow;
 

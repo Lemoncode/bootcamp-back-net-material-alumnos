@@ -33,17 +33,13 @@ public class DeckAppService : IDeckAppService
 		_deckRepository = deckRepository;
 	}
 
-	/// <summary>
-	/// Adds a new deck asynchronously.
-	/// </summary>
-	/// <param name="deck">The deck to add.</param>
-	/// <param name="userId">The user ID.</param>
-	/// <returns>The result containing the new deck ID.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<Guid>> AddDeckAsync(AddOrUpdateDeckDto deck, Guid userId)
 	{
 		try
 		{
 			var deckDomain = deck.ToEntity(userId);
+			await _deckValidator.EnsureIsValid(deckDomain).ConfigureAwait(false);
 			await _deckRepository.AddDeckAsync(deckDomain).ConfigureAwait(false);
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return Success(deckDomain.Id);
@@ -54,17 +50,13 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Updates an existing deck asynchronously.
-	/// </summary>
-	/// <param name="deck">The deck to update.</param>
-	/// <param name="userId">The user ID.</param>
-	/// <returns>The result of the update operation.</returns>
+	///  <inheritdoc/>
 	public async Task<Result> UpdateDeckAsync(AddOrUpdateDeckDto deck, Guid userId)
 	{
 		try
 		{
 			var deckDomain = deck.ToEntity(userId);
+			await _deckValidator.EnsureIsValid(deckDomain).ConfigureAwait(false);
 			_deckRepository.UpdateDeck(deckDomain);
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return Success();
@@ -75,11 +67,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Deletes a deck asynchronously.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <returns>The result of the delete operation.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<bool>> DeleteDeckAsync(Guid deckId)
 	{
 		try
@@ -104,11 +92,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Gets a deck by its ID asynchronously.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <returns>The result containing the deck DTO.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<DeckDto>> GetDeckByIdAsync(Guid deckId)
 	{
 		try
@@ -126,11 +110,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Gets the decks of a user asynchronously.
-	/// </summary>
-	/// <param name="userId">The user ID.</param>
-	/// <returns>The result containing the list of deck DTOs.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<IEnumerable<DeckDto>>> GetUserDecksAsync(Guid userId)
 	{
 		try
@@ -144,16 +124,12 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Adds a new card asynchronously.
-	/// </summary>
-	/// <param name="card">The card to add.</param>
-	/// <returns>The result containing the new card ID.</returns>
-	public async Task<Result<Guid>> AddCardAsync(AddOrUpdateCardDto card)
+	///  <inheritdoc/>
+	public async Task<Result<Guid>> AddCardAsync(AddOrUpdateCardDto card, Guid deckId)
 	{
 		try
 		{
-			var cardDomain = card.ToEntity();
+			var cardDomain = card.ToEntity(deckId);
 			await _deckRepository.AddCardAsync(cardDomain).ConfigureAwait(false);
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return Success(cardDomain.Id);
@@ -164,16 +140,12 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Updates an existing card asynchronously.
-	/// </summary>
-	/// <param name="card">The card to update.</param>
-	/// <returns>The result of the update operation.</returns>
-	public async Task<Result> UpdateCardAsync(AddOrUpdateCardDto card)
+	///  <inheritdoc/>
+	public async Task<Result> UpdateCardAsync(AddOrUpdateCardDto card, Guid deckId, Guid cardId)
 	{
 		try
 		{
-			_deckRepository.UpdateCard(card.ToEntity());
+			_deckRepository.UpdateCard(card.ToEntity(deckId, cardId));
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return Success();
 		}
@@ -183,12 +155,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Deletes a card asynchronously.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <param name="cardId">The card ID.</param>
-	/// <returns>The result of the delete operation.</returns>
+	///  <inheritdoc/>
 	public async Task<Result> DeleteCardAsync(Guid deckId, Guid cardId)
 	{
 		try
@@ -207,12 +174,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Gets a card by its ID asynchronously.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <param name="cardId">The card ID.</param>
-	/// <returns>The result containing the card DTO.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<CardDto>> GetCardByIdAsync(Guid deckId, Guid cardId)
 	{
 		try
@@ -230,13 +192,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Gets the cards of a deck asynchronously with pagination.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <param name="page">The page number.</param>
-	/// <param name="pageSize">The page size.</param>
-	/// <returns>The result containing the list of card DTOs.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<IEnumerable<CardDto>>> GetCardsAsync(Guid deckId, int page, int pageSize)
 	{
 		try
@@ -250,11 +206,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Gets the count of cards in a deck asynchronously.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <returns>The result containing the card count.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<int>> GetCardCountAsync(Guid deckId)
 	{
 		try
@@ -268,14 +220,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Gets the cards to review from a deck asynchronously.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <param name="until">The date until which to get cards for review.</param>
-	/// <param name="pageSize">The number of cards to retrieve.</param>
-	/// <param name="cursor">The cursor for pagination.</param>
-	/// <returns>The result containing the list of card DTOs.</returns>
+	///  <inheritdoc/>
 	public async Task<Result<IEnumerable<CardDto>>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
 	{
 		try
@@ -294,13 +239,7 @@ public class DeckAppService : IDeckAppService
 		}
 	}
 
-	/// <summary>
-	/// Reviews a card asynchronously.
-	/// </summary>
-	/// <param name="deckId">The deck ID.</param>
-	/// <param name="cardId">The card ID.</param>
-	/// <param name="isCorrect">Indicates whether the review was correct.</param>
-	/// <returns>The result of the review operation.</returns>
+	///  <inheritdoc/>
 	public async Task<Result> ReviewCardAsync(Guid deckId, Guid cardId, bool isCorrect)
 	{
 		try

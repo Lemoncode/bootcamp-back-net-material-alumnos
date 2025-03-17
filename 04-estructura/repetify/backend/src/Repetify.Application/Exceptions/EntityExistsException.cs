@@ -1,5 +1,4 @@
-﻿
-namespace Repetify.Application.Services
+﻿namespace Repetify.Application.Exceptions
 {
 	[Serializable]
 	internal class EntityExistsException : Exception

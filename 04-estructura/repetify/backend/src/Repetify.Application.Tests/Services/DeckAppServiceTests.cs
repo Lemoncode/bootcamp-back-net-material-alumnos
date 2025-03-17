@@ -100,9 +100,9 @@ public class DeckAppServiceTests
 	[Fact]
 	public async Task AddCardAsync_Should_Call_Repository_And_SaveChanges()
 	{
-		var cardDto = new AddOrUpdateCardDto(Guid.NewGuid(), "Hola", "Hello");
+		var cardDto = new AddOrUpdateCardDto("Hola", "Hello");
 
-		await _deckAppService.AddCardAsync(cardDto);
+		await _deckAppService.AddCardAsync(cardDto, Guid.NewGuid());
 
 		_deckRepositoryMock.Verify(r => r.AddCardAsync(It.IsAny<Card>()), Times.Once);
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);

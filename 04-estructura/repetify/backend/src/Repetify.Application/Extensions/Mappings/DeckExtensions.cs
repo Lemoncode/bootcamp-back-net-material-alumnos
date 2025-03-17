@@ -35,7 +35,7 @@ public static class DeckExtensions
 	/// <returns>A collection of DeckDto objects representing the Deck entities.</returns>
 	public static IEnumerable<DeckDto> ToDtoList(this IEnumerable<Deck> decks)
 	{
-		return decks.Select(deck => deck.ToDto());
+		return decks is null ? throw new ArgumentNullException(nameof(decks)) : decks.Select(deck => deck.ToDto());
 	}
 
 	/// <summary>
@@ -75,15 +75,5 @@ public static class DeckExtensions
 			originalLanguage: deckDto.OriginalLanguage,
 			translatedLanguage: deckDto.TranslatedLanguage
 		);
-	}
-
-	/// <summary>
-	/// Converts a collection of DeckDto objects to a collection of Deck domain entities.
-	/// </summary>
-	/// <param name="deckDtos">The collection of DeckDto objects to convert.</param>
-	/// <returns>A collection of Deck domain entities representing the DeckDto objects.</returns>
-	public static IEnumerable<Deck> ToEntityList(this IEnumerable<DeckDto> deckDtos)
-	{
-		return deckDtos.Select(deckDto => deckDto.ToEntity());
 	}
 }
