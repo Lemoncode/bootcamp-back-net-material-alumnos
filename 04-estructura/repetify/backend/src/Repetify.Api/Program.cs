@@ -1,6 +1,6 @@
-using Repetify.Web.Extensions.DI;
+using Repetify.Api.Extensions.DI;
 
-namespace Repetify.Web;
+namespace Repetify.Api;
 
 internal sealed class Program
 {

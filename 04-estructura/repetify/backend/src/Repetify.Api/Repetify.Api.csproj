@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Repetify.Application\Repetify.Application.csproj" />
+    <ProjectReference Include="..\Repetify.AuthPlatform\Repetify.AuthPlatform.csproj" />
     <ProjectReference Include="..\Repetify.Infrastructure.Persistence.EfCore\Repetify.Infrastructure.Persistence.EfCore.csproj" />
     <ProjectReference Include="..\Repetify.Domain\Repetify.Domain.csproj" />
     <ProjectReference Include="..\Repetify.Infrastructure\Repetify.Infrastructure.csproj" />

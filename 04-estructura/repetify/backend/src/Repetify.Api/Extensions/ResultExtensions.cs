@@ -3,7 +3,7 @@
 using Repetify.Application.Common;
 using Repetify.Application.Enums;
 
-namespace Repetify.Web.Extensions;
+namespace Repetify.Api.Extensions;
 
 /// <summary>
 /// Extension methods to map Result and Result&lt;T&gt; to IActionResult, allowing a custom function to be passed in case of success.

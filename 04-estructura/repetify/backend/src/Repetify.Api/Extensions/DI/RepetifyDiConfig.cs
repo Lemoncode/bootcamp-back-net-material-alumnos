@@ -1,7 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using Repetify.Api.Config;
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Services;
+using Repetify.AuthPlatform.Abstractions.IdentityProviders;
+using Repetify.AuthPlatform.Config;
+using Repetify.AuthPlatform.Config.Google;
+using Repetify.AuthPlatform.Config.Microsoft;
+using Repetify.AuthPlatform.IdentityProviders;
 using Repetify.Domain.Abstractions;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
@@ -10,7 +16,7 @@ using Repetify.Infrastructure.Persistence.EfCore.Context;
 using Repetify.Infrastructure.Persistence.EfCore.Repositories;
 using Repetify.Infrastructure.Time;
 
-namespace Repetify.Web.Extensions.DI;
+namespace Repetify.Api.Extensions.DI;
 
 internal static class RepetifyDiConfig
 {
@@ -20,7 +26,8 @@ internal static class RepetifyDiConfig
 		services.AddDomainDependencies()
 			.AddInfrastructureDependencies()
 			.AddPersistenceDependencies(configuration)
-			.AddApplicationDependencies();
+			.AddApplicationDependencies()
+			.AddApplicationConfig(configuration);
 
 		return services;
 	}
@@ -35,6 +42,9 @@ internal static class RepetifyDiConfig
 	private static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services)
 	{
 		services.AddSingleton<IClock, SystemClock>();
+		services.AddScoped<IGoogleOauthService, GoogleOauthService>();
+		services.AddScoped<IMicrosoftOauthService, MicrosoftOauthService>();
+
 		return services;
 	}
 
@@ -53,6 +63,16 @@ internal static class RepetifyDiConfig
 	private static IServiceCollection AddApplicationDependencies(this IServiceCollection services)
 	{
 		services.AddScoped<IDeckAppService, DeckAppService>();
+
+		return services;
+	}
+
+	private static IServiceCollection AddApplicationConfig(this IServiceCollection services, IConfiguration configuration)
+	{
+		services.Configure<JwtConfig>(configuration.GetSection(JwtConfig.ConfigSection));
+		services.Configure<GoogleOauthConfig>(configuration.GetSection(GoogleOauthConfig.ConfigSection));
+		services.Configure<MicrosoftOauthConfig>(configuration.GetSection(MicrosoftOauthConfig.ConfigSection));
+		services.Configure<FrontendConfig>(configuration.GetSection(FrontendConfig.ConfigSection));
 
 		return services;
 	}

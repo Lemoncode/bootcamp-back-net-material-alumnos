@@ -2,9 +2,9 @@
 
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
-using Repetify.Web.Extensions;
+using Repetify.Api.Extensions;
 
-namespace Repetify.Web.Controllers;
+namespace Repetify.Api.Controllers;
 
 /// <summary>
 /// Controller to manage decks and cards.
