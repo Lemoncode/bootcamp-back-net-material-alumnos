@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".default", ".default", "{1A
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.AuthPlatform", "Repetify.AuthPlatform\Repetify.AuthPlatform.csproj", "{8136D6B1-8DBA-4358-A18F-0E2AE3EED078}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{0A99739D-7749-470E-88A8-B995FA967373}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A99739D-7749-470E-88A8-B995FA967373}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A99739D-7749-470E-88A8-B995FA967373}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8136D6B1-8DBA-4358-A18F-0E2AE3EED078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8136D6B1-8DBA-4358-A18F-0E2AE3EED078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8136D6B1-8DBA-4358-A18F-0E2AE3EED078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8136D6B1-8DBA-4358-A18F-0E2AE3EED078}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,5 +97,6 @@ Global
 		{B1851CDD-0566-4502-A359-6EC38D5A176F} = {D6E0924A-DD98-4412-93BC-9715BBC17875}
 		{32F7E9AD-1DED-44A5-8888-56E1DF91B4E4} = {9130B2F1-DB42-4F35-8836-6711FF71F3D4}
 		{0A99739D-7749-470E-88A8-B995FA967373} = {D6E0924A-DD98-4412-93BC-9715BBC17875}
+		{8136D6B1-8DBA-4358-A18F-0E2AE3EED078} = {9130B2F1-DB42-4F35-8836-6711FF71F3D4}
 	EndGlobalSection
 EndGlobal
