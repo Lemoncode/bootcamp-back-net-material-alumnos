@@ -11,14 +11,14 @@ public class SlidingExpirationMiddleware
 {
 	private readonly RequestDelegate _next;
 
-	private readonly IJWTService _jwtService;
+	private readonly IJwtService _jwtService;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="SlidingExpirationMiddleware"/> class.
 	/// </summary>
 	/// <param name="next">The next middleware in the pipeline.</param>
 	/// <param name="jwtService">The JWT service to handle token operations.</param>
-	public SlidingExpirationMiddleware(RequestDelegate next, IJWTService jwtService)
+	public SlidingExpirationMiddleware(RequestDelegate next, IJwtService jwtService)
 	{
 		_next = next;
 		_jwtService = jwtService;

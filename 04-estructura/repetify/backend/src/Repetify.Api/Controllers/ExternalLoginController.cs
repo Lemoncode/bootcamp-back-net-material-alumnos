@@ -18,10 +18,10 @@ namespace Repetify.Api.Controllers;
 /// <param name="frontendConfig">Configuration settings for the frontend application.</param>
 [ApiController]
 [Route("api/[controller]")]
-public class ExternalLoginController(IJWTService jwtService, IGoogleOauthService googleOauthService, IMicrosoftOauthService microsoftOauthService, IOptionsSnapshot<FrontendConfig> frontendConfig) : Controller
+public class ExternalLoginController(IJwtService jwtService, IGoogleOauthService googleOauthService, IMicrosoftOauthService microsoftOauthService, IOptionsSnapshot<FrontendConfig> frontendConfig) : Controller
 {
 
-	private readonly IJWTService _jwtService = jwtService;
+	private readonly IJwtService _jwtService = jwtService;
 
 	private readonly IOptionsSnapshot<FrontendConfig> _frontendConfig = frontendConfig;
 

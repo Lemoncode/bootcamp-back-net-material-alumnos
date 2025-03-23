@@ -1,4 +1,5 @@
 using Repetify.Api.Extensions.DI;
+using Repetify.Api.Middlewares;
 
 namespace Repetify.Api;
 
@@ -13,6 +14,12 @@ internal sealed class Program
 
 		// Register all services
 		builder.Services.AddRepetifyDependencies(builder.Configuration);
+		// HttpClient
+		builder.Services.AddHttpClient("RepetifyApi", client =>
+		{
+			client.DefaultRequestHeaders.Accept.Clear();
+			client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+		});
 		builder.Services.AddControllers();
 		// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 		builder.Services.AddOpenApi();
@@ -30,9 +37,8 @@ internal sealed class Program
 		}
 
 		app.UseHttpsRedirection();
-
 		app.UseAuthorization();
-
+		app.UseMiddleware<SlidingExpirationMiddleware>();
 
 		app.MapControllers();
 

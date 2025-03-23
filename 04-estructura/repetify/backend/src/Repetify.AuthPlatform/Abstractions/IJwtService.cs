@@ -5,7 +5,7 @@ namespace Repetify.AuthPlatform.Abstractions;
 /// <summary>
 /// Interface for JWT service to handle token generation and parsing.
 /// </summary>
-public interface IJWTService
+public interface IJwtService
 {
 	/// <summary>
 	/// Generates a JWT token based on the provided user information.

@@ -8,9 +8,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Lemoncode.LibraryExample.Api.Services;
+namespace Repetify.AuthPlatform;
 
-public class JwtService(IOptionsMonitor<JwtConfig> jwtConfig) : IJWTService
+public class JwtService(IOptionsMonitor<JwtConfig> jwtConfig) : IJwtService
 {
 
 	private readonly IOptionsMonitor<JwtConfig> _jwtConfig = jwtConfig;

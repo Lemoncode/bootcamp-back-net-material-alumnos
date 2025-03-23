@@ -3,6 +3,8 @@
 using Repetify.Api.Config;
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Services;
+using Repetify.AuthPlatform;
+using Repetify.AuthPlatform.Abstractions;
 using Repetify.AuthPlatform.Abstractions.IdentityProviders;
 using Repetify.AuthPlatform.Config;
 using Repetify.AuthPlatform.Config.Google;
@@ -42,6 +44,7 @@ internal static class RepetifyDiConfig
 	private static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services)
 	{
 		services.AddSingleton<IClock, SystemClock>();
+		services.AddSingleton<IJwtService, JwtService>();
 		services.AddScoped<IGoogleOauthService, GoogleOauthService>();
 		services.AddScoped<IMicrosoftOauthService, MicrosoftOauthService>();
 
