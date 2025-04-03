@@ -8,7 +8,7 @@ namespace Repetify.Api.Extensions;
 /// <summary>
 /// Extension methods to map Result and Result&lt;T&gt; to IActionResult, allowing a custom function to be passed in case of success.
 /// </summary>
-public static class ResultExtensions
+internal static class ResultExtensions
 {
 	/// <summary>
 	/// Converts a <see cref="Result{T}"/> to an <see cref="IActionResult"/>.
@@ -37,7 +37,7 @@ public static class ResultExtensions
 		{
 			ResultStatus.NotFound => new NotFoundObjectResult(result.ErrorMessage),
 			ResultStatus.Conflict => new ConflictObjectResult(result.ErrorMessage),
-			ResultStatus.UnexpectedError => new ObjectResult(result.ErrorMessage) { StatusCode = 500 },
+			ResultStatus.InvalidArguments => new BadRequestObjectResult(result.ErrorMessage),
 			_ => new ObjectResult(result.ErrorMessage) { StatusCode = 500 }
 		};
 	}
@@ -68,7 +68,7 @@ public static class ResultExtensions
 		{
 			ResultStatus.NotFound => new NotFoundObjectResult(result.ErrorMessage),
 			ResultStatus.Conflict => new ConflictObjectResult(result.ErrorMessage),
-			ResultStatus.UnexpectedError => new ObjectResult(result.ErrorMessage) { StatusCode = 500 },
+			ResultStatus.InvalidArguments => new BadRequestObjectResult(result.ErrorMessage),
 			_ => new ObjectResult(result.ErrorMessage) { StatusCode = 500 }
 		};
 	}

@@ -15,7 +15,7 @@ public class Result
 	/// <summary>
 	///  Gets the error message of the result.
 	/// </summary>
-	public string? ErrorMessage { get; }
+		public string? ErrorMessage { get; }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Result{T}"/> class.

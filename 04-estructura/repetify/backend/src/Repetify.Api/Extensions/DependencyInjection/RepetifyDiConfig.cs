@@ -18,7 +18,7 @@ using Repetify.Infrastructure.Persistence.EfCore.Context;
 using Repetify.Infrastructure.Persistence.EfCore.Repositories;
 using Repetify.Infrastructure.Time;
 
-namespace Repetify.Api.Extensions.DI;
+namespace Repetify.Api.Extensions.DependencyInjection;
 
 internal static class RepetifyDiConfig
 {

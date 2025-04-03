@@ -3,6 +3,7 @@
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
 using Repetify.Api.Extensions;
+using System.ComponentModel.DataAnnotations;
 
 namespace Repetify.Api.Controllers;
 
@@ -107,8 +108,8 @@ public class DeckController : ControllerBase
 	/// </summary>
 	/// <param name="card">The DTO of the card to add.</param>
 	/// <returns>Created (201) if added successfully.</returns>
-	[HttpPost("decks/{deckId}/cards")]
-	public async Task<IActionResult> AddCard([FromRoute]Guid deckId, [FromBody]AddOrUpdateCardDto card)
+	[HttpPost("{deckId}/cards")]
+	public async Task<IActionResult> AddCard([FromRoute] Guid deckId, [FromBody] AddOrUpdateCardDto card)
 	{
 		ArgumentNullException.ThrowIfNull(card);
 
@@ -121,7 +122,7 @@ public class DeckController : ControllerBase
 				card.OriginalWord,
 				card.TranslatedWord
 				);
-			return CreatedAtAction(nameof(GetCardById), new { cardId }, createdCard);
+			return CreatedAtAction(nameof(GetCardById), new { deckId, cardId }, createdCard);
 		});
 	}
 
@@ -130,8 +131,8 @@ public class DeckController : ControllerBase
 	/// </summary>
 	/// <param name="card">The DTO with the updated information of the card.</param>
 	/// <returns>NoContent on success.</returns>
-	[HttpPut("decks/{deckId}/cards/{cardId}")]
-	public async Task<IActionResult> UpdateCard([FromRoute]Guid deckId, [FromRoute]Guid cardId, [FromBody] AddOrUpdateCardDto card)
+	[HttpPut("{deckId}/cards/{cardId}")]
+	public async Task<IActionResult> UpdateCard([FromRoute] Guid deckId, [FromRoute] Guid cardId, [FromBody] AddOrUpdateCardDto card)
 	{
 		var result = await _deckAppService.UpdateCardAsync(card, deckId, cardId).ConfigureAwait(false);
 		return result.ToActionResult(() => NoContent());
@@ -143,7 +144,7 @@ public class DeckController : ControllerBase
 	/// <param name="deckId">The ID of the deck.</param>
 	/// <param name="cardId">The ID of the card to delete.</param>
 	/// <returns>NoContent if deleted or NotFound if the card does not exist.</returns>
-	[HttpDelete("cards/{deckId}/{cardId}")]
+	[HttpDelete("{deckId}/cards/{cardId}")]
 	public async Task<IActionResult> DeleteCard(Guid deckId, Guid cardId)
 	{
 		var result = await _deckAppService.DeleteCardAsync(deckId, cardId).ConfigureAwait(false);
@@ -156,7 +157,7 @@ public class DeckController : ControllerBase
 	/// <param name="deckId">The ID of the deck.</param>
 	/// <param name="cardId">The ID of the card.</param>
 	/// <returns>The card if found or NotFound otherwise.</returns>
-	[HttpGet("cards/{deckId}/{cardId}")]
+	[HttpGet("{deckId}/cards/{cardId}")]
 	public async Task<IActionResult> GetCardById(Guid deckId, Guid cardId)
 	{
 		var result = await _deckAppService.GetCardByIdAsync(deckId, cardId).ConfigureAwait(false);
@@ -170,7 +171,7 @@ public class DeckController : ControllerBase
 	/// <param name="page">The page number.</param>
 	/// <param name="pageSize">The size of the page.</param>
 	/// <returns>A list of cards.</returns>
-	[HttpGet("cards/{deckId}")]
+	[HttpGet("{deckId}/cards")]
 	public async Task<IActionResult> GetCards(Guid deckId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
 	{
 		var result = await _deckAppService.GetCardsAsync(deckId, page, pageSize).ConfigureAwait(false);
@@ -182,7 +183,7 @@ public class DeckController : ControllerBase
 	/// </summary>
 	/// <param name="deckId">The ID of the deck.</param>
 	/// <returns>The count of cards.</returns>
-	[HttpGet("cards/count/{deckId}")]
+	[HttpGet("{deckId}/cards/count")]
 	public async Task<IActionResult> GetCardCount(Guid deckId)
 	{
 		var result = await _deckAppService.GetCardCountAsync(deckId).ConfigureAwait(false);
@@ -197,7 +198,7 @@ public class DeckController : ControllerBase
 	/// <param name="pageSize">The number of cards to retrieve.</param>
 	/// <param name="cursor">Cursor for pagination (optional).</param>
 	/// <returns>A list of cards to review.</returns>
-	[HttpGet("cards/review/{deckId}")]
+	[HttpGet("{deckId}/cards/review")]
 	public async Task<IActionResult> GetCardsToReview(Guid deckId, [FromQuery] DateTime until, [FromQuery] int pageSize, [FromQuery] DateTime? cursor = null)
 	{
 		if (pageSize < 1)
@@ -216,7 +217,7 @@ public class DeckController : ControllerBase
 	/// <param name="cardId">The ID of the card.</param>
 	/// <param name="isCorrect">Indicates whether the review was correct.</param>
 	/// <returns>NoContent on success.</returns>
-	[HttpPost("cards/review/{deckId}/{cardId}")]
+	[HttpPost("{deckId}/cards/review/{cardId}")]
 	public async Task<IActionResult> ReviewCard(Guid deckId, Guid cardId, [FromQuery] bool isCorrect)
 	{
 		var result = await _deckAppService.ReviewCardAsync(deckId, cardId, isCorrect).ConfigureAwait(false);

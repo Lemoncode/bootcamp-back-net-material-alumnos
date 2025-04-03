@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Specialized;
 
 using Moq;
 
@@ -8,6 +9,7 @@ using Repetify.Application.Services;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
+using Repetify.Domain.Exceptions;
 
 namespace Repetify.Application.Tests.Services;
 
@@ -39,6 +41,27 @@ public class DeckAppServiceTests
 	}
 
 	[Fact]
+	public async Task AddDeckAsync_Should_Return_Conflict_When_Deck_Already_Exists()
+	{
+		// Arrange
+		var deckDto = CreateFakeAddOrUpdateDeck();
+		var exceptionMessage = "Deck already exists!";
+		_deckValidatorMock
+			.Setup(v => v.EnsureIsValid(It.IsAny<Deck>()))
+			.ThrowsAsync(new EntityExistsException(exceptionMessage));
+
+		// Act
+		var result = await _deckAppService.AddDeckAsync(deckDto, Guid.NewGuid());
+
+		// Assert
+		result.Status.Should().Be(ResultStatus.Conflict);
+		result.ErrorMessage.Should().Be(exceptionMessage);
+		// Opcionalmente, podrías comprobar que no se llama al repositorio
+		_deckRepositoryMock.Verify(r => r.AddDeckAsync(It.IsAny<Deck>()), Times.Never);
+	}
+
+
+	[Fact]
 	public async Task UpdateDeckAsync_Should_Call_Repository_And_SaveChanges()
 	{
 		var deckDto = CreateFakeAddOrUpdateDeck();
@@ -47,6 +70,25 @@ public class DeckAppServiceTests
 
 		_deckRepositoryMock.Verify(r => r.UpdateDeck(It.IsAny<Deck>()), Times.Once);
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
+	}
+
+	[Fact]
+	public async Task UpdateDeckAsync_Should_Return_Conflict_When_Deck_Already_Exists()
+	{
+		// Arrange
+		var deckDto = CreateFakeAddOrUpdateDeck();
+		var exceptionMessage = "Deck name already in use!";
+		_deckValidatorMock
+			.Setup(v => v.EnsureIsValid(It.IsAny<Deck>()))
+			.ThrowsAsync(new EntityExistsException(exceptionMessage));
+
+		// Act
+		var result = await _deckAppService.UpdateDeckAsync(deckDto, Guid.NewGuid());
+
+		// Assert
+		result.Status.Should().Be(ResultStatus.Conflict);
+		result.ErrorMessage.Should().Be(exceptionMessage);
+		_deckRepositoryMock.Verify(r => r.UpdateDeck(It.IsAny<Deck>()), Times.Never);
 	}
 
 	[Fact]
@@ -88,19 +130,26 @@ public class DeckAppServiceTests
 	}
 
 	[Fact]
-	public async Task GetDeckByIdAsync_Should_Return_Null_When_Deck_Does_Not_Exist()
+	public async Task GetDeckByIdAsync_Should_Return_NotFound_When_Deck_Does_Not_Exist()
 	{
-		_deckRepositoryMock.Setup(r => r.GetDeckByIdAsync(It.IsAny<Guid>())).ReturnsAsync((Deck?)null);
+		// Arrange
+		_deckRepositoryMock
+			.Setup(r => r.GetDeckByIdAsync(It.IsAny<Guid>()))
+			.ReturnsAsync((Deck?)null);
 
+		// Act
 		var result = await _deckAppService.GetDeckByIdAsync(Guid.NewGuid());
 
-		result.Value.Should().BeNull();
+		// Assert
+		result.Status.Should().Be(ResultStatus.NotFound);
+		result.Value.Should().BeNull();  // Porque el servicio pone Value a null
+		result.ErrorMessage.Should().Be("Deck not found.");
 	}
 
 	[Fact]
 	public async Task AddCardAsync_Should_Call_Repository_And_SaveChanges()
 	{
-		var cardDto = new AddOrUpdateCardDto("Hola", "Hello");
+		var cardDto = new AddOrUpdateCardDto{ OriginalWord = "Hola", TranslatedWord = "Hello" };
 
 		await _deckAppService.AddCardAsync(cardDto, Guid.NewGuid());
 
@@ -142,9 +191,9 @@ public class DeckAppServiceTests
 		var untilDate = DateTime.UtcNow;
 		var pageSize = 10;
 		var cards = new List<Card>
-		{
-			new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
-		};
+			{
+				new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
+			};
 
 		_deckRepositoryMock.Setup(r => r.GetCardsToReview(deckId, untilDate, pageSize, null)).ReturnsAsync(cards);
 
@@ -155,14 +204,19 @@ public class DeckAppServiceTests
 	}
 
 	[Fact]
-	public void GetCardsToReview_Should_Throw_ArgumentOutOfRangeException_When_PageSize_Is_Less_Than_One()
+	public async Task GetCardsToReview_Should_Return_InvalidArguments_When_PageSize_Is_Less_Than_One()
 	{
+		// Arrange
 		var deckId = Guid.NewGuid();
 		var untilDate = DateTime.UtcNow;
-		var pageSize = 0;
-		Func<Task> act = async () => await _deckAppService.GetCardsToReview(deckId, untilDate, pageSize, null).ConfigureAwait(false);
-		act.Should().ThrowAsync<ArgumentOutOfRangeException>()
-			.WithMessage("*pageSize*");
+		var pageSize = 0; // <-- Inválido
+
+		// Act
+		var result = await _deckAppService.GetCardsToReview(deckId, untilDate, pageSize, null);
+
+		// Assert
+		result.Status.Should().Be(ResultStatus.InvalidArguments);
+		result.ErrorMessage.Should().Contain("page number must be greater than 0");
 	}
 
 
@@ -184,7 +238,7 @@ public class DeckAppServiceTests
 
 	private static AddOrUpdateDeckDto CreateFakeAddOrUpdateDeck()
 	{
-		return new AddOrUpdateDeckDto("Test Deck", "Description", "english", "spanish");
+		return new AddOrUpdateDeckDto { Name = "Test Deck", Description = "Description", OriginalLanguage = "english", TranslatedLanguage = "spanish" };
 	}
 
 }

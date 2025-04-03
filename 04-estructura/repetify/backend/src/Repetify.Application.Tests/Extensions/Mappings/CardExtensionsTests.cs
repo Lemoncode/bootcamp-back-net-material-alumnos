@@ -156,7 +156,7 @@ public class CardExtensionTests
 		// Arrange
 		var deckId = Guid.NewGuid();
 		var cardId = Guid.NewGuid();
-		var dto = new AddOrUpdateCardDto("Hola", "Hello");
+		var dto = new AddOrUpdateCardDto { OriginalWord = "Hola", TranslatedWord = "Hello" };
 
 		// Act
 		var result = dto.ToEntity(deckId, cardId);

@@ -1,4 +1,8 @@
-using Repetify.Api.Extensions.DI;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+
+using Repetify.Api.Extensions.DependencyInjection;
+using Repetify.Api.Handlers;
 using Repetify.Api.Middlewares;
 
 namespace Repetify.Api;
@@ -14,6 +18,11 @@ internal sealed class Program
 
 		// Register all services
 		builder.Services.AddRepetifyDependencies(builder.Configuration);
+
+		// Exception handlers
+		builder.Services.AddExceptionHandler<UnexpectedExceptionHandler>();
+		builder.Services.AddProblemDetails();
+
 		// HttpClient
 		builder.Services.AddHttpClient("RepetifyApi", client =>
 		{
@@ -25,6 +34,8 @@ internal sealed class Program
 		builder.Services.AddOpenApi();
 
 		var app = builder.Build();
+
+		app.UseExceptionHandler();
 
 		// Configure the HTTP request pipeline.
 		if (app.Environment.IsDevelopment())

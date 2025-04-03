@@ -38,9 +38,10 @@ public class Result<T>
 	/// </summary>
 	/// <param name="status">The operation status</param>
 	/// <param name="errorMessage">The error message</param>
-	public Result(ResultStatus status, string? errorMessage = null)
+	public Result(ResultStatus status, string? errorMessage = null, T? value = default(T))
 	{
 		Status = status;
 		ErrorMessage = errorMessage;
+		Value = value;
 	}
 }

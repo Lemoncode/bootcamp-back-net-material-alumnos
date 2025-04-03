@@ -149,12 +149,12 @@ public class DeckExtensionsTests
 	{
 		// Arrange
 		var userId = Guid.NewGuid();
-		var dto = new AddOrUpdateDeckDto(
-			name: "New Deck",
-			description: "New Description",
-			originalLanguage: "English",
-			translatedLanguage: "Spanish"
-		);
+		var dto = new AddOrUpdateDeckDto { 
+			Name = "New Deck",
+			Description = "New Description",
+			OriginalLanguage = "English",
+			TranslatedLanguage = "Spanish"
+		};
 
 		// Act
 		var result = dto.ToEntity(userId);
