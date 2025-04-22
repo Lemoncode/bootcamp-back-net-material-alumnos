@@ -82,4 +82,6 @@ public class DeckExtensionsTests
 		// Act & Assert
 		Assert.Throws<ArgumentNullException>(() => nullEntity!.ToDomain());
 	}
+
+
 }

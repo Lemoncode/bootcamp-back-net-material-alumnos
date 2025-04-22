@@ -15,7 +15,7 @@ namespace Repetify.Infrastructure.Persistence.EfCore.Migrations
 				columns: table => new
 				{
 					Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-					Username = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+					Username = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
 					Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
 				},
 				constraints: table =>

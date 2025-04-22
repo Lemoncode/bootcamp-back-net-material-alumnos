@@ -27,6 +27,68 @@ public class UserRepositoryTests
 	}
 
 	[Fact]
+	public async Task EmailAlreadyExists_ShouldReturnTrue_WhenEmailExists()
+	{
+		// Arrange  
+		using var context = TestHelpers.CreateInMemoryDbContext();
+		var repository = new UserRepository(context);
+		var user = new User(Guid.NewGuid(), "testuser", "test@example.com");
+		await repository.AddUserAsync(user);
+		await repository.SaveChangesAsync();
+
+		// Act  
+		var result = await repository.EmailAlreadyExistsAsync(Guid.NewGuid(), "test@example.com");
+
+		// Assert  
+		Assert.True(result);
+	}
+
+	[Fact]
+	public async Task EmailAlreadyExists_ShouldReturnFalse_WhenEmailDoesNotExist()
+	{
+		// Arrange  
+		using var context = TestHelpers.CreateInMemoryDbContext();
+		var repository = new UserRepository(context);
+
+		// Act  
+		var result = await repository.EmailAlreadyExistsAsync(Guid.NewGuid(), "nonexistent@example.com");
+
+		// Assert  
+		Assert.False(result);
+	}
+
+	[Fact]
+	public async Task UsernameAlreadyExists_ShouldReturnTrue_WhenUsernameExists()
+	{
+		// Arrange  
+		using var context = TestHelpers.CreateInMemoryDbContext();
+		var repository = new UserRepository(context);
+		var user = new User(Guid.NewGuid(), "testuser", "test@example.com");
+		await repository.AddUserAsync(user);
+		await repository.SaveChangesAsync();
+
+		// Act  
+		var result = await repository.UsernameAlreadyExistsAsync(Guid.NewGuid(), "testuser");
+
+		// Assert  
+		Assert.True(result);
+	}
+
+	[Fact]
+	public async Task UsernameAlreadyExists_ShouldReturnFalse_WhenUsernameDoesNotExist()
+	{
+		// Arrange  
+		using var context = TestHelpers.CreateInMemoryDbContext();
+		var repository = new UserRepository(context);
+
+		// Act  
+		var result = await repository.UsernameAlreadyExistsAsync(Guid.NewGuid(), "nonexistentuser");
+
+		// Assert  
+		Assert.False(result);
+	}
+
+	[Fact]
 	public async Task AddUserAsync_ShouldAddUserToDatabase()
 	{
 		// Arrange  
@@ -45,7 +107,7 @@ public class UserRepositoryTests
 	}
 
 	[Fact]
-	public async Task EditUser_ShouldUpdateUserInDatabase()
+	public async Task UpdateUser_ShouldUpdateUserInDatabase()
 	{
 		// Arrange  
 		using var context = TestHelpers.CreateInMemoryDbContext();
@@ -55,8 +117,8 @@ public class UserRepositoryTests
 		await repository.SaveChangesAsync();
 
 		// Act  
-		user = new User(user.Id,"updateduser", "test@example.com");
-		repository.EditUserAsync(user);
+		user = new User(user.Id, "updateduser", "test@example.com");
+		await repository.UpdateUserAsync(user);
 		await repository.SaveChangesAsync();
 
 		// Assert  

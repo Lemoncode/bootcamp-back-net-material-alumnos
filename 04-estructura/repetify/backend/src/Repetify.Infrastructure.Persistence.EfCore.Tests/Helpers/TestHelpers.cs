@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Repetify.Infrastructure.Persistence.EfCore.Tests.Helpers;
-internal sealed class TestHelpers
+internal static class TestHelpers
 {
 	internal static RepetifyDbContext CreateInMemoryDbContext()
 	{

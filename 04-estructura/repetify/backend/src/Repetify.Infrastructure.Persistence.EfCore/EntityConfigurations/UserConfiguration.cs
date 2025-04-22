@@ -23,6 +23,6 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<UserEntity>
 			.HasMaxLength(100);
 		builder.Property(u => u.Username)
 					.IsRequired()
-					.HasMaxLength(50);
+					.HasMaxLength(100);
 	}
 }

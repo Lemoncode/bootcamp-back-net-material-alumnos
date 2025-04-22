@@ -82,4 +82,54 @@ public class CardExtensionsTests
 		// Act & Assert
 		Assert.Throws<ArgumentNullException>(() => nullEntity!.ToDomain());
 	}
+
+
+	[Fact]
+	public void UpdateFromDomain_ShouldUpdateEntityCorrectly()
+	{
+		// Arrange  
+		var cardEntity = new CardEntity
+		{
+			Id = Guid.NewGuid(),
+			DeckId = Guid.NewGuid(),
+			OriginalWord = "Hola",
+			TranslatedWord = "Hello",
+			CorrectReviewStreak = 2,
+			NextReviewDate = DateTime.UtcNow.AddDays(1),
+			PreviousCorrectReview = DateTime.UtcNow.AddDays(-1)
+		};
+
+		var updatedCard = new Card(
+			id: cardEntity.Id,
+			deckId: cardEntity.DeckId,
+			originalWord: "Bonjour",
+			translatedWord: "Hi",
+			correctReviewStreak: 5,
+			nextReviewDate: DateTime.UtcNow.AddDays(3),
+			previousCorrectReview: DateTime.UtcNow.AddDays(-2)
+		);
+
+		// Act  
+		cardEntity.UpdateFromDomain(updatedCard);
+
+		// Assert  
+		Assert.Equal(updatedCard.Id, cardEntity.Id);
+		Assert.Equal(updatedCard.DeckId, cardEntity.DeckId);
+		Assert.Equal(updatedCard.OriginalWord, cardEntity.OriginalWord);
+		Assert.Equal(updatedCard.TranslatedWord, cardEntity.TranslatedWord);
+		Assert.Equal(updatedCard.CorrectReviewStreak, cardEntity.CorrectReviewStreak);
+		Assert.Equal(updatedCard.NextReviewDate, cardEntity.NextReviewDate);
+		Assert.Equal(updatedCard.PreviousCorrectReview, cardEntity.PreviousCorrectReview);
+	}
+
+	[Fact]
+	public void UpdateFromDomain_ShouldThrowArgumentNullException_WhenParametersAreNull()
+	{
+		// Arrange  
+		CardEntity? nullEntity = null;
+		Card? nullCard = null;
+
+		// Act & Assert  
+		Assert.Throws<ArgumentNullException>(() => nullEntity!.UpdateFromDomain(nullCard!));
+	}
 }

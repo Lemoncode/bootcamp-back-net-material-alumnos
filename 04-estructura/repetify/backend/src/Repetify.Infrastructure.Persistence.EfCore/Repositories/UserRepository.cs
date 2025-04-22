@@ -18,6 +18,20 @@ public class UserRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 		return (await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email).ConfigureAwait(false))?.ToDomain();
 	}
 
+	///  <inheritdoc/>
+	public async Task<bool> EmailAlreadyExistsAsync(Guid userId, string email)
+	{
+		ArgumentNullException.ThrowIfNull(email);
+		return await _context.Users.AnyAsync(u => u.Id != userId && u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
+	}
+
+	///  <inheritdoc/>
+	public async Task<bool> UsernameAlreadyExistsAsync(Guid userId, string username)
+	{
+		ArgumentNullException.ThrowIfNull(username);
+		return await _context.Users.AnyAsync(u => u.Id != userId && u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
+	}
+
 	/// <inheritdoc />  
 	public async Task AddUserAsync(User user)
 	{
@@ -27,7 +41,7 @@ public class UserRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 	}
 
 	/// <inheritdoc />  
-	public async Task EditUserAsync(User user)
+	public async Task UpdateUserAsync(User user)
 	{
 		var userEntity = await _context.Users.FindAsync(user.Id).ConfigureAwait(false);
 		userEntity!.UpdateFromDomain(user);

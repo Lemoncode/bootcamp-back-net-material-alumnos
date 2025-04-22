@@ -2,8 +2,12 @@
 using Microsoft.Extensions.Options;
 
 using Repetify.Api.Config;
+using Repetify.Application.Abstractions.Services;
+using Repetify.Application.Dtos;
+using Repetify.AuthPlatform;
 using Repetify.AuthPlatform.Abstractions;
 using Repetify.AuthPlatform.Abstractions.IdentityProviders;
+using Repetify.AuthPlatform.Config;
 
 using System.ComponentModel.DataAnnotations;
 
@@ -18,16 +22,18 @@ namespace Repetify.Api.Controllers;
 /// <param name="frontendConfig">Configuration settings for the frontend application.</param>
 [ApiController]
 [Route("api/[controller]")]
-public class ExternalLoginController(IJwtService jwtService, IGoogleOauthService googleOauthService, IMicrosoftOauthService microsoftOauthService, IOptionsSnapshot<FrontendConfig> frontendConfig) : Controller
+public class ExternalLoginController(IJwtService jwtService, IGoogleOauthService googleOauthService, IMicrosoftOauthService microsoftOauthService, IUserAppService userAppService, IOptionsSnapshot<FrontendConfig> frontendConfig) : Controller
 {
 
 	private readonly IJwtService _jwtService = jwtService;
 
-	private readonly IOptionsSnapshot<FrontendConfig> _frontendConfig = frontendConfig;
-
 	private readonly IGoogleOauthService _googleOauthService = googleOauthService;
 
 	private readonly IMicrosoftOauthService _MicrosoftOauthService = microsoftOauthService;
+
+	private readonly IUserAppService _userAppService = userAppService;
+
+	private readonly IOptionsSnapshot<FrontendConfig> _frontendConfig = frontendConfig;
 
 	/// <summary>
 	/// Initiates the Google sign-in process by redirecting to the Google OAuth authorization URL.
@@ -57,6 +63,7 @@ public class ExternalLoginController(IJwtService jwtService, IGoogleOauthService
 	{
 		var tokenResponse = await _googleOauthService.GetToken(code).ConfigureAwait(false);
 		var payload = await _googleOauthService.GetUserInfo(tokenResponse.IdToken).ConfigureAwait(false);
+		await CheckAndAddNewUserAsync(payload.Email, payload.Email).ConfigureAwait(false);
 		var token = _jwtService.GenerateJwtToken(payload.FamilyName, payload.GivenName, payload.Email);
 
 		this.Response.Cookies.Append("AuthToken", token, new CookieOptions { HttpOnly = true, Secure = true, Expires = DateTime.Now.AddMinutes(30) });
@@ -91,6 +98,7 @@ public class ExternalLoginController(IJwtService jwtService, IGoogleOauthService
 	{
 		var tokenResponse = await _MicrosoftOauthService.GetToken(code).ConfigureAwait(false);
 		var userInfo = await _MicrosoftOauthService.GetUserInfo(tokenResponse.AccessToken).ConfigureAwait(false);
+		await CheckAndAddNewUserAsync(userInfo.Mail, userInfo.Mail).ConfigureAwait(false);
 		var token = _jwtService.GenerateJwtToken(userInfo.Surname, userInfo.GivenName, userInfo.Mail);
 
 		this.Response.Cookies.Append("AuthToken", token, new CookieOptions { HttpOnly = true, Secure = true, Expires = DateTime.Now.AddMinutes(30) });
@@ -106,5 +114,16 @@ public class ExternalLoginController(IJwtService jwtService, IGoogleOauthService
 	{
 		this.Response.Cookies.Delete("AuthToken");
 		return Ok();
+	}
+
+	private async Task CheckAndAddNewUserAsync(string username, string email)
+	{
+		var user = await _userAppService.GetUserByEmailAsync(email).ConfigureAwait(false);
+
+		if (user is null)
+		{
+			var newUser = new AddOrEditUserDto { Username = username, Email = email };
+			await _userAppService.AddUserAsync(newUser).ConfigureAwait(false); ;
+		}
 	}
 }

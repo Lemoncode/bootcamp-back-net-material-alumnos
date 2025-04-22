@@ -4,6 +4,9 @@ using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
 using Repetify.Api.Extensions;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Repetify.Application.Enums;
 
 namespace Repetify.Api.Controllers;
 
@@ -12,18 +15,21 @@ namespace Repetify.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class DeckController : ControllerBase
 {
 	private readonly IDeckAppService _deckAppService;
-	private readonly Guid _userId = Guid.Parse("D0292C56-57FC-4D64-A9F0-0191667125FC");
+
+	private readonly IUserAppService _userAppService;
 
 	/// <summary>
 	/// Initializes a new instance of <see cref="DeckController"/>.
 	/// </summary>
 	/// <param name="deckAppService">The application service for decks.</param>
-	public DeckController(IDeckAppService deckAppService)
+	public DeckController(IDeckAppService deckAppService, IUserAppService userAppService)
 	{
 		_deckAppService = deckAppService;
+		_userAppService = userAppService;
 	}
 
 	/// <summary>
@@ -35,18 +41,17 @@ public class DeckController : ControllerBase
 	public async Task<IActionResult> AddDeck([FromBody] AddOrUpdateDeckDto deck)
 	{
 		ArgumentNullException.ThrowIfNull(deck);
-
-		// The service now returns Result<Guid>
-		var result = await _deckAppService.AddDeckAsync(deck, _userId).ConfigureAwait(false);
+		var userId =await GetCurrentUserAsync().ConfigureAwait(false);
+		var result = await _deckAppService.AddDeckAsync(deck, userId).ConfigureAwait(false);
 		return result.ToActionResult(deckId =>
 		{
 			var createdDeck = new DeckDto(
 				deckId,
-				deck.Name,
+				deck.Name!,
 				deck.Description,
-				_userId,
-				deck.OriginalLanguage,
-				deck.TranslatedLanguage);
+				userId,
+				deck.OriginalLanguage!,
+				deck.TranslatedLanguage!);
 			return CreatedAtAction(nameof(GetDeckById), new { deckId }, createdDeck);
 		});
 	}
@@ -62,7 +67,8 @@ public class DeckController : ControllerBase
 	{
 		ArgumentNullException.ThrowIfNull(deck);
 
-		var result = await _deckAppService.UpdateDeckAsync(deck, _userId).ConfigureAwait(false);
+		var userId = await GetCurrentUserAsync().ConfigureAwait(false);
+		var result = await _deckAppService.UpdateDeckAsync(deck, userId).ConfigureAwait(false);
 		return result.ToActionResult(() => NoContent());
 	}
 
@@ -99,7 +105,8 @@ public class DeckController : ControllerBase
 	[HttpGet("user-decks")]
 	public async Task<IActionResult> GetUserDecks()
 	{
-		var result = await _deckAppService.GetUserDecksAsync(_userId).ConfigureAwait(false);
+		var userId = await GetCurrentUserAsync().ConfigureAwait(false);
+		var result = await _deckAppService.GetUserDecksAsync(userId).ConfigureAwait(false);
 		return result.ToActionResult(decks => Ok(decks));
 	}
 
@@ -222,5 +229,23 @@ public class DeckController : ControllerBase
 	{
 		var result = await _deckAppService.ReviewCardAsync(deckId, cardId, isCorrect).ConfigureAwait(false);
 		return result.ToActionResult(() => NoContent());
+	}
+
+	private async Task<Guid> GetCurrentUserAsync()
+	{
+		var email = User.FindFirst(ClaimTypes.Email)?.Value;
+		if (email is null)
+		{
+			throw new InvalidOperationException("Unable to extract the e-mail from the JWT token.");
+		}
+
+		var user = await _userAppService.GetUserByEmailAsync(email).ConfigureAwait(false);
+		
+		if (user.Status != ResultStatus.Success)
+		{
+			throw new InvalidOperationException("Unable to retrieve the current user.");
+		}
+
+		return user.Value!.Id;
 	}
 }

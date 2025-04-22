@@ -54,6 +54,24 @@ public static class UserExtensions
 		};
 	}
 
+	/// <summary>  
+	/// Converts an AddOrEditUserDto to a User domain entity.  
+	/// </summary>  
+	/// <param name="addOrEditUserDto">The AddOrEditUserDto to convert.</param>  
+	/// <param name="userId">The unique identifier for the User entity.</param>  
+	/// <returns>A User domain entity representing the AddOrEditUserDto.</returns>  
+	/// <exception cref="ArgumentNullException">Thrown when the addOrEditUserDto is null.</exception>  
+	public static User ToEntity(this AddOrEditUserDto addOrEditUserDto, Guid? userId = null)
+	{
+		ArgumentNullException.ThrowIfNull(addOrEditUserDto);
+
+		return new User(
+			id: userId,
+			username: addOrEditUserDto.Username!,
+			email: addOrEditUserDto.Email!
+		);
+	}
+
 	/// <summary>
 	/// Converts a collection of UserDto objects to a collection of User entities.
 	/// </summary>

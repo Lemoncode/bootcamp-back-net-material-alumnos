@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
 namespace Repetify.Api.Handlers;
@@ -8,7 +9,8 @@ namespace Repetify.Api.Handlers;
 /// <summary>
 /// Handles unexpected exceptions by returning a standardized error response.
 /// </summary>
-sealed internal class UnexpectedExceptionHandler : IExceptionHandler
+[SuppressMessage("Class instantiation", "CA1812", Justification = "This class is instantiated in runtime.")]
+internal sealed class UnexpectedExceptionHandler : IExceptionHandler
 {
 	/// <summary>
 	/// Attempts to handle an unexpected exception by returning a standardized error response.
