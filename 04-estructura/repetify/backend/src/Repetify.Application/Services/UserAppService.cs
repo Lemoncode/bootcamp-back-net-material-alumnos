@@ -77,7 +77,7 @@ public class UserAppService : IUserAppService
 		var user = await _userRepository.GetUserByEmailAsync(email).ConfigureAwait(false);
 		if (user is null)
 		{
-			return ResultFactory.NotFound<UserDto?>("Deck not found.");
+			return ResultFactory.NotFound<UserDto?>("User not found.");
 		}
 
 		return ResultFactory.Success<UserDto?>(user.ToDto());

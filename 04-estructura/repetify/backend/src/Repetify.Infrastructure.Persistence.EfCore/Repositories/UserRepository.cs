@@ -22,14 +22,14 @@ public class UserRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 	public async Task<bool> EmailAlreadyExistsAsync(Guid userId, string email)
 	{
 		ArgumentNullException.ThrowIfNull(email);
-		return await _context.Users.AnyAsync(u => u.Id != userId && u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
+		return await _context.Users.AnyAsync(u => u.Id != userId && u.Email.Equals(email)).ConfigureAwait(false);
 	}
 
 	///  <inheritdoc/>
 	public async Task<bool> UsernameAlreadyExistsAsync(Guid userId, string username)
 	{
 		ArgumentNullException.ThrowIfNull(username);
-		return await _context.Users.AnyAsync(u => u.Id != userId && u.Username.Equals(username, StringComparison.OrdinalIgnoreCase)).ConfigureAwait(false);
+		return await _context.Users.AnyAsync(u => u.Id != userId && u.Username.Equals(username)).ConfigureAwait(false);
 	}
 
 	/// <inheritdoc />  

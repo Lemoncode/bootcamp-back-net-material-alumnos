@@ -20,6 +20,7 @@ public class JwtService(IOptionsMonitor<JwtConfig> jwtConfig) : IJwtService
 		var claims = new[]
 		{
 	new Claim(JwtRegisteredClaimNames.Sub, emailAddress),
+	new Claim(JwtRegisteredClaimNames.Email, emailAddress),
 	new Claim(JwtRegisteredClaimNames.FamilyName, familyName),
 	new Claim(JwtRegisteredClaimNames.GivenName, firstName)
 	};
