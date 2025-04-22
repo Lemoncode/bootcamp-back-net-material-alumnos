@@ -9,9 +9,9 @@ namespace Repetify.Infrastructure.Persistence.EfCore.Entities;
 public class UserEntity
 {
 	/// <summary>
-	/// Gets the unique identifier for the user.
+	/// Gets or sets the unique identifier for the user.
 	/// </summary>
-	public Guid Id { get; private set; }
+	public Guid Id { get; set; }
 
 	/// <summary>
 	/// Gets or sets the username of the user.

@@ -10,22 +10,22 @@ namespace Repetify.Infrastructure.Persistence.EfCore.Repositories;
 /// <summary>
 /// Implementation of the deck repository using EF Core.
 /// </summary>
-public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
+public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbContext),  IDeckRepository
 {
-	private const string InMemoryDBProviderName = "Microsoft.EntityFrameworkCore.InMemory";
 
 	private readonly RepetifyDbContext _dbContext = dbContext;
 
 	/// <inheritdoc />
 	public async Task AddDeckAsync(Deck deck)
 	{
-		await _dbContext.Decks.AddAsync(deck.ToEntity()).ConfigureAwait(false);
+		await _dbContext.Decks.AddAsync(deck.ToDataEntity()).ConfigureAwait(false);
 	}
 
 	/// <inheritdoc />
-	public void UpdateDeck(Deck deck)
+	public async Task UpdateDeckAsync(Deck deck)
 	{
-		_dbContext.Decks.Update(deck.ToEntity());
+		var deckEntity = await _dbContext.Decks.FindAsync(deck.Id).ConfigureAwait(false);
+		deckEntity!.UpdateFromDomain(deck);
 	}
 
 	/// <inheritdoc />
@@ -82,15 +82,15 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 	{
 		ArgumentNullException.ThrowIfNull(card);
 
-		var cardEntity = CardExtensions.ToEntity(card);
+		var cardEntity = CardExtensions.ToDataEntity(card);
 		await _dbContext.Cards.AddAsync(cardEntity).ConfigureAwait(false);
 	}
 
 	/// <inheritdoc />
-	public void UpdateCard(Card card)
+	public async Task UpdateCardAsync(Card card)
 	{
-		var cardEntity = CardExtensions.ToEntity(card);
-		_dbContext.Cards.Update(cardEntity);
+		var cardEntity = await _dbContext.Cards.FindAsync(card.Id).ConfigureAwait(false);
+		cardEntity!.UpdateFromDomain(card);
 	}
 
 	/// <inheritdoc />
@@ -164,8 +164,4 @@ public class DeckRepository(RepetifyDbContext dbContext) : IDeckRepository
 	public Task SaveChangesAsync() =>
 	_dbContext.SaveChangesAsync();
 
-	private bool IsInMemoryDb()
-	{
-		return _dbContext.Database.ProviderName?.Equals(InMemoryDBProviderName, StringComparison.Ordinal) ?? false;
-	}
 }

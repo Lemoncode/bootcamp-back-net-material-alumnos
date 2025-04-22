@@ -4,7 +4,7 @@ using Repetify.Infrastructure.Persistence.EfCore.Entities;
 namespace Repetify.Infrastructure.Persistence.EfCore.Extensions.Mappers;
 
 /// <summary>
-/// Provides methods to map between domain and entity models for Deck and Card.
+/// Provides methods to map between Deck domain objects and DeckEntity data objects.
 /// </summary>
 public static class DeckExtensions
 {
@@ -13,7 +13,7 @@ public static class DeckExtensions
 	/// </summary>
 	/// <param name="deckDomain">The Deck domain model.</param>
 	/// <returns>The corresponding DeckEntity.</returns>
-	public static DeckEntity ToEntity(this Deck deckDomain)
+	public static DeckEntity ToDataEntity(this Deck deckDomain)
 	{
 		ArgumentNullException.ThrowIfNull(deckDomain);
 
@@ -45,5 +45,22 @@ public static class DeckExtensions
 			originalLanguage: deckEntity.OriginalLanguage,
 			translatedLanguage: deckEntity.TranslatedLanguage
 		);
+	}
+
+	/// <summary>  
+	/// Updates the properties of a DeckEntity from a Deck domain model.  
+	/// </summary>  
+	/// <param name="deckEntity">The DeckEntity to update.</param>  
+	/// <param name="deck">The Deck domain model with updated values.</param>  
+	public static void UpdateFromDomain(this DeckEntity deckEntity, Deck deck)
+	{
+		ArgumentNullException.ThrowIfNull(deckEntity);
+		ArgumentNullException.ThrowIfNull(deck);
+
+		deckEntity.Name = deck.Name;
+		deckEntity.Description = deck.Description;
+		deckEntity.UserId = deck.UserId;
+		deckEntity.OriginalLanguage = deck.OriginalLanguage;
+		deckEntity.TranslatedLanguage = deck.TranslatedLanguage;
 	}
 }

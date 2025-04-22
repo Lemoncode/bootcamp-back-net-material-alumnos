@@ -24,7 +24,7 @@ public class DeckExtensionsTests
 		);
 
 		// Act
-		var entity = deck.ToEntity();
+		var entity = deck.ToDataEntity();
 
 		// Assert
 		Assert.NotNull(entity);
@@ -70,7 +70,7 @@ public class DeckExtensionsTests
 		Deck? nullDeck = null;
 
 		// Act & Assert
-		Assert.Throws<ArgumentNullException>(() => nullDeck!.ToEntity());
+		Assert.Throws<ArgumentNullException>(() => nullDeck!.ToDataEntity());
 	}
 
 	[Fact]

@@ -68,7 +68,7 @@ public class DeckAppServiceTests
 
 		await _deckAppService.UpdateDeckAsync(deckDto, Guid.NewGuid());
 
-		_deckRepositoryMock.Verify(r => r.UpdateDeck(It.IsAny<Deck>()), Times.Once);
+		_deckRepositoryMock.Verify(r => r.UpdateDeckAsync(It.IsAny<Deck>()), Times.Once);
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
 	}
 
@@ -88,7 +88,7 @@ public class DeckAppServiceTests
 		// Assert
 		result.Status.Should().Be(ResultStatus.Conflict);
 		result.ErrorMessage.Should().Be(exceptionMessage);
-		_deckRepositoryMock.Verify(r => r.UpdateDeck(It.IsAny<Deck>()), Times.Never);
+		_deckRepositoryMock.Verify(r => r.UpdateDeckAsync(It.IsAny<Deck>()), Times.Never);
 	}
 
 	[Fact]
@@ -167,7 +167,7 @@ public class DeckAppServiceTests
 		await _deckAppService.ReviewCardAsync(deckId, card.Id, true);
 
 		_reviewCardServiceMock.Verify(r => r.UpdateReview(card, true), Times.Once);
-		_deckRepositoryMock.Verify(r => r.UpdateCard(card), Times.Once);
+		_deckRepositoryMock.Verify(r => r.UpdateCardAsync(card), Times.Once);
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
 	}
 

@@ -25,7 +25,8 @@ public interface IDeckRepository
 	/// Updates an existing deck.
 	/// </summary>
 	/// <param name="deck">The deck to update.</param>
-	void UpdateDeck(Deck deck);
+	/// <returns>A task representing the asynchronous operation.</returns>
+	Task UpdateDeckAsync(Deck deck);
 
 	/// <summary>
 	/// Gets a deck by its identifier asynchronously.
@@ -87,7 +88,7 @@ public interface IDeckRepository
 	/// </summary>
 	/// <param name="card">The card to update.</param>
 	/// <returns>A task representing the asynchronous operation.</returns>
-	void UpdateCard(Card card);
+	Task UpdateCardAsync(Card card);
 
 	/// <summary>
 	/// Deletes a card from a specific deck asynchronously.

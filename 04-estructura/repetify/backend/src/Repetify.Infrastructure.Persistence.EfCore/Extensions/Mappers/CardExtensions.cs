@@ -14,7 +14,7 @@ public static class CardExtensions
 	/// <param name="cardDomain">The Card domain object to map.</param>
 	/// <param name="deckId">The ID of the deck to associate with the card.</param>
 	/// <returns>A CardEntity data object.</returns>
-	public static CardEntity ToEntity(this Card cardDomain)
+	public static CardEntity ToDataEntity(this Card cardDomain)
 	{
 		ArgumentNullException.ThrowIfNull(cardDomain);
 
@@ -48,5 +48,22 @@ public static class CardExtensions
 			nextReviewDate: cardEntity.NextReviewDate,
 			previousCorrectReview: cardEntity.PreviousCorrectReview
 		);
+	}
+
+	/// <summary>  
+	/// Updates a CardEntity data object with values from a Card domain object.  
+	/// </summary>  
+	/// <param name="cardEntity">The CardEntity data object to update.</param>  
+	/// <param name="card">The Card domain object containing updated values.</param>  
+	public static void UpdateFromDomain(this CardEntity cardEntity, Card card)
+	{
+		ArgumentNullException.ThrowIfNull(cardEntity);
+		ArgumentNullException.ThrowIfNull(card);
+
+		cardEntity.OriginalWord = card.OriginalWord;
+		cardEntity.TranslatedWord = card.TranslatedWord;
+		cardEntity.CorrectReviewStreak = card.CorrectReviewStreak;
+		cardEntity.NextReviewDate = card.NextReviewDate;
+		cardEntity.PreviousCorrectReview = card.PreviousCorrectReview;
 	}
 }

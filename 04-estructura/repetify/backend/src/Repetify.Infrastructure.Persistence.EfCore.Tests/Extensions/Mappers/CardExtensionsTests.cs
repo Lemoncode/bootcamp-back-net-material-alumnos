@@ -21,7 +21,7 @@ public class CardExtensionsTests
 		);
 
 		// Act
-		var entity = card.ToEntity();
+		var entity = card.ToDataEntity();
 
 		// Assert
 		Assert.NotNull(entity);
@@ -70,7 +70,7 @@ public class CardExtensionsTests
 		var deckId = Guid.NewGuid();
 
 		// Act & Assert
-		Assert.Throws<ArgumentNullException>(() => nullCard!.ToEntity());
+		Assert.Throws<ArgumentNullException>(() => nullCard!.ToDataEntity());
 	}
 
 	[Fact]

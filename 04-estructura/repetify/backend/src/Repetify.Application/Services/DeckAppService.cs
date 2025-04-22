@@ -57,7 +57,7 @@ public class DeckAppService : IDeckAppService
 		{
 			var deckDomain = deck.ToEntity(userId);
 			await _deckValidator.EnsureIsValid(deckDomain).ConfigureAwait(false);
-			_deckRepository.UpdateDeck(deckDomain);
+			await _deckRepository.UpdateDeckAsync(deckDomain).ConfigureAwait(false);
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return ResultFactory.Success();
 		}
@@ -111,7 +111,7 @@ public class DeckAppService : IDeckAppService
 	///  <inheritdoc/>
 	public async Task<Result> UpdateCardAsync(AddOrUpdateCardDto card, Guid deckId, Guid cardId)
 	{
-		_deckRepository.UpdateCard(card.ToEntity(deckId, cardId));
+		await _deckRepository.UpdateCardAsync(card.ToEntity(deckId, cardId)).ConfigureAwait(false);
 		await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 		return ResultFactory.Success();
 	}
@@ -175,7 +175,7 @@ public class DeckAppService : IDeckAppService
 		}
 
 		_cardReviewService.UpdateReview(card, isCorrect);
-		_deckRepository.UpdateCard(card);
+		await _deckRepository.UpdateCardAsync(card).ConfigureAwait(false);
 		await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 		return ResultFactory.Success();
 	}
