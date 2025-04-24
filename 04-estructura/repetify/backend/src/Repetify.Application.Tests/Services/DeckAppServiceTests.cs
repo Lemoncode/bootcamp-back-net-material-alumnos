@@ -4,8 +4,8 @@ using FluentAssertions.Specialized;
 using Moq;
 
 using Repetify.Application.Dtos;
-using Repetify.Application.Enums;
 using Repetify.Application.Services;
+using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
@@ -65,6 +65,7 @@ public class DeckAppServiceTests
 	public async Task UpdateDeckAsync_Should_Call_Repository_And_SaveChanges()
 	{
 		var deckDto = CreateFakeAddOrUpdateDeck();
+		_deckRepositoryMock.Setup(m => m.UpdateDeckAsync(It.IsAny<Deck>())).ReturnsAsync(ResultFactory.Success());
 
 		await _deckAppService.UpdateDeckAsync(deckDto, Guid.NewGuid());
 
@@ -95,7 +96,7 @@ public class DeckAppServiceTests
 	public async Task DeleteDeckAsync_Should_Call_Repository_And_SaveChanges_When_Deck_Exists()
 	{
 		var deckId = Guid.NewGuid();
-		_deckRepositoryMock.Setup(r => r.DeleteDeckAsync(deckId)).ReturnsAsync(true);
+		_deckRepositoryMock.Setup(r => r.DeleteDeckAsync(deckId)).ReturnsAsync(ResultFactory.Success());
 
 		var result = await _deckAppService.DeleteDeckAsync(deckId);
 
@@ -108,7 +109,7 @@ public class DeckAppServiceTests
 	public async Task DeleteDeckAsync_Should_Return_False_When_Deck_Does_Not_Exist()
 	{
 		var deckId = Guid.NewGuid();
-		_deckRepositoryMock.Setup(r => r.DeleteDeckAsync(deckId)).ReturnsAsync(false);
+		_deckRepositoryMock.Setup(r => r.DeleteDeckAsync(deckId)).ReturnsAsync(ResultFactory.NotFound());
 
 		var result = await _deckAppService.DeleteDeckAsync(deckId);
 
@@ -121,7 +122,7 @@ public class DeckAppServiceTests
 	{
 		var deckId = Guid.NewGuid();
 		var deck = new Deck(deckId, "Deck", "description", Guid.NewGuid(), "english", "spanish");
-		_deckRepositoryMock.Setup(r => r.GetDeckByIdAsync(deckId)).ReturnsAsync(deck);
+		_deckRepositoryMock.Setup(r => r.GetDeckByIdAsync(deckId)).ReturnsAsync(ResultFactory.Success(deck));
 
 		var result = await _deckAppService.GetDeckByIdAsync(deckId);
 
@@ -135,14 +136,13 @@ public class DeckAppServiceTests
 		// Arrange
 		_deckRepositoryMock
 			.Setup(r => r.GetDeckByIdAsync(It.IsAny<Guid>()))
-			.ReturnsAsync((Deck?)null);
+			.ReturnsAsync(ResultFactory.NotFound<Deck>("Deck not found."));
 
 		// Act
 		var result = await _deckAppService.GetDeckByIdAsync(Guid.NewGuid());
 
 		// Assert
 		result.Status.Should().Be(ResultStatus.NotFound);
-		result.Value.Should().BeNull();  // Porque el servicio pone Value a null
 		result.ErrorMessage.Should().Be("Deck not found.");
 	}
 
@@ -162,7 +162,7 @@ public class DeckAppServiceTests
 	{
 		var deckId = Guid.NewGuid();
 		var card = new Card(deckId, "Hola", "Hello", 3, DateTime.UtcNow, DateTime.UtcNow);
-		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, card.Id)).ReturnsAsync(card);
+		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, card.Id)).ReturnsAsync(ResultFactory.Success(card));
 
 		await _deckAppService.ReviewCardAsync(deckId, card.Id, true);
 
@@ -177,7 +177,7 @@ public class DeckAppServiceTests
 		var deckId = Guid.NewGuid();
 		var cardId = Guid.NewGuid();
 
-		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, cardId)).ReturnsAsync((Card?)null);
+		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, cardId)).ReturnsAsync(ResultFactory.NotFound<Card>());
 
 		var result = await _deckAppService.ReviewCardAsync(deckId, cardId, true);
 
@@ -195,7 +195,7 @@ public class DeckAppServiceTests
 				new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
 			};
 
-		_deckRepositoryMock.Setup(r => r.GetCardsToReview(deckId, untilDate, pageSize, null)).ReturnsAsync(cards);
+		_deckRepositoryMock.Setup(r => r.GetCardsToReview(deckId, untilDate, pageSize, null)).ReturnsAsync(ResultFactory.Success<IEnumerable<Card>>(cards));
 
 		var result = await _deckAppService.GetCardsToReview(deckId, untilDate, pageSize, null);
 

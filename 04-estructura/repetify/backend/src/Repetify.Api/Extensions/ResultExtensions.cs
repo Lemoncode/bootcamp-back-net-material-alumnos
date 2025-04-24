@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-using Repetify.Application.Common;
-using Repetify.Application.Enums;
+using Repetify.Crosscutting;
 
 namespace Repetify.Api.Extensions;
 

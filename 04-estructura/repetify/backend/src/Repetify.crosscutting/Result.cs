@@ -1,9 +1,11 @@
-﻿namespace Repetify.Crosscutting;
+﻿using Repetify.crosscutting;
+
+namespace Repetify.Crosscutting;
 
 /// <summary>
 /// Represents a result of a void operation, containing a status.
 /// </summary>
-public class Result
+public class Result : IResult
 {
 	/// <summary>
 	/// Gets the status of the result.

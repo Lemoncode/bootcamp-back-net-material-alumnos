@@ -1,5 +1,5 @@
-﻿using Repetify.Application.Common;
-using Repetify.Application.Dtos;
+﻿using Repetify.Application.Dtos;
+using Repetify.Crosscutting;
 
 namespace Repetify.Application.Abstractions.Services;
 

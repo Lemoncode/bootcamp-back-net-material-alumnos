@@ -2,8 +2,8 @@
 
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
-using Repetify.Application.Enums;
 using Repetify.Application.Services;
+using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
@@ -62,7 +62,7 @@ public class UserAppServiceTests
 	{
 		// Arrange  
 		var userId = Guid.NewGuid();
-		_userRepositoryMock.Setup(r => r.DeleteUserAsync(userId)).ReturnsAsync(true);
+		_userRepositoryMock.Setup(r => r.DeleteUserAsync(userId)).ReturnsAsync(ResultFactory.Success());
 		_userRepositoryMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 
 		// Act  
@@ -70,7 +70,7 @@ public class UserAppServiceTests
 
 		// Assert  
 		Assert.Equal(ResultStatus.Success, result.Status);
-		Assert.True(result.Value);
+		Assert.True(result.IsSuccess);
 	}
 
 	[Fact]
@@ -78,7 +78,7 @@ public class UserAppServiceTests
 	{
 		// Arrange  
 		var userId = Guid.NewGuid();
-		_userRepositoryMock.Setup(r => r.DeleteUserAsync(userId)).ReturnsAsync(false);
+		_userRepositoryMock.Setup(r => r.DeleteUserAsync(userId)).ReturnsAsync(ResultFactory.NotFound("Unable to find the user to delete."));
 
 		// Act  
 		var result = await _userAppService.DeleteUserAsync(userId);
@@ -127,7 +127,7 @@ public class UserAppServiceTests
 		// Arrange  
 		var email = "test@example.com";
 		var user = new User(Guid.NewGuid(), "testuser", email);
-		_userRepositoryMock.Setup(r => r.GetUserByEmailAsync(email)).ReturnsAsync(user);
+		_userRepositoryMock.Setup(r => r.GetUserByEmailAsync(email)).ReturnsAsync(ResultFactory.Success(user));
 
 		// Act  
 		var result = await _userAppService.GetUserByEmailAsync(email);
@@ -143,13 +143,13 @@ public class UserAppServiceTests
 	{
 		// Arrange  
 		var email = "nonexistent@example.com";
-		_userRepositoryMock.Setup(r => r.GetUserByEmailAsync(email)).ReturnsAsync((User?)null);
+		_userRepositoryMock.Setup(r => r.GetUserByEmailAsync(email)).ReturnsAsync(ResultFactory.NotFound<User>("User not found."));
 
 		// Act  
 		var result = await _userAppService.GetUserByEmailAsync(email);
 
 		// Assert  
 		Assert.Equal(ResultStatus.NotFound, result.Status);
-		Assert.Equal("Deck not found.", result.ErrorMessage);
+		Assert.Equal("User not found.", result.ErrorMessage);
 	}
 }

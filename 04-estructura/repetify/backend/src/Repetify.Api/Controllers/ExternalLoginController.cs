@@ -4,11 +4,11 @@ using Microsoft.Extensions.Options;
 using Repetify.Api.Config;
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
-using Repetify.Application.Enums;
 using Repetify.AuthPlatform;
 using Repetify.AuthPlatform.Abstractions;
 using Repetify.AuthPlatform.Abstractions.IdentityProviders;
 using Repetify.AuthPlatform.Config;
+using Repetify.Crosscutting;
 
 using System.ComponentModel.DataAnnotations;
 
@@ -119,9 +119,9 @@ public class ExternalLoginController(IJwtService jwtService, IGoogleOauthService
 
 	private async Task CheckAndAddNewUserAsync(string username, string email)
 	{
-		var user = await _userAppService.GetUserByEmailAsync(email).ConfigureAwait(false);
+		var userResult = await _userAppService.GetUserByEmailAsync(email).ConfigureAwait(false);
 
-		if (user.Status != ResultStatus.Success)
+		if (!userResult.IsSuccess)
 		{
 			var newUser = new AddOrEditUserDto { Username = username, Email = email };
 			await _userAppService.AddUserAsync(newUser).ConfigureAwait(false);

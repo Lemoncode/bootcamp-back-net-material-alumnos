@@ -1,7 +1,7 @@
 ﻿using Repetify.Application.Abstractions.Services;
-using Repetify.Application.Common;
 using Repetify.Application.Dtos;
 using Repetify.Application.Extensions.Mappings;
+using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
@@ -44,16 +44,15 @@ public class UserAppService : IUserAppService
 		}
 	}
 
-	public async Task<Result<bool>> DeleteUserAsync(Guid userId)
+	public async Task<Result> DeleteUserAsync(Guid userId)
 	{
-		var deleted = await _userRepository.DeleteUserAsync(userId).ConfigureAwait(false);
-		if (deleted)
+		var deletedResult = await _userRepository.DeleteUserAsync(userId).ConfigureAwait(false);
+		if (deletedResult.IsSuccess)
 		{
 			await _userRepository.SaveChangesAsync().ConfigureAwait(false);
-			return ResultFactory.Success(true);
 		}
 
-		return ResultFactory.NotFound<bool>("Unable to find the user to delete.");
+		return deletedResult;
 	}
 
 	public async Task<Result> UpdateUserAsync(AddOrEditUserDto user, Guid userId)
@@ -72,14 +71,14 @@ public class UserAppService : IUserAppService
 		}
 	}
 
-	public async Task<Result<UserDto?>> GetUserByEmailAsync(string email)
+	public async Task<Result<UserDto>> GetUserByEmailAsync(string email)
 	{
-		var user = await _userRepository.GetUserByEmailAsync(email).ConfigureAwait(false);
-		if (user is null)
+		var userResult = await _userRepository.GetUserByEmailAsync(email).ConfigureAwait(false);
+		if (!userResult.IsSuccess)
 		{
-			return ResultFactory.NotFound<UserDto?>("User not found.");
+			return ResultFactory.PropagateFailure<UserDto>(userResult);
 		}
 
-		return ResultFactory.Success<UserDto?>(user.ToDto());
+		return ResultFactory.Success<UserDto>(userResult.Value.ToDto());
 	}
 }

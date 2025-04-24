@@ -1,4 +1,6 @@
-﻿namespace Repetify.Crosscutting;
+﻿using Repetify.crosscutting;
+
+namespace Repetify.Crosscutting;
 
 /// <summary>
 /// Factory class for creating <see cref="Result"/> and <see cref="Result{T}"/> instances.
@@ -64,4 +66,44 @@ public static class ResultFactory
 	/// <param name="errorMessage">The error message of the result.</param>
 	/// <returns>An <see cref="Result{T}"/> with an Conflict status.</returns>
 	public static Result<T> Conflict<T>(string? errorMessage) => new(ResultStatus.Conflict, errorMessage);
+
+	/// <summary>
+	/// Creates a <see cref="Result{T}"/> from an existing <see cref="IResult"/> instance.
+	/// </summary>
+	/// <typeparam name="T">The type of the value for the resulting <see cref="Result{T}"/>.</typeparam>
+	/// <param name="result">The existing <see cref="IResult"/> instance to convert.</param>
+	/// <returns>A new <see cref="Result{T}"/> with the same status and error message as the provided <see cref="IResult"/>.</returns>
+	/// <exception cref="ArgumentNullException">Thrown if the <paramref name="result"/> is null.</exception>
+	/// <exception cref="InvalidOperationException">Thrown if the result status is success.</exception>
+	public static Result<T> PropagateFailure<T>(IResult result)
+	{
+		ArgumentNullException.ThrowIfNull(result);
+
+		if (result.IsSuccess)
+		{
+			throw new InvalidOperationException("This method should be used only with failure results.");
+		}
+
+		return new Result<T>(result.Status, result.ErrorMessage);
+	}
+
+	/// <summary>
+	/// Creates a <see cref="Result{T}"/> from an existing <see cref="IResult"/> instance.
+	/// </summary>
+	/// <typeparam name="T">The type of the value for the resulting <see cref="Result{T}"/>.</typeparam>
+	/// <param name="result">The existing <see cref="IResult"/> instance to convert.</param>
+	/// <returns>A new <see cref="Result"/> with the same status and error message as the provided <see cref="IResult"/>.</returns>
+	/// <exception cref="ArgumentNullException">Thrown if the <paramref name="result"/> is null.</exception>
+	/// <exception cref="InvalidOperationException">Thrown if the result status is success.</exception>
+	public static Result PropagateFailure(IResult result)
+	{
+		ArgumentNullException.ThrowIfNull(result);
+
+		if (result.IsSuccess)
+		{
+			throw new InvalidOperationException("This method should be used only with failure results.");
+		}
+
+		return new Result(result.Status, result.ErrorMessage);
+	}
 }

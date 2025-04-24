@@ -6,7 +6,7 @@ using Repetify.Api.Extensions;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using Repetify.Application.Enums;
+using Repetify.Crosscutting;
 
 namespace Repetify.Api.Controllers;
 

@@ -1,10 +1,14 @@
-﻿namespace Repetify.Crosscutting;
+﻿using Repetify.crosscutting;
+
+using System.Diagnostics.CodeAnalysis;
+
+namespace Repetify.Crosscutting;
 
 /// <summary>
 /// Represents a result of an operation, containing a value and a status.
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
-public class Result<T>
+public class Result<T> : IResult
 {
 	/// <summary>
 	/// Gets the value of the result.
@@ -46,5 +50,6 @@ public class Result<T>
 	/// <summary>  
 	/// Gets a value indicating whether the result is successful.  
 	/// </summary>  
+	[MemberNotNullWhen(true, nameof(Value))]
 	public bool IsSuccess => this.Status == ResultStatus.Success;
 }

@@ -1,5 +1,5 @@
-﻿using Repetify.Application.Common;
-using Repetify.Application.Dtos;
+﻿using Repetify.Application.Dtos;
+using Repetify.Crosscutting;
 
 namespace Repetify.Application.Abstractions.Services;
 
@@ -13,7 +13,7 @@ public interface IUserAppService
 	/// </summary>
 	/// <param name="email">The email address of the user to retrieve.</param>
 	/// <returns>A <see cref="Result{T}"/> containing the user data if found, or an appropriate error status.</returns>
-	Task<Result<UserDto?>> GetUserByEmailAsync(string email);
+	Task<Result<UserDto>> GetUserByEmailAsync(string email);
 
 	/// <summary>
 	/// Adds a new user to the system.
@@ -34,6 +34,6 @@ public interface IUserAppService
 	/// Deletes a user from the system.
 	/// </summary>
 	/// <param name="userId">The ID of the user to delete.</param>
-	/// <returns>A <see cref="Result{T}"/> indicating whether the deletion was successful, or an appropriate error status.</returns>
-	Task<Result<bool>> DeleteUserAsync(Guid userId);
+	/// <returns>A <see cref="Result"/> indicating whether the deletion was successful, or an appropriate error status.</returns>
+	Task<Result> DeleteUserAsync(Guid userId);
 }

@@ -56,9 +56,18 @@ public class DeckAppService : IDeckAppService
 		{
 			var deckDomain = deck.ToEntity(userId);
 			await _deckValidator.EnsureIsValid(deckDomain).ConfigureAwait(false);
-			await _deckRepository.UpdateDeckAsync(deckDomain).ConfigureAwait(false);
+			var updateResult = await _deckRepository.UpdateDeckAsync(deckDomain).ConfigureAwait(false);
+			if (!updateResult.IsSuccess)
+			{
+				return updateResult;
+			}
+
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return ResultFactory.Success();
+		}
+		catch (EntityExistsException ex)
+		{
+			return ResultFactory.Conflict(ex.Message);
 		}
 	}
 
@@ -66,7 +75,7 @@ public class DeckAppService : IDeckAppService
 	public async Task<Result<bool>> DeleteDeckAsync(Guid deckId)
 	{
 		var deleted = await _deckRepository.DeleteDeckAsync(deckId).ConfigureAwait(false);
-		if (deleted)
+		if (deleted.IsSuccess)
 		{
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return ResultFactory.Success(true);
@@ -78,20 +87,25 @@ public class DeckAppService : IDeckAppService
 	///  <inheritdoc/>
 	public async Task<Result<DeckDto>> GetDeckByIdAsync(Guid deckId)
 	{
-		var deck = await _deckRepository.GetDeckByIdAsync(deckId).ConfigureAwait(false);
-		if (deck is null)
+		var deckResult = await _deckRepository.GetDeckByIdAsync(deckId).ConfigureAwait(false);
+		if (!deckResult.IsSuccess)
 		{
-			return ResultFactory.NotFound<DeckDto>("Deck not found.");
+			return ResultFactory.PropagateFailure<DeckDto>(deckResult);
 		}
-
-		return ResultFactory.Success(deck.ToDto());
+		
+		return ResultFactory.Success(deckResult.Value.ToDto());
 	}
 
 	///  <inheritdoc/>
 	public async Task<Result<IEnumerable<DeckDto>>> GetUserDecksAsync(Guid userId)
 	{
-		var decks = await _deckRepository.GetDecksByUserIdAsync(userId).ConfigureAwait(false);
-		return ResultFactory.Success(decks.ToDtoList());
+		var decksResult = await _deckRepository.GetDecksByUserIdAsync(userId).ConfigureAwait(false);
+		if (!decksResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<IEnumerable<DeckDto>>(decksResult);
+		}
+
+		return ResultFactory.Success(decksResult.Value.ToDtoList());
 	}
 
 	///  <inheritdoc/>
@@ -114,31 +128,38 @@ public class DeckAppService : IDeckAppService
 	///  <inheritdoc/>
 	public async Task<Result> DeleteCardAsync(Guid deckId, Guid cardId)
 	{
-		var deleted = await _deckRepository.DeleteCardAsync(deckId, cardId).ConfigureAwait(false);
-		if (deleted)
+		var deletedResult = await _deckRepository.DeleteCardAsync(deckId, cardId).ConfigureAwait(false);
+		if (deletedResult.IsSuccess)
 		{
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return ResultFactory.Success();
 		}
-		return ResultFactory.NotFound("Card not found.");
+
+		return deletedResult;
 	}
 
 	///  <inheritdoc/>
 	public async Task<Result<CardDto>> GetCardByIdAsync(Guid deckId, Guid cardId)
 	{
-		var card = await _deckRepository.GetCardByIdAsync(deckId, cardId).ConfigureAwait(false);
-		if (card is null)
+		var cardResult = await _deckRepository.GetCardByIdAsync(deckId, cardId).ConfigureAwait(false);
+		if (!cardResult .IsSuccess)
 		{
-			return ResultFactory.NotFound<CardDto>("Card not found.");
+			return ResultFactory.PropagateFailure<CardDto>(cardResult);
 		}
-		return ResultFactory.Success(card.ToDto());
+		
+		return ResultFactory.Success(cardResult.Value.ToDto());
 	}
 
 	///  <inheritdoc/>
 	public async Task<Result<IEnumerable<CardDto>>> GetCardsAsync(Guid deckId, int page, int pageSize)
 	{
-		var cards = await _deckRepository.GetCardsAsync(deckId, page, pageSize).ConfigureAwait(false);
-		return ResultFactory.Success(cards.ToDtoList());
+		var cardsResult = await _deckRepository.GetCardsAsync(deckId, page, pageSize).ConfigureAwait(false);
+		if (!cardsResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(cardsResult);
+		}
+
+		return ResultFactory.Success(cardsResult.Value.ToDtoList());
 	}
 
 	///  <inheritdoc/>
@@ -156,21 +177,26 @@ public class DeckAppService : IDeckAppService
 			return ResultFactory.InvalidArgument<IEnumerable<CardDto>>("The page number must be greater than 0.");
 		}
 
-		var cards = await _deckRepository.GetCardsToReview(deckId, until, pageSize, cursor).ConfigureAwait(false);
-		return ResultFactory.Success(cards.ToDtoList());
+		var cardsResult = await _deckRepository.GetCardsToReview(deckId, until, pageSize, cursor).ConfigureAwait(false);
+		if (!cardsResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(cardsResult);
+		}
+		
+		return ResultFactory.Success(cardsResult.Value.ToDtoList());
 	}
 
 	///  <inheritdoc/>
 	public async Task<Result> ReviewCardAsync(Guid deckId, Guid cardId, bool isCorrect)
 	{
-		var card = await _deckRepository.GetCardByIdAsync(deckId, cardId).ConfigureAwait(false);
-		if (card is null)
+		var cardResult = await _deckRepository.GetCardByIdAsync(deckId, cardId).ConfigureAwait(false);
+		if (!cardResult.IsSuccess)
 		{
-			return ResultFactory.NotFound("The card to review was not found.");
+			return ResultFactory.PropagateFailure(cardResult);
 		}
-
-		_cardReviewService.UpdateReview(card, isCorrect);
-		await _deckRepository.UpdateCardAsync(card).ConfigureAwait(false);
+		
+		_cardReviewService.UpdateReview(cardResult.Value, isCorrect);
+		await _deckRepository.UpdateCardAsync(cardResult.Value).ConfigureAwait(false);
 		await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 		return ResultFactory.Success();
 	}
