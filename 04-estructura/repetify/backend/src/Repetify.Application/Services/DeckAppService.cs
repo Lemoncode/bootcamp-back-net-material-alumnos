@@ -1,11 +1,10 @@
 ﻿using Repetify.Application.Abstractions.Services;
-using Repetify.Application.Common;
 using Repetify.Application.Dtos;
 using Repetify.Application.Extensions.Mappings;
+using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Exceptions;
-
 namespace Repetify.Application.Services;
 
 /// <summary>
@@ -60,10 +59,6 @@ public class DeckAppService : IDeckAppService
 			await _deckRepository.UpdateDeckAsync(deckDomain).ConfigureAwait(false);
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return ResultFactory.Success();
-		}
-		catch (EntityExistsException ex)
-		{
-			return ResultFactory.Conflict(ex.Message);
 		}
 	}
 

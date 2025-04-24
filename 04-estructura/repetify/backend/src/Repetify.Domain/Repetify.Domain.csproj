@@ -5,4 +5,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Repetify.crosscutting\Repetify.crosscutting.csproj" />
+	</ItemGroup>
 </Project>

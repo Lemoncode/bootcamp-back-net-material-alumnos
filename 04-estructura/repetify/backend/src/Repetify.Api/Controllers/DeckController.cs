@@ -126,8 +126,8 @@ public class DeckController : ControllerBase
 			var createdCard = new CardDto(
 				cardId,
 				deckId,
-				card.OriginalWord,
-				card.TranslatedWord
+				card.OriginalWord!,
+				card.TranslatedWord!
 				);
 			return CreatedAtAction(nameof(GetCardById), new { deckId, cardId }, createdCard);
 		});

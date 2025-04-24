@@ -1,11 +1,9 @@
-﻿using Repetify.Application.Enums;
-
-namespace Repetify.Application.Common;
+﻿namespace Repetify.Crosscutting;
 
 /// <summary>
 /// Factory class for creating <see cref="Result"/> and <see cref="Result{T}"/> instances.
 /// </summary>
-internal static class ResultFactory
+public static class ResultFactory
 {
 	/// <summary>
 	/// Creates a successful <see cref="Result{T}"/> with the specified value.

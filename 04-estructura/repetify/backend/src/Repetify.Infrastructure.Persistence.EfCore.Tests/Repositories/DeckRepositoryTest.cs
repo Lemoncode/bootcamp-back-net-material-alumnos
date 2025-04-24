@@ -69,7 +69,7 @@ public class DeckRepositoryTests
 		await repository.SaveChangesAsync();
 
 		// Assert
-		Assert.True(result);
+		Assert.True(result.IsSuccess);
 		Assert.Null(await dbContext.Decks.FirstOrDefaultAsync(d => d.Id == deck.Id));
 	}
 
@@ -84,7 +84,7 @@ public class DeckRepositoryTests
 		var result = await repository.DeleteDeckAsync(Guid.NewGuid());
 
 		// Assert
-		Assert.False(result);
+		Assert.False(result.IsSuccess);
 	}
 
 
@@ -104,8 +104,9 @@ public class DeckRepositoryTests
 
 		// Assert
 		Assert.NotNull(result);
-		Assert.Equal(deck.Name, result.Name);
-		Assert.Equal(deck.OriginalLanguage, result.OriginalLanguage);
+		Assert.True(result.IsSuccess);
+		Assert.Equal(deck.Name, result.Value!.Name);
+		Assert.Equal(deck.OriginalLanguage, result.Value!.OriginalLanguage);
 	}
 
 	[Fact]
@@ -119,7 +120,7 @@ public class DeckRepositoryTests
 		var result = await repository.GetDeckByIdAsync(Guid.NewGuid());
 
 		// Assert
-		Assert.Null(result);
+		Assert.Null(result.Value);
 	}
 
 	[Fact]
@@ -138,13 +139,15 @@ public class DeckRepositoryTests
 		await repository.SaveChangesAsync();
 
 		// Act
-		var decks = await repository.GetDecksByUserIdAsync(userId);
+		var decksResult = await repository.GetDecksByUserIdAsync(userId);
 
 		// Assert
-		Assert.NotNull(decks);
-		Assert.Equal(2, decks.Count());
-		Assert.Contains(decks, d => d.Name == "Deck 1");
-		Assert.Contains(decks, d => d.Name == "Deck 2");
+		Assert.True(decksResult.IsSuccess);
+
+		Assert.NotNull(decksResult);
+		Assert.Equal(2, decksResult.Value!.Count());
+		Assert.Contains(decksResult.Value!, d => d.Name == "Deck 1");
+		Assert.Contains(decksResult.Value!, d => d.Name == "Deck 2");
 	}
 
 	[Fact]
@@ -157,11 +160,12 @@ public class DeckRepositoryTests
 		var userId = Guid.NewGuid();
 
 		// Act
-		var decks = await repository.GetDecksByUserIdAsync(userId);
+		var decksResult = await repository.GetDecksByUserIdAsync(userId);
 
 		// Assert
-		Assert.NotNull(decks);
-		Assert.Empty(decks);
+		Assert.NotNull(decksResult);
+		Assert.True(decksResult.IsSuccess);
+		Assert.Empty(decksResult.Value!);
 	}
 
 	[Fact]
@@ -182,13 +186,14 @@ public class DeckRepositoryTests
 		await repository.SaveChangesAsync();
 
 		// Act
-		var decks = await repository.GetDecksByUserIdAsync(userId1);
+		var decksResult = await repository.GetDecksByUserIdAsync(userId1);
 
 		// Assert
-		Assert.NotNull(decks);
-		Assert.Single(decks);
-		Assert.Equal("Deck 1", decks.First().Name);
-		Assert.DoesNotContain(decks, d => d.UserId == userId2);
+		Assert.NotNull(decksResult);
+		Assert.True(decksResult.IsSuccess);
+		Assert.Single(decksResult.Value!);
+		Assert.Equal("Deck 1", decksResult.Value!.First().Name);
+		Assert.DoesNotContain(decksResult.Value!, d => d.UserId == userId2);
 	}
 
 	[Fact]
@@ -218,10 +223,10 @@ public class DeckRepositoryTests
 
 		// Assert
 		Assert.NotNull(resultDecks);
-		Assert.Equal(3, resultDecks.Count());
-		Assert.Contains(resultDecks, d => d.Name == "Deck A");
-		Assert.Contains(resultDecks, d => d.Name == "Deck B");
-		Assert.Contains(resultDecks, d => d.Name == "Deck C");
+		Assert.Equal(3, resultDecks.Value!.Count());
+		Assert.Contains(resultDecks.Value!, d => d.Name == "Deck A");
+		Assert.Contains(resultDecks.Value!, d => d.Name == "Deck B");
+		Assert.Contains(resultDecks.Value!, d => d.Name == "Deck C");
 	}
 
 	[Fact]
@@ -243,11 +248,12 @@ public class DeckRepositoryTests
 		await repository.SaveChangesAsync();
 
 		// Act
-		var cards = await repository.GetCardsAsync(deck.Id, page: 1, pageSize: 1);
+		var cardsResult = await repository.GetCardsAsync(deck.Id, page: 1, pageSize: 1);
 
 		// Assert
-		Assert.Single(cards);
-		Assert.Equal("Word1", cards.First().OriginalWord);
+		Assert.True(cardsResult.IsSuccess);
+		Assert.Single(cardsResult.Value!);
+		Assert.Equal("Word1", cardsResult.Value!.First().OriginalWord);
 	}
 
 	[Fact]
@@ -336,7 +342,7 @@ public class DeckRepositoryTests
 		var result = await repository.DeleteCardAsync(deck.Id, card.Id);
 		await repository.SaveChangesAsync();
 
-		Assert.True(result);
+		Assert.True(result.IsSuccess);
 		var deletedCard = await dbContext.Cards.FirstOrDefaultAsync(c => c.Id == card.Id);
 		Assert.Null(deletedCard);
 	}
@@ -353,12 +359,13 @@ public class DeckRepositoryTests
 
 		var result = await repository.DeleteCardAsync(deck.Id, Guid.NewGuid());
 
-		Assert.False(result);
+		Assert.False(result.IsSuccess);
 	}
 
 	[Fact]
 	public async Task GetCardByIdAsync_ShouldReturnCard_WhenExists()
 	{
+		// Arrange
 		using var dbContext = TestHelpers.CreateInMemoryDbContext();
 		var repository = new DeckRepository(dbContext);
 
@@ -366,14 +373,17 @@ public class DeckRepositoryTests
 		await repository.AddDeckAsync(deck);
 		await repository.SaveChangesAsync();
 
+		// Act
 		var card = new Card(Guid.NewGuid(), deck.Id, "Auto", "Car");
 		await repository.AddCardAsync(card);
 		await repository.SaveChangesAsync();
 
-		var retrievedCard = await repository.GetCardByIdAsync(deck.Id, card.Id);
+		var retrievedCardResult = await repository.GetCardByIdAsync(deck.Id, card.Id);
 
-		Assert.NotNull(retrievedCard);
-		Assert.Equal("Auto", retrievedCard.OriginalWord);
+		// Assert
+		Assert.NotNull(retrievedCardResult);
+		Assert.True(retrievedCardResult.IsSuccess);
+		Assert.Equal("Auto", retrievedCardResult.Value!.OriginalWord);
 	}
 
 	[Fact]

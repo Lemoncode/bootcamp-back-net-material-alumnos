@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Entities;
 using Repetify.Infrastructure.Persistence.EfCore.Context;
@@ -7,39 +8,38 @@ using Repetify.Infrastructure.Persistence.EfCore.Extensions.Mappers;
 
 namespace Repetify.Infrastructure.Persistence.EfCore.Repositories;
 
-/// <summary>
-/// Implementation of the deck repository using EF Core.
-/// </summary>
-public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbContext),  IDeckRepository
+public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbContext), IDeckRepository
 {
-
 	private readonly RepetifyDbContext _context = dbContext;
 
-	/// <inheritdoc />
 	public async Task AddDeckAsync(Deck deck)
 	{
 		await _context.Decks.AddAsync(deck.ToDataEntity()).ConfigureAwait(false);
 	}
 
-	/// <inheritdoc />
-	public async Task UpdateDeckAsync(Deck deck)
+	public async Task<Result> UpdateDeckAsync(Deck deck)
 	{
 		var deckEntity = await _context.Decks.FindAsync(deck.Id).ConfigureAwait(false);
-		deckEntity!.UpdateFromDomain(deck);
+
+		if (deckEntity is null)
+		{
+			return ResultFactory.NotFound($"Unable to find the deck with Id ${deck.Id}.");
+		}
+
+		deckEntity.UpdateFromDomain(deck);
+		return ResultFactory.Success();
 	}
 
-	/// <inheritdoc />
-	public async Task<bool> DeleteDeckAsync(Guid deckId)
+	public async Task<Result> DeleteDeckAsync(Guid deckId)
 	{
 		if (!await _context.Decks.AnyAsync(d => d.Id == deckId).ConfigureAwait(false))
 		{
-			return false;
+			return ResultFactory.NotFound($"Deck with ID {deckId} was not found.");
 		}
 
 		if (IsInMemoryDb())
 		{
-			var deck = await _context.Decks
-				.FirstOrDefaultAsync(d => d.Id == deckId).ConfigureAwait(false);
+			var deck = await _context.Decks.FirstOrDefaultAsync(d => d.Id == deckId).ConfigureAwait(false);
 			_context.Decks.Remove(deck!);
 		}
 		else
@@ -47,58 +47,62 @@ public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 			await _context.Decks.Where(d => d.Id == deckId).ExecuteDeleteAsync().ConfigureAwait(false);
 		}
 
-		return true;
+		return ResultFactory.Success();
 	}
 
-	/// <inheritdoc />
-	public async Task<Deck?> GetDeckByIdAsync(Guid deckId)
+	public async Task<Result<Deck>> GetDeckByIdAsync(Guid deckId)
 	{
-		return
-			(await _context.Decks
-				.AsNoTracking()
-				.FirstOrDefaultAsync(d => d.Id == deckId).ConfigureAwait(false))?.ToDomain();
+		var deckEntity = await _context.Decks
+			.AsNoTracking()
+			.FirstOrDefaultAsync(d => d.Id == deckId).ConfigureAwait(false);
+
+		return deckEntity is null
+			? ResultFactory.NotFound<Deck>($"Deck with ID {deckId} not found.")
+			: ResultFactory.Success(deckEntity.ToDomain());
 	}
 
-	/// <inheritdoc />
-	public async Task<IEnumerable<Deck>> GetDecksByUserIdAsync(Guid userId)
+	public async Task<Result<IEnumerable<Deck>>> GetDecksByUserIdAsync(Guid userId)
 	{
-		return await _context.Decks
+		var decks = await _context.Decks
 			.Where(d => d.UserId == userId)
 			.AsNoTracking()
 			.Select(d => d.ToDomain())
 			.ToListAsync().ConfigureAwait(false);
+
+		return ResultFactory.Success(decks.AsEnumerable());
 	}
 
-	///  <inheritdoc/>
 	public Task<bool> DeckNameExistsForUserAsync(Guid deckId, string name, Guid userId)
 	{
 		ArgumentNullException.ThrowIfNull(name);
-
 		return _context.Decks.AnyAsync(d => d.Name == name && d.UserId == userId && d.Id != deckId);
 	}
 
-	/// <inheritdoc />
 	public async Task AddCardAsync(Card card)
 	{
 		ArgumentNullException.ThrowIfNull(card);
-
 		var cardEntity = CardExtensions.ToDataEntity(card);
 		await _context.Cards.AddAsync(cardEntity).ConfigureAwait(false);
 	}
 
-	/// <inheritdoc />
-	public async Task UpdateCardAsync(Card card)
+	public async Task<Result> UpdateCardAsync(Card card)
 	{
 		var cardEntity = await _context.Cards.FindAsync(card.Id).ConfigureAwait(false);
-		cardEntity!.UpdateFromDomain(card);
+
+		if (cardEntity is null)
+		{
+			return ResultFactory.NotFound($"Unable to find a card with id ${card.Id}.");
+		}
+
+		cardEntity.UpdateFromDomain(card);
+		return ResultFactory.Success();
 	}
 
-	/// <inheritdoc />
-	public async Task<bool> DeleteCardAsync(Guid deckId, Guid cardId)
+	public async Task<Result> DeleteCardAsync(Guid deckId, Guid cardId)
 	{
 		if (!await _context.Cards.AnyAsync(c => c.DeckId == deckId && c.Id == cardId).ConfigureAwait(false))
 		{
-			return false;
+			return ResultFactory.NotFound($"Card with ID {cardId} in deck {deckId} was not found.");
 		}
 
 		if (IsInMemoryDb())
@@ -114,13 +118,12 @@ public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 				.ExecuteDeleteAsync().ConfigureAwait(false);
 		}
 
-		return true;
+		return ResultFactory.Success();
 	}
 
-	///  <inheritdoc/>
-	public async Task<IEnumerable<Card>> GetCardsAsync(Guid deckId, int page, int pageSize)
+	public async Task<Result<IEnumerable<Card>>> GetCardsAsync(Guid deckId, int page, int pageSize)
 	{
-		return await _context.Cards
+		var cards = await _context.Cards
 			.Where(c => c.DeckId == deckId)
 			.OrderBy(c => c.NextReviewDate)
 			.Skip((page - 1) * pageSize)
@@ -128,40 +131,43 @@ public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 			.AsNoTracking()
 			.Select(c => c.ToDomain()!)
 			.ToListAsync().ConfigureAwait(false);
+
+		return ResultFactory.Success(cards.AsEnumerable());
 	}
 
-	/// <inheritdoc />
 	public Task<int> GetCardCountAsync(Guid deckId) => _context.Cards
-			.CountAsync(c => c.DeckId == deckId);
+		.CountAsync(c => c.DeckId == deckId);
 
-	/// <inheritdoc />
-	public async Task<Card?> GetCardByIdAsync(Guid deckId, Guid cardId)
+	public async Task<Result<Card>> GetCardByIdAsync(Guid deckId, Guid cardId)
 	{
-		return (await _context.Cards
+		var cardEntity = await _context.Cards
 			.AsNoTracking()
-			.FirstOrDefaultAsync(c => c.DeckId == deckId && c.Id == cardId).ConfigureAwait(false))?.ToDomain();
+			.FirstOrDefaultAsync(c => c.DeckId == deckId && c.Id == cardId).ConfigureAwait(false);
+
+		return cardEntity is null
+			? ResultFactory.NotFound<Card>($"Card with ID {cardId} not found in deck {deckId}.")
+			: ResultFactory.Success(cardEntity.ToDomain()!);
 	}
 
-	/// <inheritdoc />
-	public async Task<IEnumerable<Card>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
+	public async Task<Result<IEnumerable<Card>>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
 	{
-		var result = _context.Cards
+		var query = _context.Cards
 			.Where(c => c.DeckId == deckId && c.NextReviewDate <= until);
 
 		if (cursor.HasValue)
 		{
-			result = result.Where(c => c.NextReviewDate > cursor);
+			query = query.Where(c => c.NextReviewDate > cursor);
 		}
 
-		return await result.OrderBy(c => c.NextReviewDate)
-		.Take(pageSize)
-		.AsNoTracking()
-		.Select(d => d.ToDomain())
-		.ToListAsync().ConfigureAwait(false);
+		var cards = await query
+			.OrderBy(c => c.NextReviewDate)
+			.Take(pageSize)
+			.AsNoTracking()
+			.Select(d => d.ToDomain())
+			.ToListAsync().ConfigureAwait(false);
+
+		return ResultFactory.Success(cards.AsEnumerable());
 	}
 
-	/// <inheritdoc />
-	public Task SaveChangesAsync() =>
-	_context.SaveChangesAsync();
-
+	public Task SaveChangesAsync() => _context.SaveChangesAsync();
 }

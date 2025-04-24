@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Repetify.crosscutting\Repetify.crosscutting.csproj" />
-    <ProjectReference Include="..\Repetify.Domain\Repetify.Domain.csproj" />
-  </ItemGroup>
 </Project>

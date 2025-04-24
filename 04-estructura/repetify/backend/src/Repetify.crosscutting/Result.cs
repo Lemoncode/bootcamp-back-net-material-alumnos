@@ -1,6 +1,4 @@
-﻿using Repetify.Application.Enums;
-
-namespace Repetify.Application.Common;
+﻿namespace Repetify.Crosscutting;
 
 /// <summary>
 /// Represents a result of a void operation, containing a status.
@@ -22,7 +20,7 @@ public class Result
 	/// </summary>
 	/// <param name="status">The status of the result.</param>
 	/// <param name="errorMessage">The error message of the result</param>
-	public Result(ResultStatus status, string? errorMessage)
+	internal Result(ResultStatus status, string? errorMessage)
 	{
 		Status = status;
 		ErrorMessage = errorMessage;
@@ -31,8 +29,13 @@ public class Result
 	/// <summary>
 	/// Initializes a new instance of the <see cref="Result"/> class with a default status of Success.
 	/// </summary>
-	public Result()
+	internal Result()
 	{
 		Status = ResultStatus.Success;
 	}
+
+	/// <summary>  
+	/// Gets a value indicating whether the result is successful.  
+	/// </summary>  
+	public bool IsSuccess => this.Status == ResultStatus.Success;
 }

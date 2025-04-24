@@ -23,7 +23,8 @@ public class UserRepositoryTests
 
 		// Assert  
 		Assert.NotNull(result);
-		Assert.Equal(user.Email, result!.Email);
+		Assert.True(result.IsSuccess);
+		Assert.Equal(user.Email, result.Value!.Email);
 	}
 
 	[Fact]
@@ -142,7 +143,7 @@ public class UserRepositoryTests
 		await repository.SaveChangesAsync();
 
 		// Assert  
-		Assert.True(result);
+		Assert.True(result.IsSuccess);
 		var deletedUser = await context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
 		Assert.Null(deletedUser);
 	}
@@ -158,6 +159,6 @@ public class UserRepositoryTests
 		var result = await repository.DeleteUserAsync(Guid.NewGuid());
 
 		// Assert  
-		Assert.False(result);
+		Assert.False(result.IsSuccess);
 	}
 }
