@@ -5,6 +5,7 @@ using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Exceptions;
+
 namespace Repetify.Application.Services;
 
 /// <summary>

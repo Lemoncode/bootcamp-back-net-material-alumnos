@@ -1,4 +1,4 @@
-﻿using Repetify.crosscutting;
+﻿using Repetify.Crosscutting;
 
 using System.Diagnostics.CodeAnalysis;
 

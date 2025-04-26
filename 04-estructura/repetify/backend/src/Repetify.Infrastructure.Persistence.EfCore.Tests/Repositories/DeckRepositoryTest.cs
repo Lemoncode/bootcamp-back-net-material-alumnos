@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+using Repetify.Crosscutting;
 using Repetify.Domain.Entities;
 using Repetify.Infrastructure.Persistence.EfCore.Context;
 using Repetify.Infrastructure.Persistence.EfCore.Repositories;
@@ -120,6 +121,7 @@ public class DeckRepositoryTests
 		var result = await repository.GetDeckByIdAsync(Guid.NewGuid());
 
 		// Assert
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 		Assert.Null(result.Value);
 	}
 
@@ -360,6 +362,7 @@ public class DeckRepositoryTests
 		var result = await repository.DeleteCardAsync(deck.Id, Guid.NewGuid());
 
 		Assert.False(result.IsSuccess);
+		Assert.Equal(ResultStatus.NotFound, result.Status);
 	}
 
 	[Fact]

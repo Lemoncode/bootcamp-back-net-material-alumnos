@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
+using Repetify.Api.Extensions;
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
-using Repetify.Api.Extensions;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authorization;
+// using Repetify.Crosscutting;
+
 using System.Security.Claims;
-using Repetify.Crosscutting;
 
 namespace Repetify.Api.Controllers;
 

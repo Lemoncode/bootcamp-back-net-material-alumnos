@@ -1,6 +1,4 @@
-﻿using Repetify.crosscutting;
-
-namespace Repetify.Crosscutting;
+﻿namespace Repetify.Crosscutting;
 
 /// <summary>
 /// Represents a result of a void operation, containing a status.
