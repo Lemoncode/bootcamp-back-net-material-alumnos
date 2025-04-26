@@ -69,11 +69,11 @@ public static class DeckExtensions
 		ArgumentNullException.ThrowIfNull(deckDto);
 
 		return new Deck(
-			name: deckDto.Name,
+			name: deckDto.Name!,
 			description: deckDto.Description,
 			userId: userId,
-			originalLanguage: deckDto.OriginalLanguage,
-			translatedLanguage: deckDto.TranslatedLanguage
+			originalLanguage: deckDto.OriginalLanguage!,
+			translatedLanguage: deckDto.TranslatedLanguage!
 		);
 	}
 }

@@ -171,20 +171,20 @@ public class DeckAppService : IDeckAppService
 	}
 
 	///  <inheritdoc/>
-	public async Task<Result<IEnumerable<CardDto>>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
+	public async Task<Result<CardsToReviewDto>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
 	{
 		if (pageSize < 1)
 		{
-			return ResultFactory.InvalidArgument<IEnumerable<CardDto>>("The page number must be greater than 0.");
+			return ResultFactory.InvalidArgument<CardsToReviewDto>("The page number must be greater than 0.");
 		}
 
 		var cardsResult = await _deckRepository.GetCardsToReview(deckId, until, pageSize, cursor).ConfigureAwait(false);
 		if (!cardsResult.IsSuccess)
 		{
-			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(cardsResult);
+			return ResultFactory.PropagateFailure<CardsToReviewDto>(cardsResult);
 		}
 		
-		return ResultFactory.Success(cardsResult.Value.ToDtoList());
+		return ResultFactory.Success(new CardsToReviewDto { Cards = cardsResult.Value.Cards.ToDtoList(), Count = cardsResult.Value.Count });
 	}
 
 	///  <inheritdoc/>

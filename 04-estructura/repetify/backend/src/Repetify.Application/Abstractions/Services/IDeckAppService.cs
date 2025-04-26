@@ -103,13 +103,13 @@ public interface IDeckAppService
 	/// <returns>A task representing the asynchronous operation.</returns>
 	Task<Result> ReviewCardAsync(Guid deckId, Guid cardId, bool isCorrect);
 
-	/// <summary>
-	/// Gets a list of cards to review from the specified deck until a certain date.
-	/// </summary>
-	/// <param name="deckId">The ID of the deck.</param>
-	/// <param name="until">The date until which to get cards for review.</param>
-	/// <param name="pageSize">The number of cards to retrieve.</param>
-	/// <param name="cursor">The cursor for pagination, representing the last retrieved card's review date.</param>
-	/// <returns>A task representing the asynchronous operation, with a result of an enumerable of card DTOs.</returns>
-	Task<Result<IEnumerable<CardDto>>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor);
+	/// <summary>  
+	/// Gets a list of cards to review from the specified deck until a certain date.  
+	/// </summary>  
+	/// <param name="deckId">The ID of the deck.</param>  
+	/// <param name="until">The date until which to get cards for review.</param>  
+	/// <param name="pageSize">The number of cards to retrieve.</param>  
+	/// <param name="cursor">The cursor for pagination, representing the last retrieved card's review date.</param>  
+	/// <returns>A task representing the asynchronous operation, with a result of a <see cref="CardsToReviewDto"/> object.</returns>
+	Task<Result<CardsToReviewDto>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor);
 }

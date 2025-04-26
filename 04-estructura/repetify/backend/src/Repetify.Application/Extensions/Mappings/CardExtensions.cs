@@ -74,8 +74,8 @@ public static class CardExtensions
 		return new Card(
 			id: cardId,
 			deckId: deckId,
-			originalWord: cardDto.OriginalWord,
-			translatedWord: cardDto.TranslatedWord
+			originalWord: cardDto.OriginalWord!,
+			translatedWord: cardDto.TranslatedWord!
 		);
 	}
 }

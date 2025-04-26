@@ -191,16 +191,21 @@ public class DeckAppServiceTests
 		var untilDate = DateTime.UtcNow;
 		var pageSize = 10;
 		var cards = new List<Card>
-			{
-				new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
-			};
+					{
+						new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
+					};
+		int? count = cards.Count;
 
-		_deckRepositoryMock.Setup(r => r.GetCardsToReview(deckId, untilDate, pageSize, null)).ReturnsAsync(ResultFactory.Success<IEnumerable<Card>>(cards));
+		_deckRepositoryMock
+			.Setup(r => r.GetCardsToReview(deckId, untilDate, pageSize, null))
+			.ReturnsAsync(ResultFactory.Success((cards.AsEnumerable(), count)));
 
 		var result = await _deckAppService.GetCardsToReview(deckId, untilDate, pageSize, null);
+		Assert.True(result.IsSuccess);
 
-		result.Value.Should().HaveCount(1);
-		result.Value.First().OriginalWord.Should().Be("Hola");
+		result.Value.Cards.Should().HaveCount(1);
+		result.Value.Cards.First().OriginalWord.Should().Be("Hola");
+		result.Value.Count.Should().Be(count);
 	}
 
 	[Fact]

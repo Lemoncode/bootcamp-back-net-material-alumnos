@@ -149,8 +149,12 @@ public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 			: ResultFactory.Success(cardEntity.ToDomain()!);
 	}
 
-	public async Task<Result<IEnumerable<Card>>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
+	public async Task<Result<(IEnumerable<Card> Cards, int? Count)>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor)
 	{
+		int? count =
+			cursor is null ? await _context.Cards.CountAsync(c => c.DeckId == deckId && c.NextReviewDate <= until).ConfigureAwait(false)
+			: null;
+
 		var query = _context.Cards
 			.Where(c => c.DeckId == deckId && c.NextReviewDate <= until);
 
@@ -166,7 +170,7 @@ public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 			.Select(d => d.ToDomain())
 			.ToListAsync().ConfigureAwait(false);
 
-		return ResultFactory.Success(cards.AsEnumerable());
+		return ResultFactory.Success((cards.AsEnumerable(), count));
 	}
 
 	public Task SaveChangesAsync() => _context.SaveChangesAsync();

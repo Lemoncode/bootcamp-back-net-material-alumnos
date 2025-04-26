@@ -74,7 +74,15 @@ public interface IDeckRepository
 	/// <param name="pageSize">The maximum number of cards to retrieve.</param>  
 	/// <param name="cursor">The optional cursor for pagination.</param>  
 	/// <returns>A <see cref="Result{T}"/> containing the list of cards to review or an error status.</returns>  
-	Task<Result<IEnumerable<Card>>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor);
+	/// <summary>  
+	/// Gets a list of cards to review.  
+	/// </summary>  
+	/// <param name="deckId">The identifier of the deck.</param>  
+	/// <param name="until">The date until which cards should be reviewed.</param>  
+	/// <param name="pageSize">The maximum number of cards to retrieve.</param>  
+	/// <param name="cursor">The optional cursor for pagination.</param>  
+	/// <returns>A <see cref="Result{T}"/> containing a tuple with the list of cards to review and an optional count, or an error status.</returns>
+	Task<Result<(IEnumerable<Card> Cards, int? Count)>> GetCardsToReview(Guid deckId, DateTime until, int pageSize, DateTime? cursor);
 
 	/// <summary>  
 	/// Adds a new card asynchronously.  
