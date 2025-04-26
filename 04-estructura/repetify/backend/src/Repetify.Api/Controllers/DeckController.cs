@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Repetify.Api.Extensions;
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
+using Repetify.Crosscutting;
+
 // using Repetify.Crosscutting;
 
 using System.Security.Claims;
