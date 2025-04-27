@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Repetify.Application.Dtos;
 
-namespace Repetify.Application.Dtos;
-
+/// <summary>  
+/// Represents the data transfer object for cards to review.  
+/// </summary>  
 public class CardsToReviewDto
 {
+	/// <summary>  
+	/// Gets or sets the count of cards to review.  
+	/// </summary>  
 	public int? Count { get; set; }
 
+	/// <summary>  
+	/// Gets or sets the collection of cards to review.  
+	/// </summary>  
 	public required IEnumerable<CardDto> Cards { get; set; }
-
 }

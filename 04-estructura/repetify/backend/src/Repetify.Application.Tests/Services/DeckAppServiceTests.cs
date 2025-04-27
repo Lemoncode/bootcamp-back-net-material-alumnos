@@ -56,7 +56,6 @@ public class DeckAppServiceTests
 		// Assert
 		result.Status.Should().Be(ResultStatus.Conflict);
 		result.ErrorMessage.Should().Be(exceptionMessage);
-		// Opcionalmente, podrías comprobar que no se llama al repositorio
 		_deckRepositoryMock.Verify(r => r.AddDeckAsync(It.IsAny<Deck>()), Times.Never);
 	}
 
