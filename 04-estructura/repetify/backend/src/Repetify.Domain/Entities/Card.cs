@@ -68,7 +68,7 @@ public class Card
 	/// <param name="nextReviewDate">The date when the card should be reviewed next.</param>
 	/// <param name="previousCorrectReview">The date of the previous correct review.</param>
 	public Card(Guid deckId, string originalWord, string translatedWord, int correctReviewStreak,
-						DateTime nextReviewDate, DateTime previousCorrectReview)
+		DateTime nextReviewDate, DateTime previousCorrectReview)
 		: this(Guid.NewGuid(),
 			  deckId,
 			  originalWord,
@@ -95,15 +95,14 @@ public class Card
 		ArgumentNullException.ThrowIfNullOrWhiteSpace(originalWord);
 		ArgumentNullException.ThrowIfNullOrWhiteSpace(translatedWord);
 
+		if (correctReviewStreak < 0)
+		{
+			ArgumentOutOfRangeException.ThrowIfNegative(correctReviewStreak);
+		}
 		Id = id;
 		DeckId = deckId;
 		OriginalWord = originalWord;
 		TranslatedWord = translatedWord;
-		if (correctReviewStreak < 0)
-		{
-			throw new ArgumentOutOfRangeException(nameof(correctReviewStreak), "The number of hits must be a number greater than or equal to zero.");
-		}
-
 		CorrectReviewStreak = correctReviewStreak;
 		NextReviewDate = nextReviewDate;
 		PreviousCorrectReview = previousCorrectReview;

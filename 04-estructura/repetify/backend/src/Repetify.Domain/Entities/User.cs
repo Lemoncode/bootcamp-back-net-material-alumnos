@@ -1,4 +1,6 @@
-﻿namespace Repetify.Domain.Entities;
+﻿using System.Net.Mail;
+
+namespace Repetify.Domain.Entities;
 
 /// <summary>  
 /// Represents a user entity with an ID, username, and email.  
@@ -29,8 +31,19 @@ public class User
 	/// <exception cref="ArgumentNullException">Thrown when <paramref name="username"/> or <paramref name="email"/> is null.</exception>  
 	public User(Guid? id, string username, string email)
 	{
+		ArgumentNullException.ThrowIfNullOrWhiteSpace(username);
+		ArgumentNullException.ThrowIfNullOrWhiteSpace(email);
+		try
+		{
+			_ = new MailAddress(email);
+		}
+		catch (FormatException)
+		{
+			throw new ArgumentException("Invalid email format", nameof(email));
+		}
+
 		Id = id ?? Guid.NewGuid();
-		Username = username ?? throw new ArgumentNullException(nameof(username));
-		Email = email ?? throw new ArgumentNullException(nameof(email));
+		Username = username;
+		Email = email;
 	}
 }

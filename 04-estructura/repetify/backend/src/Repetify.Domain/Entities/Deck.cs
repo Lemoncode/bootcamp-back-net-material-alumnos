@@ -12,7 +12,7 @@ public class Deck
 	/// <summary>
 	/// Gets or sets the unique identifier for the deck.
 	/// </summary>
-	public Guid Id { get; set; }
+	public Guid Id { get; private set; }
 
 	/// <summary>
 	/// Gets the name of the deck.

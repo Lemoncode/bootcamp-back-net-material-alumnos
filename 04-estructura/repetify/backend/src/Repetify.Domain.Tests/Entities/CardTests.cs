@@ -1,5 +1,7 @@
 ﻿using Repetify.Domain.Entities;
 
+using System;
+
 namespace Repetify.Domain.Tests.Entities;
 
 public class CardTests
@@ -29,47 +31,62 @@ public class CardTests
 	public void Card_ShouldThrowArgumentNullException_WhenOriginalWordIsNull()
 	{
 		// Act & Assert
-		Assert.Throws<ArgumentNullException>(() =>
+		var exception = Assert.Throws<ArgumentNullException>(() =>
 			new Card(Guid.NewGuid(), null!, "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+		Assert.Equal("originalWord", exception.ParamName);
 	}
 
 	[Fact]
 	public void Card_ShouldThrowArgumentException_WhenOriginalWordIsEmpty()
 	{
 		// Act & Assert
-		Assert.Throws<ArgumentException>(() =>
+		var exception = Assert.Throws<ArgumentException>(() =>
 			new Card(Guid.NewGuid(), "", "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+		Assert.Equal("originalWord", exception.ParamName);
 	}
 
 	[Fact]
 	public void Card_ShouldThrowArgumentException_WhenOriginalWordIsWhitespace()
 	{
 		// Act & Assert
-		Assert.Throws<ArgumentException>(() =>
+		var exception = Assert.Throws<ArgumentException>(() =>
 			new Card(Guid.NewGuid(), "   ", "Hello", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+		Assert.Equal("originalWord", exception.ParamName);
 	}
 
 	[Fact]
 	public void Card_ShouldThrowArgumentNullException_WhenTranslatedWordIsNull()
 	{
 		// Act & Assert
-		Assert.Throws<ArgumentNullException>(() =>
+		var exception = Assert.Throws<ArgumentNullException>(() =>
 			new Card(Guid.NewGuid(), "Hola", null!, 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+		Assert.Equal("translatedWord", exception.ParamName);
 	}
 
 	[Fact]
 	public void Card_ShouldThrowArgumentException_WhenTranslatedWordIsEmpty()
 	{
 		// Act & Assert
-		Assert.Throws<ArgumentException>(() =>
+		var exception = Assert.Throws<ArgumentException>(() =>
 			new Card(Guid.NewGuid(), "Hola", "", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+		Assert.Equal("translatedWord", exception.ParamName);
 	}
 
 	[Fact]
 	public void Card_ShouldThrowArgumentException_WhenTranslatedWordIsWhitespace()
 	{
 		// Act & Assert
-		Assert.Throws<ArgumentException>(() =>
+		var exception = Assert.Throws<ArgumentException>(() =>
 			new Card(Guid.NewGuid(), "Hola", "   ", 0, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+		Assert.Equal("translatedWord", exception.ParamName);
+	}
+
+	[Fact]
+	public void Card_ShouldThrowArgumentOutOfRangeException_WhenCorrectReviewStreakIsNegative()
+	{
+		// Act & Assert
+		var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+			new Card(Guid.NewGuid(), "Hola", "Hello", -1, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+		Assert.Equal("correctReviewStreak", exception.ParamName);
 	}
 }
