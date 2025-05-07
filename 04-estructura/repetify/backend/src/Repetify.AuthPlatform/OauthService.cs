@@ -11,7 +11,7 @@ using System.Text.Json;
 
 namespace Repetify.AuthPlatform;
 
-public class OauthService : IOauthService
+public abstract class OauthService : IOauthService
 {
 
 	private readonly IOptionsSnapshot<OauthConfig> _oauthConfig;

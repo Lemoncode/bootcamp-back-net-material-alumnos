@@ -3,35 +3,35 @@
 /// <summary>
 /// Configuration settings for OAuth authentication. This class can't be instantiated directly.
 /// </summary>
-public abstract record class OauthConfig
+public abstract class OauthConfig
 {
 	/// <summary>
-	/// Gets or sets the URL to obtain the OAuth authorization code.
+	/// The URL used to obtain the OAuth authorization code. This property is immutable after initialization.
 	/// </summary>
-	public required Uri OauthCodeUrl { get; set; }
+	public required Uri OauthCodeUrl { get; init; }
 
 	/// <summary>
-	/// Gets or sets the URL to obtain the OAuth token.
+	/// The URL used to obtain the OAuth token. This property is immutable after initialization.
 	/// </summary>
-	public required Uri OauthTokenUrl { get; set; }
+	public required Uri OauthTokenUrl { get; init; }
 
 	/// <summary>
-	/// Gets or sets the client ID for the OAuth application.
+	/// The client ID for the OAuth application. This property is immutable after initialization.
 	/// </summary>
-	public required string ClientId { get; set; }
+	public required string ClientId { get; init; }
 
 	/// <summary>
-	/// Gets or sets the client secret for the OAuth application.
+	/// The client secret for the OAuth application. This property is immutable after initialization.
 	/// </summary>
-	public required string ClientSecret { get; set; }
+	public required string ClientSecret { get; init; }
 
 	/// <summary>
-	/// Gets or sets the redirect URI for the OAuth application.
+	/// The redirect URI for the OAuth application. This property is immutable after initialization.
 	/// </summary>
-	public required Uri RedirectUri { get; set; }
+	public required Uri RedirectUri { get; init; }
 
 	/// <summary>
-	/// Gets or sets the scopes for the OAuth application.
+	/// The scopes for the OAuth application. This property is immutable after initialization.
 	/// </summary>
-	public required string[] Scopes { get; set; }
+	public required string[] Scopes { get; init; }
 }

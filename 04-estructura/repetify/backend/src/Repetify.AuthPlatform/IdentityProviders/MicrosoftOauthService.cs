@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Repetify.AuthPlatform.IdentityProviders;
 
-public class MicrosoftOauthService : OauthService, IMicrosoftOauthService
+public sealed class MicrosoftOauthService : OauthService, IMicrosoftOauthService
 {
 
 	private static JsonSerializerOptions _jsonSerializationOptions = new JsonSerializerOptions

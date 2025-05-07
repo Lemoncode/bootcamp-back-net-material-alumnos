@@ -33,15 +33,15 @@ public class CardReviewService : ICardReviewService
 		if (isCorrect)
 		{
 			card.SetCorrectReviewStreak(card.CorrectReviewStreak + 1);
-			card.SetPreviousCorrectReview(_clock.UtcNow);
+			card.SetPreviousCorrectReview(_clock.UtcNow, _clock.UtcNow);
 
 			// Adjust next review date based on streak
-			card.SetNextReviewDate(CalculateNextReviewDate(card));
+			card.SetNextReviewDate(CalculateNextReviewDate(card), _clock.UtcNow);
 		}
 		else
 		{
 			card.SetCorrectReviewStreak(0);
-			card.SetNextReviewDate(_clock.UtcNow.AddDays(1)); // Reset to review tomorrow
+			card.SetNextReviewDate(_clock.UtcNow.AddDays(1), _clock.UtcNow); // Reset to review tomorrow
 		}
 	}
 

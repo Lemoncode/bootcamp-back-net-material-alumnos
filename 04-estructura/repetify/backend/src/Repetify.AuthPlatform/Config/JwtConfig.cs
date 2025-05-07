@@ -3,7 +3,7 @@
 /// <summary>
 /// Configuration settings for JWT authentication.
 /// </summary>
-public record class JwtConfig
+public class JwtConfig
 {
 	/// <summary>
 	/// The configuration section name for JWT settings.
@@ -13,15 +13,15 @@ public record class JwtConfig
 	/// <summary>
 	/// Gets or sets the audience for the JWT.
 	/// </summary>
-	public required string Audience { get; set; }
+	public required string Audience { get; init; }
 
 	/// <summary>
 	/// Gets or sets the signing key for the JWT.
 	/// </summary>
-	public required string SigningKey { get; set; }
+	public required string SigningKey { get; init; }
 
 	/// <summary>
 	/// Gets or sets the issuer of the JWT.
 	/// </summary>
-	public required string Issuer { get; set; }
+	public required string Issuer { get; init; }
 }

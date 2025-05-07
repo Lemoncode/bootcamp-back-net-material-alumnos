@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Repetify.AuthPlatform.IdentityProviders;
 
-public class GoogleOauthService : OauthService, IGoogleOauthService
+public sealed class GoogleOauthService : OauthService, IGoogleOauthService
 {
 
 	public GoogleOauthService(IOptionsSnapshot<GoogleOauthConfig> oauthConfig, IHttpClientFactory httpClientFactory) : base(oauthConfig, httpClientFactory)

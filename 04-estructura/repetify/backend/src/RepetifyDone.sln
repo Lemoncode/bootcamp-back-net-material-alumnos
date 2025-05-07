@@ -21,17 +21,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06. Tests", "06. Tests", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. UnitTests", "01. UnitTests", "{D6E0924A-DD98-4412-93BC-9715BBC17875}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Domain.Tests", "Repetify.Domain.Tests\Repetify.Domain.Tests.csproj", "{D3AFAA25-A359-4C02-AD38-A783395A990E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Domain.UnitTests", "Repetify.Domain.UnitTests\Repetify.Domain.UnitTests.csproj", "{D3AFAA25-A359-4C02-AD38-A783395A990E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Infrastructure.Persistence.EfCore", "Repetify.Infrastructure.Persistence.EfCore\Repetify.Infrastructure.Persistence.EfCore.csproj", "{765BF3F3-D73F-4F99-A2C5-98E88D8399B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Application", "Repetify.Application\Repetify.Application.csproj", "{87B9E693-26B9-406E-BC4B-9B4804CDCAC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Infrastructure.Persistence.EfCore.Tests", "Repetify.Infrastructure.Persistence.EfCore.Tests\Repetify.Infrastructure.Persistence.EfCore.Tests.csproj", "{B1851CDD-0566-4502-A359-6EC38D5A176F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Infrastructure.Persistence.EfCore.UnitTests", "Repetify.Infrastructure.Persistence.EfCore.UnitTests\Repetify.Infrastructure.Persistence.EfCore.UnitTests.csproj", "{B1851CDD-0566-4502-A359-6EC38D5A176F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Infrastructure", "Repetify.Infrastructure\Repetify.Infrastructure.csproj", "{32F7E9AD-1DED-44A5-8888-56E1DF91B4E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Application.Tests", "Repetify.Application.Tests\Repetify.Application.Tests.csproj", "{0A99739D-7749-470E-88A8-B995FA967373}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repetify.Application.UnitTests", "Repetify.Application.UnitTests\Repetify.Application.UnitTests.csproj", "{0A99739D-7749-470E-88A8-B995FA967373}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".default", ".default", "{1A4AA235-1C57-439C-A78C-10621A580DF5}"
 	ProjectSection(SolutionItems) = preProject
@@ -105,5 +105,8 @@ Global
 		{0A99739D-7749-470E-88A8-B995FA967373} = {D6E0924A-DD98-4412-93BC-9715BBC17875}
 		{8136D6B1-8DBA-4358-A18F-0E2AE3EED078} = {9130B2F1-DB42-4F35-8836-6711FF71F3D4}
 		{888C0C53-62DF-4BAE-9A96-E42C4623643B} = {03C78BDF-AEDB-4312-92D5-761B259E9E91}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {03DF92F9-7090-46DB-8602-FEC236C86213}
 	EndGlobalSection
 EndGlobal

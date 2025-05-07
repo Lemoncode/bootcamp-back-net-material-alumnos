@@ -9,7 +9,7 @@ namespace Repetify.AuthPlatform.Config.Microsoft;
 /// <summary>
 /// Configuration settings for Microsoft OAuth.
 /// </summary>
-public record class MicrosoftOauthConfig : OauthConfig
+public class MicrosoftOauthConfig : OauthConfig
 {
 	/// <summary>
 	/// The configuration section name for Microsoft SSO.
