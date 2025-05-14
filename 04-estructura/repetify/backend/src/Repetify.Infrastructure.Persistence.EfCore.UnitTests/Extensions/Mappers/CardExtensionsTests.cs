@@ -122,14 +122,35 @@ public class CardExtensionsTests
 		Assert.Equal(updatedCard.PreviousCorrectReview, cardEntity.PreviousCorrectReview);
 	}
 
-	[Fact]
-	public void UpdateFromDomain_ShouldThrowArgumentNullException_WhenParametersAreNull()
+	[Theory]
+	[InlineData(true, false)]
+	[InlineData(false, true)]
+	public void UpdateFromDomain_ShouldThrowArgumentNullException_WhenInputIsNull(bool dataEntityIsNull, bool domainEntityIsNull)
 	{
-		// Arrange  
-		CardEntity? nullEntity = null;
-		Card? nullCard = null;
+		// Arrange
+		CardEntity? cardEntity = dataEntityIsNull ? null : new CardEntity
+		{
+			Id = Guid.NewGuid(),
+			DeckId = Guid.NewGuid(),
+			OriginalWord = "Hola",
+			TranslatedWord = "Hello",
+			CorrectReviewStreak = 2,
+			NextReviewDate = DateTime.UtcNow.AddDays(1),
+			PreviousCorrectReview = DateTime.UtcNow.AddDays(-1)
+		};
 
-		// Act & Assert  
-		Assert.Throws<ArgumentNullException>(() => nullEntity!.UpdateFromDomain(nullCard!));
+		Card? updatedCard = domainEntityIsNull ? null : new Card(
+			id: Guid.NewGuid(),
+			deckId: Guid.NewGuid(),
+			originalWord: "Bonjour",
+			translatedWord: "Hi",
+			correctReviewStreak: 5,
+			nextReviewDate: DateTime.UtcNow.AddDays(3),
+			previousCorrectReview: DateTime.UtcNow.AddDays(-2)
+		);
+
+		// Act & Assert
+		var exception = Assert.Throws<ArgumentNullException>(() => cardEntity!.UpdateFromDomain(updatedCard!));
+		Assert.Equal(dataEntityIsNull ?  "cardEntity" : "card", exception.ParamName);
 	}
 }

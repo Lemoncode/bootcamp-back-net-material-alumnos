@@ -116,10 +116,7 @@ public class Card
 	/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="nextReviewDate"/> is in the past relative to <paramref name="currentDate"/>.</exception>
 	public void SetNextReviewDate(DateTime nextReviewDate, DateTime? currentDate = null)
 	{
-		if (currentDate is null)
-		{
-			currentDate = DateTime.UtcNow;
-		}
+		currentDate ??= DateTime.UtcNow;
 
 		if (nextReviewDate < currentDate)
 		{
@@ -137,11 +134,8 @@ public class Card
 	/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="previousCorrectReview"/> is in the future relative to <paramref name="currentDate"/>.</exception>
 	public void SetPreviousCorrectReview(DateTime previousCorrectReview, DateTime? currentDate = null)
 	{
-		if (currentDate is null)
-		{
-			currentDate = DateTime.UtcNow;
-		}
-
+		currentDate ??= DateTime.UtcNow;
+		
 		if (previousCorrectReview > currentDate)
 		{
 			throw new ArgumentOutOfRangeException(nameof(previousCorrectReview), "Previous correct review date cannot be in the future.");

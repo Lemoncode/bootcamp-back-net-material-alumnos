@@ -82,6 +82,64 @@ public class DeckExtensionsTests
 		// Act & Assert
 		Assert.Throws<ArgumentNullException>(() => nullEntity!.ToDomain());
 	}
+	[Fact]
+	public void UpdateFromDomain_ShouldUpdateCorrectly()
+	{
+		// Arrange
+		var deckEntity = new DeckEntity
+		{
+			Id = Guid.NewGuid(),
+			Name = "Old Name",
+			Description = "Old Description",
+			UserId = Guid.NewGuid(),
+			OriginalLanguage = "Old Language",
+			TranslatedLanguage = "Old Translated Language"
+		};
 
+		var deckDomain = new Deck(
+			id: deckEntity.Id,
+			name: "Updated Name",
+			description: "Updated Description",
+			userId: deckEntity.UserId,
+			originalLanguage: "Updated Language",
+			translatedLanguage: "Updated Translated Language"
+		);
 
+		// Act
+		deckEntity.UpdateFromDomain(deckDomain);
+
+		// Assert
+		Assert.Equal(deckDomain.Id, deckEntity.Id);
+		Assert.Equal(deckDomain.Name, deckEntity.Name);
+		Assert.Equal(deckDomain.Description, deckEntity.Description);
+		Assert.Equal(deckDomain.UserId, deckEntity.UserId);
+		Assert.Equal(deckDomain.OriginalLanguage, deckEntity.OriginalLanguage);
+		Assert.Equal(deckDomain.TranslatedLanguage, deckEntity.TranslatedLanguage);
+	}
+
+	[Theory]
+	[InlineData(true, false)]
+	[InlineData(false, true)]
+	public void UpdateFromDomain_ShouldThrowArgumentNullException_WhenInputIsNull(bool dataEntityIsNull, bool domainIsNull)
+	{
+		// Arrange
+		DeckEntity? deckEntity = !dataEntityIsNull? new DeckEntity
+		{
+			Name = "Deck test",
+			OriginalLanguage = "English",
+			TranslatedLanguage = "Spanish",
+		} : null;
+		Deck? deck = !domainIsNull ? new Deck(
+			id: Guid.NewGuid(),
+			name: "Test Name",
+			description: "Test Description",
+			userId: Guid.NewGuid(),
+			originalLanguage: "English",
+			translatedLanguage: "English"
+		) : null;
+
+		// Act & Assert
+		var exception = Assert.Throws<ArgumentNullException>(() => deckEntity!.UpdateFromDomain(deck!));
+		Assert.Equal(exception.ParamName, domainIsNull ? nameof(deck) : nameof(deckEntity));
+	}
 }
