@@ -12,7 +12,7 @@ public interface IDeckRepository
 	/// Adds a new deck asynchronously.  
 	/// </summary>  
 	/// <param name="deck">The deck to add.</param>  
-	Task AddDeckAsync(Deck deck);
+	Task<Result> AddDeckAsync(Deck deck);
 
 	/// <summary>  
 	/// Deletes a deck asynchronously by its identifier.  
@@ -88,7 +88,7 @@ public interface IDeckRepository
 	/// Adds a new card asynchronously.  
 	/// </summary>  
 	/// <param name="card">The card to add.</param>  
-	Task AddCardAsync(Card card);
+	Task<Result> AddCardAsync(Card card);
 
 	/// <summary>  
 	/// Updates an existing card.  

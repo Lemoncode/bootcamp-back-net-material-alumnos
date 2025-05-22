@@ -21,11 +21,12 @@ public class DeckRepositoryTests
 		var deck = new Deck(Guid.NewGuid(), "Test Deck", "Test Description", Guid.NewGuid(), "EN", "ES");
 
 		// Act
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
+		
+		var storedDeck = await dbContext.Decks.FirstOrDefaultAsync(d => d.Id == deck.Id);
 
 		// Assert
-		var storedDeck = await dbContext.Decks.FirstOrDefaultAsync(d => d.Id == deck.Id);
 		Assert.NotNull(storedDeck);
 		Assert.Equal(deck.Name, storedDeck.Name);
 		Assert.Equal(deck.OriginalLanguage, storedDeck.OriginalLanguage);
@@ -39,12 +40,12 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Original Name", "Original Description", Guid.NewGuid(), "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
 		deck = new Deck(deck.Id, "Updated Name", "Updated Description", deck.UserId, deck.OriginalLanguage, deck.TranslatedLanguage);
-		await repository.UpdateDeckAsync(deck);
+		EnsureSuccess(await repository.UpdateDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Assert
@@ -62,7 +63,7 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Deck to delete", "Test", Guid.NewGuid(), "EN", "FR");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -97,7 +98,7 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Spanish Deck", "Learning Spanish", Guid.NewGuid(), "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -136,8 +137,8 @@ public class DeckRepositoryTests
 		var deck1 = new Deck(Guid.NewGuid(), "Deck 1", "Description 1", userId, "EN", "FR");
 		var deck2 = new Deck(Guid.NewGuid(), "Deck 2", "Description 2", userId, "EN", "ES");
 
-		await repository.AddDeckAsync(deck1);
-		await repository.AddDeckAsync(deck2);
+		EnsureSuccess(await repository.AddDeckAsync(deck1));
+		EnsureSuccess(await repository.AddDeckAsync(deck2));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -183,8 +184,8 @@ public class DeckRepositoryTests
 		var deck1 = new Deck(Guid.NewGuid(), "Deck 1", "Description 1", userId1, "EN", "FR");
 		var deck2 = new Deck(Guid.NewGuid(), "Deck 2", "Description 2", userId2, "EN", "ES");
 
-		await repository.AddDeckAsync(deck1);
-		await repository.AddDeckAsync(deck2);
+		EnsureSuccess(await repository.AddDeckAsync(deck1));
+		EnsureSuccess(await repository.AddDeckAsync(deck2));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -216,7 +217,7 @@ public class DeckRepositoryTests
 
 		foreach (var deck in decks)
 		{
-			await repository.AddDeckAsync(deck);
+			EnsureSuccess(await repository.AddDeckAsync(deck));
 		}
 		await repository.SaveChangesAsync();
 
@@ -239,14 +240,14 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Test Deck", "Test Description", Guid.NewGuid(), "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		var card1 = new Card(Guid.NewGuid(), deck.Id, "Word1", "Translation1");
 		var card2 = new Card(Guid.NewGuid(), deck.Id, "Word2", "Translation2");
 
-		await repository.AddCardAsync(card1);
-		await repository.AddCardAsync(card2);
+		EnsureSuccess(await repository.AddCardAsync(card1));
+		EnsureSuccess(await repository.AddCardAsync(card2));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -266,11 +267,11 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Test Deck", "Test Description", Guid.NewGuid(), "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
-		await repository.AddCardAsync(new Card(Guid.NewGuid(), deck.Id, "Word1", "Translation1"));
-		await repository.AddCardAsync(new Card(Guid.NewGuid(), deck.Id, "Word2", "Translation2"));
+		EnsureSuccess(await repository.AddCardAsync(new Card(Guid.NewGuid(), deck.Id, "Word1", "Translation1")));
+		EnsureSuccess(await repository.AddCardAsync(new Card(Guid.NewGuid(), deck.Id, "Word2", "Translation2")));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -287,12 +288,12 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Vocabulary", "Spanish words", Guid.NewGuid(), "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		var card = new Card(Guid.NewGuid(), deck.Id, "Hola", "Hello");
 
-		await repository.AddCardAsync(card);
+		EnsureSuccess(await repository.AddCardAsync(card));
 		await repository.SaveChangesAsync();
 
 		var storedCard = await dbContext.Cards.FirstOrDefaultAsync(c => c.OriginalWord == "Hola");
@@ -308,16 +309,16 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Test Deck", "Test Description", Guid.NewGuid(), "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		var card = new Card(Guid.NewGuid(), deck.Id, "Original Word", "Original Translation");
-		await repository.AddCardAsync(card);
+		EnsureSuccess(await repository.AddCardAsync(card));
 		await repository.SaveChangesAsync();
 
 		// Act
 		card = new Card(card.Id, card.DeckId, "Updated Word", "Updated Translation", card.CorrectReviewStreak, card.NextReviewDate, card.PreviousCorrectReview);
-		await repository.UpdateCardAsync(card);
+		EnsureSuccess(await repository.UpdateCardAsync(card));
 		await repository.SaveChangesAsync();
 
 		// Assert
@@ -334,11 +335,11 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Languages", "Learning French", Guid.NewGuid(), "EN", "FR");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		var card = new Card(Guid.NewGuid(), deck.Id, "Chat", "Cat");
-		await repository.AddCardAsync(card);
+		EnsureSuccess(await repository.AddCardAsync(card));
 		await repository.SaveChangesAsync();
 
 		var result = await repository.DeleteCardAsync(deck.Id, card.Id);
@@ -356,7 +357,7 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Practice", "Deck for tests", Guid.NewGuid(), "EN", "IT");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		var result = await repository.DeleteCardAsync(deck.Id, Guid.NewGuid());
@@ -373,12 +374,12 @@ public class DeckRepositoryTests
 		var repository = new DeckRepository(dbContext);
 
 		var deck = new Deck(Guid.NewGuid(), "Words", "Deck description", Guid.NewGuid(), "EN", "DE");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
 		var card = new Card(Guid.NewGuid(), deck.Id, "Auto", "Car");
-		await repository.AddCardAsync(card);
+		EnsureSuccess(await repository.AddCardAsync(card));
 		await repository.SaveChangesAsync();
 
 		var retrievedCardResult = await repository.GetCardByIdAsync(deck.Id, card.Id);
@@ -400,7 +401,7 @@ public class DeckRepositoryTests
 		var name = "should be unique";
 		var deck = new Deck(Guid.NewGuid(), name, "Description", userId, "EN", "ES");
 		var deckToTest = new Deck(Guid.NewGuid(), name, "Description", userId, "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -420,7 +421,7 @@ public class DeckRepositoryTests
 		var name = "should be unique";
 		var deck = new Deck(Guid.NewGuid(), name, "Description", Guid.NewGuid(), "EN", "ES");
 		var deckToTest = new Deck(Guid.NewGuid(), name, "Description", Guid.NewGuid(), "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -438,7 +439,7 @@ public class DeckRepositoryTests
 		var userId = Guid.NewGuid();
 		var repository = new DeckRepository(dbContext);
 		var deck = new Deck(Guid.NewGuid(), "Existing Deck", "Description", userId, "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -457,7 +458,7 @@ public class DeckRepositoryTests
 
 		var userId = Guid.NewGuid();
 		var deck = new Deck(Guid.NewGuid(), "Existing Deck", "Description", userId, "EN", "ES");
-		await repository.AddDeckAsync(deck);
+		EnsureSuccess(await repository.AddDeckAsync(deck));
 		await repository.SaveChangesAsync();
 
 		// Act
@@ -465,5 +466,10 @@ public class DeckRepositoryTests
 
 		// Assert
 		Assert.False(exists);
+	}
+
+	private static void EnsureSuccess(Result result)
+	{
+		Assert.True(result.IsSuccess, result.ErrorMessage);
 	}
 }

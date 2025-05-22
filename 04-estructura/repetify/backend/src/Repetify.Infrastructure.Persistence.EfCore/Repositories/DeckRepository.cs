@@ -12,9 +12,10 @@ public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 {
 	private readonly RepetifyDbContext _context = dbContext;
 
-	public async Task AddDeckAsync(Deck deck)
+	public async Task<Result> AddDeckAsync(Deck deck)
 	{
 		await _context.Decks.AddAsync(deck.ToDataEntity()).ConfigureAwait(false);
+		return ResultFactory.Success();
 	}
 
 	public async Task<Result> UpdateDeckAsync(Deck deck)
@@ -78,11 +79,12 @@ public class DeckRepository(RepetifyDbContext dbContext) : RepositoryBase(dbCont
 		return _context.Decks.AnyAsync(d => d.Name == name && d.UserId == userId && d.Id != deckId);
 	}
 
-	public async Task AddCardAsync(Card card)
+	public async Task<Result> AddCardAsync(Card card)
 	{
 		ArgumentNullException.ThrowIfNull(card);
 		var cardEntity = CardExtensions.ToDataEntity(card);
 		await _context.Cards.AddAsync(cardEntity).ConfigureAwait(false);
+		return ResultFactory.Success();
 	}
 
 	public async Task<Result> UpdateCardAsync(Card card)
