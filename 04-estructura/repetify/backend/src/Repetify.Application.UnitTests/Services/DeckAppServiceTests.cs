@@ -9,7 +9,6 @@ using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
-using Repetify.Domain.Exceptions;
 
 namespace Repetify.Application.Tests.Services;
 
@@ -24,7 +23,7 @@ public class DeckAppServiceTests
 	{
 		_deckValidatorMock = new Mock<IDeckValidator>();
 		_reviewCardServiceMock = new Mock<ICardReviewService>();
-		_deckValidatorMock.Setup(m => m.EnsureIsValid(It.IsAny<Deck>())).Returns(Task.CompletedTask);
+		_deckValidatorMock.Setup(m => m.EnsureIsValid(It.IsAny<Deck>())).ReturnsAsync(ResultFactory.Success());
 		_deckRepositoryMock = new Mock<IDeckRepository>();
 		_deckAppService = new DeckAppService(_deckValidatorMock.Object, _reviewCardServiceMock.Object, _deckRepositoryMock.Object);
 	}
@@ -34,6 +33,7 @@ public class DeckAppServiceTests
 	{
 		var deckDto = CreateFakeAddOrUpdateDeck();
 
+		_deckRepositoryMock.Setup(m => m.AddDeckAsync(It.IsAny<Deck>())).ReturnsAsync(ResultFactory.Success());
 		await _deckAppService.AddDeckAsync(deckDto, Guid.NewGuid());
 
 		_deckRepositoryMock.Verify(r => r.AddDeckAsync(It.IsAny<Deck>()), Times.Once);
@@ -45,17 +45,15 @@ public class DeckAppServiceTests
 	{
 		// Arrange
 		var deckDto = CreateFakeAddOrUpdateDeck();
-		var exceptionMessage = "Deck already exists!";
 		_deckValidatorMock
 			.Setup(v => v.EnsureIsValid(It.IsAny<Deck>()))
-			.ThrowsAsync(new EntityExistsException(exceptionMessage));
+			.ReturnsAsync(ResultFactory.Conflict("Deck already exists"));
 
 		// Act
 		var result = await _deckAppService.AddDeckAsync(deckDto, Guid.NewGuid());
 
 		// Assert
 		result.Status.Should().Be(ResultStatus.Conflict);
-		result.ErrorMessage.Should().Be(exceptionMessage);
 		_deckRepositoryMock.Verify(r => r.AddDeckAsync(It.IsAny<Deck>()), Times.Never);
 	}
 
@@ -80,7 +78,7 @@ public class DeckAppServiceTests
 		var exceptionMessage = "Deck name already in use!";
 		_deckValidatorMock
 			.Setup(v => v.EnsureIsValid(It.IsAny<Deck>()))
-			.ThrowsAsync(new EntityExistsException(exceptionMessage));
+			.ReturnsAsync(ResultFactory.Conflict(exceptionMessage));
 
 		// Act
 		var result = await _deckAppService.UpdateDeckAsync(deckDto, Guid.NewGuid());
@@ -160,7 +158,7 @@ public class DeckAppServiceTests
 	public async Task ReviewCardAsync_Should_Update_Card_And_SaveChanges_When_Card_Exists()
 	{
 		var deckId = Guid.NewGuid();
-		var card = new Card(deckId, "Hola", "Hello", 3, DateTime.UtcNow, DateTime.UtcNow);
+		var card = new Card(deckId, "Hola", "Hello", 3, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(-1));
 		_deckRepositoryMock.Setup(r => r.GetCardByIdAsync(deckId, card.Id)).ReturnsAsync(ResultFactory.Success(card));
 
 		await _deckAppService.ReviewCardAsync(deckId, card.Id, true);
@@ -191,7 +189,7 @@ public class DeckAppServiceTests
 		var pageSize = 10;
 		var cards = new List<Card>
 					{
-						new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow, DateTime.UtcNow)
+						new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(-1))
 					};
 		int? count = cards.Count;
 
@@ -228,7 +226,7 @@ public class DeckAppServiceTests
 	public async Task GetCardCountAsync_Should_Return_Correct_Count()
 	{
 		var deckId = Guid.NewGuid();
-		_deckRepositoryMock.Setup(r => r.GetCardCountAsync(deckId)).ReturnsAsync(5);
+		_deckRepositoryMock.Setup(r => r.GetCardCountAsync(deckId)).ReturnsAsync(ResultFactory.Success(5));
 
 		var result = await _deckAppService.GetCardCountAsync(deckId);
 

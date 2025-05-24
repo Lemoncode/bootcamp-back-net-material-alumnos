@@ -7,7 +7,6 @@ using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
-using Repetify.Domain.Exceptions;
 
 namespace Repetify.Application.Tests.Services;
 
@@ -30,8 +29,8 @@ public class UserAppServiceTests
 		// Arrange  
 		var userDto = new AddOrEditUserDto { Username = "testuser", Email = "test@example.com" };
 		var user = new User(Guid.NewGuid(), userDto.Username, userDto.Email);
-		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).Returns(Task.CompletedTask);
-		_userRepositoryMock.Setup(r => r.AddUserAsync(It.IsAny<User>())).Returns(Task.CompletedTask);
+		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
+		_userRepositoryMock.Setup(r => r.AddUserAsync(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
 		_userRepositoryMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 
 		// Act  
@@ -47,7 +46,7 @@ public class UserAppServiceTests
 	{
 		// Arrange  
 		var userDto = new AddOrEditUserDto { Username = "testuser", Email = "test@example.com" };
-		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ThrowsAsync(new EntityExistsException("User already exists."));
+		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Conflict("User already exists."));
 
 		// Act  
 		var result = await _userAppService.AddUserAsync(userDto);
@@ -94,8 +93,8 @@ public class UserAppServiceTests
 		// Arrange  
 		var userId = Guid.NewGuid();
 		var userDto = new AddOrEditUserDto { Username = "updateduser", Email = "updated@example.com" };
-		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).Returns(Task.CompletedTask);
-		_userRepositoryMock.Setup(r => r.UpdateUserAsync(It.IsAny<User>())).Returns(Task.CompletedTask);
+		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
+		_userRepositoryMock.Setup(r => r.UpdateUserAsync(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
 		_userRepositoryMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 
 		// Act  
@@ -111,7 +110,7 @@ public class UserAppServiceTests
 		// Arrange  
 		var userId = Guid.NewGuid();
 		var userDto = new AddOrEditUserDto { Username = "updateduser", Email = "updated@example.com" };
-		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ThrowsAsync(new EntityExistsException("User already exists."));
+		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Conflict("User already exists."));
 
 		// Act  
 		var result = await _userAppService.UpdateUserAsync(userDto, userId);

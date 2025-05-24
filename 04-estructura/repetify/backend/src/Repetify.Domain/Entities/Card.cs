@@ -104,6 +104,7 @@ public class Card
 		DeckId = deckId;
 		OriginalWord = originalWord;
 		TranslatedWord = translatedWord;
+		CorrectReviewStreak = correctReviewStreak;
 		NextReviewDate = nextReviewDate;
 		PreviousCorrectReview = previousCorrectReview;
 	}
