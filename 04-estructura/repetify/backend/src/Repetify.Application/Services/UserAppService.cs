@@ -27,7 +27,7 @@ public class UserAppService : IUserAppService
 		_userValidator = validator;
 	}
 
-	public async Task<Result<Guid>> AddUserAsync(AddOrEditUserDto user)
+	public async Task<Result<Guid>> AddUserAsync(AddOrUpdateUserDto user)
 	{
 		var userDomain = user.ToEntity();
 		var validatorResult = await _userValidator.EnsureIsValid(userDomain).ConfigureAwait(false);
@@ -57,7 +57,7 @@ public class UserAppService : IUserAppService
 		return deletedResult;
 	}
 
-	public async Task<Result> UpdateUserAsync(AddOrEditUserDto user, Guid userId)
+	public async Task<Result> UpdateUserAsync(AddOrUpdateUserDto user, Guid userId)
 	{
 		var userDomain = user.ToEntity(userId);
 		var validatorResult = await _userValidator.EnsureIsValid(userDomain).ConfigureAwait(false);

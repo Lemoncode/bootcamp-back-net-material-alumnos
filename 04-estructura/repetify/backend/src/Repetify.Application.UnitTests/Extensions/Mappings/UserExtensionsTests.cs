@@ -92,7 +92,7 @@ public class UserExtensionsTests
 	public void ToEntity_WithAddOrEditUserDto_ShouldConvertToUser()
 	{
 		// Arrange  
-		var addOrEditUserDto = new AddOrEditUserDto
+		var addOrEditUserDto = new AddOrUpdateUserDto
 		{
 			Username = "TestUser",
 			Email = "test@example.com"

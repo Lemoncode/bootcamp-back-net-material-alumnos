@@ -27,7 +27,7 @@ public class UserAppServiceTests
 	public async Task AddUserAsync_ShouldReturnSuccess_WhenUserIsValid()
 	{
 		// Arrange  
-		var userDto = new AddOrEditUserDto { Username = "testuser", Email = "test@example.com" };
+		var userDto = new AddOrUpdateUserDto { Username = "testuser", Email = "test@example.com" };
 		var user = new User(Guid.NewGuid(), userDto.Username, userDto.Email);
 		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
 		_userRepositoryMock.Setup(r => r.AddUserAsync(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
@@ -45,7 +45,7 @@ public class UserAppServiceTests
 	public async Task AddUserAsync_ShouldReturnConflict_WhenUserAlreadyExists()
 	{
 		// Arrange  
-		var userDto = new AddOrEditUserDto { Username = "testuser", Email = "test@example.com" };
+		var userDto = new AddOrUpdateUserDto { Username = "testuser", Email = "test@example.com" };
 		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Conflict("User already exists."));
 
 		// Act  
@@ -92,7 +92,7 @@ public class UserAppServiceTests
 	{
 		// Arrange  
 		var userId = Guid.NewGuid();
-		var userDto = new AddOrEditUserDto { Username = "updateduser", Email = "updated@example.com" };
+		var userDto = new AddOrUpdateUserDto { Username = "updateduser", Email = "updated@example.com" };
 		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
 		_userRepositoryMock.Setup(r => r.UpdateUserAsync(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
 		_userRepositoryMock.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
@@ -109,7 +109,7 @@ public class UserAppServiceTests
 	{
 		// Arrange  
 		var userId = Guid.NewGuid();
-		var userDto = new AddOrEditUserDto { Username = "updateduser", Email = "updated@example.com" };
+		var userDto = new AddOrUpdateUserDto { Username = "updateduser", Email = "updated@example.com" };
 		_userValidatorMock.Setup(v => v.EnsureIsValid(It.IsAny<User>())).ReturnsAsync(ResultFactory.Conflict("User already exists."));
 
 		// Act  

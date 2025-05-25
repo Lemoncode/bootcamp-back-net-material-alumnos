@@ -61,7 +61,7 @@ public static class UserExtensions
 	/// <param name="userId">The unique identifier for the User entity.</param>  
 	/// <returns>A User domain entity representing the AddOrEditUserDto.</returns>  
 	/// <exception cref="ArgumentNullException">Thrown when the addOrEditUserDto is null.</exception>  
-	public static User ToEntity(this AddOrEditUserDto addOrEditUserDto, Guid? userId = null)
+	public static User ToEntity(this AddOrUpdateUserDto addOrEditUserDto, Guid? userId = null)
 	{
 		ArgumentNullException.ThrowIfNull(addOrEditUserDto);
 
