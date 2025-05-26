@@ -141,7 +141,7 @@ public class DeckExtensionsTests
 		var userId = Guid.NewGuid();
 
 		// Act & Assert
-		Assert.Throws<ArgumentNullException>(() => dto.ToEntity(userId));
+		Assert.Throws<ArgumentNullException>(() => dto.ToEntity(userId, null));
 	}
 
 	#endregion
