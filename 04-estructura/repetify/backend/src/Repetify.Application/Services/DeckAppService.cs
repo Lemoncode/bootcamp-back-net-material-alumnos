@@ -1,6 +1,6 @@
 ﻿using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;
-using Repetify.Application.Extensions.Mappings;
+using Repetify.Application.Extensions.Mappers;
 using Repetify.Crosscutting;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;

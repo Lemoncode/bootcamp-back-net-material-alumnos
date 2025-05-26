@@ -1,7 +1,7 @@
 ﻿using Repetify.Application.Dtos;
 using Repetify.Domain.Entities;
 
-namespace Repetify.Application.Extensions.Mappings;
+namespace Repetify.Application.Extensions.Mappers;
 
 /// <summary>
 /// Provides extension methods for mapping User domain entities to UserDto objects and vice versa.

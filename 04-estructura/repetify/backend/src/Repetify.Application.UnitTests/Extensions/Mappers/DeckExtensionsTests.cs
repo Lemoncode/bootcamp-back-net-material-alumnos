@@ -1,5 +1,5 @@
 ﻿using Repetify.Application.Dtos;
-using Repetify.Application.Extensions.Mappings;
+using Repetify.Application.Extensions.Mappers;
 using Repetify.Domain.Entities;
 
 using Xunit;
