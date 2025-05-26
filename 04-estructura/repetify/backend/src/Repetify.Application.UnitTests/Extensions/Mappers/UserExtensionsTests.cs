@@ -4,7 +4,7 @@ using Repetify.Domain.Entities;
 
 using Xunit;
 
-namespace Repetify.Application.Tests.Extensions.Mappings;
+namespace Repetify.Application.UnitTests.Extensions.Mappers;
 
 public class UserExtensionsTests
 {

@@ -53,9 +53,9 @@ public class DeckAppService : IDeckAppService
 	}
 
 	///  <inheritdoc/>
-	public async Task<Result> UpdateDeckAsync(AddOrUpdateDeckDto deck, Guid userId)
+	public async Task<Result> UpdateDeckAsync(Guid deckId, AddOrUpdateDeckDto deck, Guid userId)
 	{
-		var deckDomain = deck.ToEntity(userId);
+		var deckDomain = deck.ToEntity(userId, deckId);
 		var validatorResult = await _deckValidator.EnsureIsValid(deckDomain).ConfigureAwait(false);
 
 		if (!validatorResult.IsSuccess)

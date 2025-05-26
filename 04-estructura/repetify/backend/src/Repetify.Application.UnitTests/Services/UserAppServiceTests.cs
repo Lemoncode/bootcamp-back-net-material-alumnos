@@ -8,7 +8,7 @@ using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
 
-namespace Repetify.Application.Tests.Services;
+namespace Repetify.Application.UnitTests.Services;
 
 public class UserAppServiceTests
 {

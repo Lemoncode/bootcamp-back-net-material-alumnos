@@ -10,7 +10,7 @@ using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
 
-namespace Repetify.Application.Tests.Services;
+namespace Repetify.Application.UnitTests.Services;
 
 public class DeckAppServiceTests
 {
@@ -64,7 +64,7 @@ public class DeckAppServiceTests
 		var deckDto = CreateFakeAddOrUpdateDeck();
 		_deckRepositoryMock.Setup(m => m.UpdateDeckAsync(It.IsAny<Deck>())).ReturnsAsync(ResultFactory.Success());
 
-		await _deckAppService.UpdateDeckAsync(deckDto, Guid.NewGuid());
+		await _deckAppService.UpdateDeckAsync(Guid.NewGuid(), deckDto, Guid.NewGuid());
 
 		_deckRepositoryMock.Verify(r => r.UpdateDeckAsync(It.IsAny<Deck>()), Times.Once);
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
@@ -81,7 +81,7 @@ public class DeckAppServiceTests
 			.ReturnsAsync(ResultFactory.Conflict(exceptionMessage));
 
 		// Act
-		var result = await _deckAppService.UpdateDeckAsync(deckDto, Guid.NewGuid());
+		var result = await _deckAppService.UpdateDeckAsync(Guid.NewGuid(), deckDto, Guid.NewGuid());
 
 		// Assert
 		result.Status.Should().Be(ResultStatus.Conflict);
@@ -189,7 +189,7 @@ public class DeckAppServiceTests
 		var pageSize = 10;
 		var cards = new List<Card>
 					{
-						new Card(deckId, "Hola", "Hello", 1, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(-1))
+						new(deckId, "Hola", "Hello", 1, DateTime.UtcNow.AddDays(1), DateTime.UtcNow.AddDays(-1))
 					};
 		int? count = cards.Count;
 
@@ -240,6 +240,6 @@ public class DeckAppServiceTests
 
 	private static AddOrUpdateDeckDto CreateFakeAddOrUpdateDeck()
 	{
-		return new AddOrUpdateDeckDto { Name = "Test Deck", Description = "Description", OriginalLanguage = "english", TranslatedLanguage = "spanish" };
+		return new AddOrUpdateDeckDto { Name = "Test Deck", Description = "Description", OriginalLanguage = "English", TranslatedLanguage = "Spanish" };
 	}
 }
