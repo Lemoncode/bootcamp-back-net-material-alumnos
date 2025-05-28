@@ -97,7 +97,7 @@ public class DeckAppServiceTests
 
 		var result = await _deckAppService.DeleteDeckAsync(deckId);
 
-		result.Value.Should()
+		result.IsSuccess.Should()
 			.BeTrue();
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Once);
 	}
@@ -110,7 +110,7 @@ public class DeckAppServiceTests
 
 		var result = await _deckAppService.DeleteDeckAsync(deckId);
 
-		result.Value.Should().BeFalse();
+		result.IsSuccess.Should().BeFalse();
 		_deckRepositoryMock.Verify(r => r.SaveChangesAsync(), Times.Never);
 	}
 
