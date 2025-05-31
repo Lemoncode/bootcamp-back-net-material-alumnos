@@ -2,9 +2,12 @@
 using Repetify.Application.Dtos;
 using Repetify.Application.Extensions.Mappers;
 using Repetify.Crosscutting;
+using Repetify.Crosscutting.Exceptions;
+using Repetify.Crosscutting.Extensions;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
 using Repetify.Domain.Entities;
+
 using System.Diagnostics.CodeAnalysis;
 
 namespace Repetify.Application.Services;
@@ -18,12 +21,6 @@ public class DeckAppService : IDeckAppService
 	private readonly ICardReviewService _cardReviewService;
 	private readonly IDeckRepository _deckRepository;
 
-	/// <summary>
-	/// Initializes a new instance of the <see cref="DeckAppService"/> class.
-	/// </summary>
-	/// <param name="deckValidator">The deck validator.</param>
-	/// <param name="cardReviewService">The card review service.</param>
-	/// <param name="deckRepository">The deck repository.</param>
 	public DeckAppService(
 		IDeckValidator deckValidator,
 		ICardReviewService cardReviewService,
@@ -34,31 +31,33 @@ public class DeckAppService : IDeckAppService
 		_deckRepository = deckRepository ?? throw new ArgumentNullException(nameof(deckRepository));
 	}
 
-	///  <inheritdoc/>
 	public async Task<Result<Guid>> AddDeckAsync(AddOrUpdateDeckDto deck, Guid userId)
 	{
+<<<<<<< HEAD
 		ArgumentNullException.ThrowIfNull(deck);
 
 		var deckDomain = deck.ToEntity(userId);
 		var result = await _deckValidator.EnsureIsValidAsync(deckDomain).ConfigureAwait(false);
 		if (!result.IsSuccess)
+=======
+		try
+>>>>>>> kastwey/result-refactor
 		{
-			return ResultFactory.PropagateFailure<Guid>(result);
+			var deckDomain = deck.ToEntity(userId);
+			await _deckValidator.EnsureIsValid(deckDomain).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.AddDeckAsync(deckDomain).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+			return ResultFactory.Success(deckDomain.Id);
 		}
-
-		var addResult = await _deckRepository.AddDeckAsync(deckDomain).ConfigureAwait(false);
-		if (!addResult.IsSuccess)
+		catch (ResultFailureException ex)
 		{
-			return ResultFactory.PropagateFailure<Guid>(addResult);
+			return ResultFactory.PropagateFailure<Guid>(ex.Result);
 		}
-
-		await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
-		return ResultFactory.Success(deckDomain.Id);
 	}
 
-	///  <inheritdoc/>
 	public async Task<Result> UpdateDeckAsync(Guid deckId, AddOrUpdateDeckDto deck, Guid userId)
 	{
+<<<<<<< HEAD
 		ArgumentNullException.ThrowIfNull(deck);
 
 		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
@@ -232,56 +231,192 @@ public class DeckAppService : IDeckAppService
 		
 		var deletedResult = await _deckRepository.DeleteCardAsync(deckId, cardId).ConfigureAwait(false);
 		if (deletedResult.IsSuccess)
+=======
+		try
+>>>>>>> kastwey/result-refactor
 		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			var deckDomain = deck.ToEntity(userId, deckId);
+			await _deckValidator.EnsureIsValid(deckDomain).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.UpdateDeckAsync(deckDomain).EnsureSuccessAsync().ConfigureAwait(false);
 			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
 			return ResultFactory.Success();
 		}
-
-		return deletedResult;
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure(ex.Result);
+		}
 	}
 
-	///  <inheritdoc/>
+	public async Task<Result> DeleteDeckAsync(Guid deckId, Guid userId)
+	{
+		try
+		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.DeleteDeckAsync(deckId).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+			return ResultFactory.Success();
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure(ex.Result);
+		}
+	}
+
+	[SuppressMessage("Performance", "CA1849:Call async methods when in an async method", Justification = "The CheckPermission method does not require async calls")]
+	public async Task<Result<DeckDto>> GetDeckByIdAsync(Guid deckId, Guid userId)
+	{
+		try
+		{
+			var deck = await _deckRepository.GetDeckByIdAsync(deckId).EnsureSuccessAsync().ConfigureAwait(false);
+			CheckUserPermission(deck, userId).EnsureSuccess();
+			return ResultFactory.Success(deck.ToDto());
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure<DeckDto>(ex.Result);
+		}
+	}
+
+	public async Task<Result<IEnumerable<DeckDto>>> GetUserDecksAsync(Guid userId)
+	{
+		try
+		{
+			var decks = await _deckRepository.GetDecksByUserIdAsync(userId).EnsureSuccessAsync().ConfigureAwait(false);
+			return ResultFactory.Success(decks.ToDtoList());
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure<IEnumerable<DeckDto>>(ex.Result);
+		}
+	}
+
+	public async Task<Result<Guid>> AddCardAsync(AddOrUpdateCardDto card, Guid deckId, Guid userId)
+	{
+		try
+		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			var cardDomain = card.ToEntity(deckId);
+			await _deckRepository.AddCardAsync(cardDomain).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+			return ResultFactory.Success(cardDomain.Id);
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure<Guid>(ex.Result);
+		}
+	}
+
+	public async Task<Result> UpdateCardAsync(AddOrUpdateCardDto card, Guid deckId, Guid cardId, Guid userId)
+	{
+		try
+		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.UpdateCardAsync(card.ToEntity(deckId, cardId)).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+			return ResultFactory.Success();
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure(ex.Result);
+		}
+	}
+
+	public async Task<Result> DeleteCardAsync(Guid deckId, Guid cardId, Guid userId)
+	{
+		try
+		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.DeleteCardAsync(deckId, cardId).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+			return ResultFactory.Success();
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure(ex.Result);
+		}
+	}
+
 	public async Task<Result<CardDto>> GetCardByIdAsync(Guid deckId, Guid cardId, Guid userId)
 	{
-		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
-		if (!permissionResult.IsSuccess)
+		try
 		{
-			return ResultFactory.PropagateFailure<CardDto>(permissionResult);
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			var card = await _deckRepository.GetCardByIdAsync(deckId, cardId).EnsureSuccessAsync().ConfigureAwait(false);
+			return ResultFactory.Success(card.ToDto());
 		}
-		
-		var cardResult = await _deckRepository.GetCardByIdAsync(deckId, cardId).ConfigureAwait(false);
-		if (!cardResult.IsSuccess)
+		catch (ResultFailureException ex)
 		{
-			return ResultFactory.PropagateFailure<CardDto>(cardResult);
+			return ResultFactory.PropagateFailure<CardDto>(ex.Result);
 		}
-
-		return ResultFactory.Success(cardResult.Value.ToDto());
 	}
 
+<<<<<<< HEAD
 	///  <inheritdoc/>
+=======
+	public async Task<Result<IEnumerable<CardDto>>> GetCardsAsync(Guid deckId, Guid userId, int page, int pageSize)
+	{
+		try
+		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			var cards = await _deckRepository.GetCardsAsync(deckId, page, pageSize).EnsureSuccessAsync().ConfigureAwait(false);
+			return ResultFactory.Success(cards.ToDtoList());
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(ex.Result);
+		}
+	}
+
+	public async Task<Result<int>> GetCardCountAsync(Guid deckId, Guid userId)
+	{
+		try
+		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			var count = await _deckRepository.GetCardCountAsync(deckId).EnsureSuccessAsync().ConfigureAwait(false);
+			return ResultFactory.Success(count);
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure<int>(ex.Result);
+		}
+	}
+
+	public async Task<Result<CardsToReviewDto>> GetCardsToReview(Guid deckId, Guid userId, DateTime until, int pageSize, DateTime? cursor)
+	{
+		if (pageSize < 1)
+		{
+			return ResultFactory.InvalidArgument<CardsToReviewDto>("The page number must be greater than 0.");
+		}
+
+		try
+		{
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			var cardsResult = await _deckRepository.GetCardsToReview(deckId, until, pageSize, cursor).EnsureSuccessAsync().ConfigureAwait(false);
+			return ResultFactory.Success(new CardsToReviewDto { Cards = cardsResult.Cards.ToDtoList(), Count = cardsResult.Count });
+		}
+		catch (ResultFailureException ex)
+		{
+			return ResultFactory.PropagateFailure<CardsToReviewDto>(ex.Result);
+		}
+	}
+
+>>>>>>> kastwey/result-refactor
 	public async Task<Result> ReviewCardAsync(Guid deckId, Guid cardId, Guid userId, bool isCorrect)
 	{
-		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
-		if (!permissionResult.IsSuccess)
+		try
 		{
-			return permissionResult;
+			await CheckUserPermissionAsync(deckId, userId).EnsureSuccessAsync().ConfigureAwait(false);
+			var card = await _deckRepository.GetCardByIdAsync(deckId, cardId).EnsureSuccessAsync().ConfigureAwait(false);
+			_cardReviewService.UpdateReview(card, isCorrect);
+			await _deckRepository.UpdateCardAsync(card).EnsureSuccessAsync().ConfigureAwait(false);
+			await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
+			return ResultFactory.Success();
 		}
-
-		var cardResult = await _deckRepository.GetCardByIdAsync(deckId, cardId).ConfigureAwait(false);
-		if (!cardResult.IsSuccess)
+		catch (ResultFailureException ex)
 		{
-			return ResultFactory.PropagateFailure(cardResult);
+			return ResultFactory.PropagateFailure(ex.Result);
 		}
-
-		_cardReviewService.UpdateReview(cardResult.Value, isCorrect);
-		var updateResult = await _deckRepository.UpdateCardAsync(cardResult.Value).ConfigureAwait(false);
-		if (!updateResult.IsSuccess)
-		{
-			return updateResult;
-		}
-
-		await _deckRepository.SaveChangesAsync().ConfigureAwait(false);
-		return ResultFactory.Success();
 	}
 
 	private async Task<Result> CheckUserPermissionAsync(Guid deckId, Guid userId)

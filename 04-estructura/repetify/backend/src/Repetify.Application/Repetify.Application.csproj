@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <ProjectReference Include="..\Repetify.Crosscutting\Repetify.Crosscutting.csproj" />
+=======
+    <ProjectReference Include="..\Repetify.crosscutting\Repetify.Crosscutting.csproj" />
+>>>>>>> kastwey/result-refactor
     <ProjectReference Include="..\Repetify.Domain\Repetify.Domain.csproj" />
   </ItemGroup>
 </Project>
