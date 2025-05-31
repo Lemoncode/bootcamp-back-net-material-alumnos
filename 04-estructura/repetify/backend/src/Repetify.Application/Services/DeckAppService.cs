@@ -29,16 +29,18 @@ public class DeckAppService : IDeckAppService
 		ICardReviewService cardReviewService,
 		IDeckRepository deckRepository)
 	{
-		_deckValidator = deckValidator;
-		_cardReviewService = cardReviewService;
-		_deckRepository = deckRepository;
+		_deckValidator = deckValidator ?? throw new ArgumentNullException(nameof(deckValidator));
+		_cardReviewService = cardReviewService ?? throw new ArgumentNullException(nameof(cardReviewService));
+		_deckRepository = deckRepository ?? throw new ArgumentNullException(nameof(deckRepository));
 	}
 
 	///  <inheritdoc/>
 	public async Task<Result<Guid>> AddDeckAsync(AddOrUpdateDeckDto deck, Guid userId)
 	{
+		ArgumentNullException.ThrowIfNull(deck);
+
 		var deckDomain = deck.ToEntity(userId);
-		var result = await _deckValidator.EnsureIsValid(deckDomain).ConfigureAwait(false);
+		var result = await _deckValidator.EnsureIsValidAsync(deckDomain).ConfigureAwait(false);
 		if (!result.IsSuccess)
 		{
 			return ResultFactory.PropagateFailure<Guid>(result);
@@ -57,6 +59,8 @@ public class DeckAppService : IDeckAppService
 	///  <inheritdoc/>
 	public async Task<Result> UpdateDeckAsync(Guid deckId, AddOrUpdateDeckDto deck, Guid userId)
 	{
+		ArgumentNullException.ThrowIfNull(deck);
+
 		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
 		if (!permissionResult.IsSuccess)
 		{
@@ -64,7 +68,7 @@ public class DeckAppService : IDeckAppService
 		}
 
 		var deckDomain = deck.ToEntity(userId, deckId);
-		var validatorResult = await _deckValidator.EnsureIsValid(deckDomain).ConfigureAwait(false);
+		var validatorResult = await _deckValidator.EnsureIsValidAsync(deckDomain).ConfigureAwait(false);
 		if (!validatorResult.IsSuccess)
 		{
 			return validatorResult;
@@ -128,6 +132,59 @@ public class DeckAppService : IDeckAppService
 		}
 
 		return ResultFactory.Success(decksResult.Value.ToDtoList());
+	}
+
+	///  <inheritdoc/>
+	public async Task<Result<int>> GetCardCountAsync(Guid deckId, Guid userId)
+	{
+		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
+		if (!permissionResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<int>(permissionResult);
+		}
+
+		return await _deckRepository.GetCardCountAsync(deckId).ConfigureAwait(false);
+	}
+
+	///  <inheritdoc/>
+	public async Task<Result<IEnumerable<CardDto>>> GetCardsAsync(Guid deckId, Guid userId, int page, int pageSize)
+	{
+		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
+		if (!permissionResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(permissionResult);
+		}
+
+		var cardsResult = await _deckRepository.GetCardsAsync(deckId, page, pageSize).ConfigureAwait(false);
+		if (!cardsResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(cardsResult);
+		}
+
+		return ResultFactory.Success(cardsResult.Value.ToDtoList());
+	}
+
+	///  <inheritdoc/>
+	public async Task<Result<CardsToReviewDto>> GetCardsToReview(Guid deckId, Guid userId, DateTime until, int pageSize, DateTime? cursor)
+	{
+		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
+		if (pageSize < 1)
+		{
+			return ResultFactory.InvalidArgument<CardsToReviewDto>("The page number must be greater than 0.");
+		}
+
+		if (!permissionResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<CardsToReviewDto>(permissionResult);
+		}
+
+		var cardsResult = await _deckRepository.GetCardsToReview(deckId, until, pageSize, cursor).ConfigureAwait(false);
+		if (!cardsResult.IsSuccess)
+		{
+			return ResultFactory.PropagateFailure<CardsToReviewDto>(cardsResult);
+		}
+
+		return ResultFactory.Success(new CardsToReviewDto { Cards = cardsResult.Value.Cards.ToDtoList(), Count = cardsResult.Value.Count });
 	}
 
 	///  <inheritdoc/>
@@ -203,59 +260,6 @@ public class DeckAppService : IDeckAppService
 		}
 
 		return ResultFactory.Success(cardResult.Value.ToDto());
-	}
-
-	///  <inheritdoc/>
-	public async Task<Result<IEnumerable<CardDto>>> GetCardsAsync(Guid deckId, Guid userId, int page, int pageSize)
-	{
-		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
-		if (!permissionResult.IsSuccess)
-		{
-			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(permissionResult);
-		}
-
-		var cardsResult = await _deckRepository.GetCardsAsync(deckId, page, pageSize).ConfigureAwait(false);
-		if (!cardsResult.IsSuccess)
-		{
-			return ResultFactory.PropagateFailure<IEnumerable<CardDto>>(cardsResult);
-		}
-
-		return ResultFactory.Success(cardsResult.Value.ToDtoList());
-	}
-
-	///  <inheritdoc/>
-	public async Task<Result<int>> GetCardCountAsync(Guid deckId, Guid userId)
-	{
-		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
-		if (!permissionResult.IsSuccess)
-		{
-			return ResultFactory.PropagateFailure<int>(permissionResult);
-		}
-
-		return await _deckRepository.GetCardCountAsync(deckId).ConfigureAwait(false);
-	}
-
-	///  <inheritdoc/>
-	public async Task<Result<CardsToReviewDto>> GetCardsToReview(Guid deckId, Guid userId, DateTime until, int pageSize, DateTime? cursor)
-	{
-		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
-		if (pageSize < 1)
-		{
-			return ResultFactory.InvalidArgument<CardsToReviewDto>("The page number must be greater than 0.");
-		}
-
-		if (!permissionResult.IsSuccess)
-		{
-			return ResultFactory.PropagateFailure<CardsToReviewDto>(permissionResult);
-		}
-
-		var cardsResult = await _deckRepository.GetCardsToReview(deckId, until, pageSize, cursor).ConfigureAwait(false);
-		if (!cardsResult.IsSuccess)
-		{
-			return ResultFactory.PropagateFailure<CardsToReviewDto>(cardsResult);
-		}
-
-		return ResultFactory.Success(new CardsToReviewDto { Cards = cardsResult.Value.Cards.ToDtoList(), Count = cardsResult.Value.Count });
 	}
 
 	///  <inheritdoc/>
