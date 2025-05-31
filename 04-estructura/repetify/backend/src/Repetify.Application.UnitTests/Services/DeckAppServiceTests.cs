@@ -426,17 +426,6 @@ public class DeckAppServiceTests
 	}
 
 	[Fact]
-	public async Task GetCardsToReview_ReturnsFailure_WhenPageSizeInvalid()
-	{
-		_deckRepositoryMock.Setup(r => r.GetDeckByIdAsync(_deckId)).ReturnsAsync(ResultFactory.Success(CreateDeck()));
-
-		var result = await _service.GetCardsToReview(_deckId, _userId, DateTime.UtcNow, 0, null);
-
-		Assert.False(result.IsSuccess);
-		Assert.Equal(ResultStatus.InvalidArguments, result.Status);
-	}
-
-	[Fact]
 	public async Task GetCardsToReview_ReturnsFailure_WhenNoPermission()
 	{
 		_deckRepositoryMock.Setup(r => r.GetDeckByIdAsync(_deckId)).ReturnsAsync(ResultFactory.Success(CreateDeck(Guid.NewGuid())));

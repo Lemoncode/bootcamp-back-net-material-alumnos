@@ -168,10 +168,6 @@ public class DeckAppService : IDeckAppService
 	public async Task<Result<CardsToReviewDto>> GetCardsToReview(Guid deckId, Guid userId, DateTime until, int pageSize, DateTime? cursor)
 	{
 		var permissionResult = await CheckUserPermissionAsync(deckId, userId).ConfigureAwait(false);
-		if (pageSize < 1)
-		{
-			return ResultFactory.InvalidArgument<CardsToReviewDto>("The page number must be greater than 0.");
-		}
 
 		if (!permissionResult.IsSuccess)
 		{
