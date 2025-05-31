@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 using Repetify.Crosscutting;
+using IResult = Repetify.Crosscutting.IResult;
 
 namespace Repetify.Api.Extensions;
 
@@ -25,20 +26,14 @@ internal static class ResultExtensions
 	{
 		ArgumentNullException.ThrowIfNull(result);
 
-		if (result.Status == ResultStatus.Success)
+		if (result.IsSuccess)
 		{
 			return successFunc != null
 				? successFunc(result.Value!)
 				: new OkObjectResult(result.Value);
 		}
 
-		return result.Status switch
-		{
-			ResultStatus.NotFound => new NotFoundObjectResult(result.ErrorMessage),
-			ResultStatus.Conflict => new ConflictObjectResult(result.ErrorMessage),
-			ResultStatus.InvalidArguments => new BadRequestObjectResult(result.ErrorMessage),
-			_ => new ObjectResult(result.ErrorMessage) { StatusCode = 500 }
-		};
+		return result.ToErrorResult();
 	}
 
 	/// <summary>
@@ -56,13 +51,18 @@ internal static class ResultExtensions
 	{
 		ArgumentNullException.ThrowIfNull(result);
 
-		if (result.Status == ResultStatus.Success)
+		if (result.IsSuccess)
 		{
 			return successFunc != null
 				? successFunc()
 				: new OkResult();
 		}
 
+		return result.ToErrorResult();
+	}
+
+	private static ObjectResult ToErrorResult(this IResult result)
+	{
 		return result.Status switch
 		{
 			ResultStatus.NotFound => new NotFoundObjectResult(result.ErrorMessage),
