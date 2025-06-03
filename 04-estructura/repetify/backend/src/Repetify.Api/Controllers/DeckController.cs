@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 using Repetify.Api.Extensions;
@@ -44,7 +43,7 @@ public class DeckController : ControllerBase
 	public async Task<IActionResult> AddDeck([FromBody] AddOrUpdateDeckDto deck)
 	{
 		ArgumentNullException.ThrowIfNull(deck);
-		var userId =await GetCurrentUserAsync().ConfigureAwait(false);
+		var userId = await GetCurrentUserAsync().ConfigureAwait(false);
 		var result = await _deckAppService.AddDeckAsync(deck, userId).ConfigureAwait(false);
 		return result.ToActionResult(deckId =>
 		{
@@ -245,7 +244,7 @@ public class DeckController : ControllerBase
 		}
 
 		var user = await _userAppService.GetUserByEmailAsync(email).ConfigureAwait(false);
-		
+
 		if (user.Status != ResultStatus.Success)
 		{
 			throw new InvalidOperationException("Unable to retrieve the current user.");
