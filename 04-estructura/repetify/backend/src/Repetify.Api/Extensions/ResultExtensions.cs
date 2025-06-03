@@ -68,7 +68,7 @@ internal static class ResultExtensions
 			ResultStatus.NotFound => new NotFoundObjectResult(result.ErrorMessage),
 			ResultStatus.Conflict => new ConflictObjectResult(result.ErrorMessage),
 			ResultStatus.InvalidArguments => new BadRequestObjectResult(result.ErrorMessage),
-			_ => new ObjectResult(result.ErrorMessage) { StatusCode = 500 }
+			_ => new ObjectResult(result.ErrorMessage) { StatusCode = StatusCodes.Status500InternalServerError}
 		};
 	}
 }
