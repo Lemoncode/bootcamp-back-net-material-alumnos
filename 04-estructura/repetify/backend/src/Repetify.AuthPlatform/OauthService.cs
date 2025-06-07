@@ -15,13 +15,16 @@ namespace Repetify.AuthPlatform;
 public abstract class OauthService : IOauthService
 {
 
-	private readonly IOptionsSnapshot<OauthConfig> _oauthConfig;
+	private readonly OauthConfig _oauthConfig;
 
 	private readonly HttpClient _httpClient;
 
 	protected OauthService(IOptionsSnapshot<OauthConfig> oauthConfig, IHttpClientFactory httpClientFactory)
 	{
-		_oauthConfig = oauthConfig;
+		ArgumentNullException.ThrowIfNull(oauthConfig);
+		ArgumentNullException.ThrowIfNull(httpClientFactory);
+
+		_oauthConfig = oauthConfig.Value;
 		_httpClient = httpClientFactory.CreateClient();
 	}
 
@@ -29,10 +32,10 @@ public abstract class OauthService : IOauthService
 	{
 		var dict = new Dictionary<string, string>
 		{
-			["client_id"] = _oauthConfig.Value.ClientId,
-			["redirect_uri"] = _oauthConfig.Value.RedirectUri.AbsoluteUri,
+			["client_id"] = _oauthConfig.ClientId,
+			["redirect_uri"] = _oauthConfig.RedirectUri.AbsoluteUri,
 			["response_type"] = "code",
-			["scope"] = string.Join(' ', _oauthConfig.Value.Scopes),
+			["scope"] = string.Join(' ', _oauthConfig.Scopes),
 			["access_type"] = "online"
 		};
 
@@ -41,7 +44,7 @@ public abstract class OauthService : IOauthService
 			dict.Add("state", returnUrl.AbsoluteUri);
 		}
 
-		return new(GetUrlFromDictionary(_oauthConfig.Value.OauthCodeUrl, dict));
+		return new(GetUrlFromDictionary(_oauthConfig.OauthCodeUrl, dict));
 	}
 
 	private static string GetUrlFromDictionary(Uri url, Dictionary<string, string> queryStringParams)
@@ -54,16 +57,16 @@ public abstract class OauthService : IOauthService
 	{
 		using var content = new FormUrlEncodedContent(new Dictionary<string, string>()
 		{
-			["client_id"] = _oauthConfig.Value.ClientId,
-			["client_secret"] = _oauthConfig.Value.ClientSecret,
-			["redirect_uri"] = _oauthConfig.Value.RedirectUri.AbsoluteUri,
+			["client_id"] = _oauthConfig.ClientId,
+			["client_secret"] = _oauthConfig.ClientSecret,
+			["redirect_uri"] = _oauthConfig.RedirectUri.AbsoluteUri,
 			["code"] = code,
 			["grant_type"] = "authorization_code"
 		});
 
 		try
 		{
-			var response = await _httpClient.PostAsync(_oauthConfig.Value.OauthTokenUrl, content).ConfigureAwait(false);
+			var response = await _httpClient.PostAsync(_oauthConfig.OauthTokenUrl, content).ConfigureAwait(false);
 			string? stringContent = null;
 			try
 			{

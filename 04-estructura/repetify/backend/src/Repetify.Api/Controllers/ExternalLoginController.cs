@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-using Repetify.Api.Config;
 using Repetify.Api.Extensions;
 using Repetify.Application.Abstractions.Services;
 using Repetify.Application.Dtos;

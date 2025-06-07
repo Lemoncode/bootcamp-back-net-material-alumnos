@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
-using Repetify.Api.Config;
 using Repetify.Application.Abstractions.Services;
+using Repetify.Application.Config;
 using Repetify.Application.Services;
 using Repetify.AuthPlatform;
 using Repetify.AuthPlatform.Abstractions;

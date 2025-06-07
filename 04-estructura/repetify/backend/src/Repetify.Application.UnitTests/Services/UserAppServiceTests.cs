@@ -2,7 +2,7 @@
 
 using Moq;
 
-using Repetify.Api.Config;
+using Repetify.Application.Config;
 using Repetify.Application.Services;
 using Repetify.AuthPlatform.Abstractions;
 using Repetify.AuthPlatform.Abstractions.IdentityProviders;

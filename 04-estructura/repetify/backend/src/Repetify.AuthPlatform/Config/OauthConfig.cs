@@ -33,5 +33,5 @@ public abstract class OauthConfig
 	/// <summary>
 	/// The scopes for the OAuth application. This property is immutable after initialization.
 	/// </summary>
-	public required string[] Scopes { get; init; }
+	public required IReadOnlyList<string> Scopes { get; init; }
 }

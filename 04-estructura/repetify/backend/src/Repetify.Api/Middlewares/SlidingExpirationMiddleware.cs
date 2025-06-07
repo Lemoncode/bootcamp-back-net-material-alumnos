@@ -36,7 +36,7 @@ public class SlidingExpirationMiddleware
 		var cookie = context.Request.Cookies["AuthToken"];
 		if (cookie is not null)
 		{
-			var cookieOptions = new CookieOptions();
+			var cookieOptions = new CookieOptions { HttpOnly = true, Secure = true };
 			if (ShouldRenew(cookie, out var newExpiration, out var newToken))
 			{
 				cookieOptions.Expires = newExpiration;
