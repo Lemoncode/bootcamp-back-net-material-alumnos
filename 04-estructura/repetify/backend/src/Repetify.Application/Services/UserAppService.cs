@@ -18,16 +18,16 @@ namespace Repetify.Application.Services;
 
 public class UserAppService : IUserAppService
 {
-	private readonly IGoogleOAuthService _googleOauthService;
-	private readonly IMicrosoftOAuthService _microsoftOauthService;
+	private readonly IGoogleOAuthService _googleOAuthService;
+	private readonly IMicrosoftOAuthService _microsoftOAuthService;
 	private readonly IJwtService _jwtService;
 	private readonly IUserRepository _userRepository;
 	private readonly FrontendConfig _frontendConfig;
 
-	public UserAppService(IGoogleOAuthService googleOauthService, IMicrosoftOAuthService microsoftOauthService, IJwtService jwtService, IUserRepository repository, IOptionsSnapshot<FrontendConfig> frontendConfig)
+	public UserAppService(IGoogleOAuthService googleOAuthService, IMicrosoftOAuthService microsoftOAuthService, IJwtService jwtService, IUserRepository repository, IOptionsSnapshot<FrontendConfig> frontendConfig)
 	{
-		_googleOauthService = googleOauthService ?? throw new ArgumentNullException(nameof(googleOauthService));
-		_microsoftOauthService = microsoftOauthService ?? throw new ArgumentNullException(nameof(microsoftOauthService));
+		_googleOAuthService = googleOAuthService ?? throw new ArgumentNullException(nameof(googleOAuthService));
+		_microsoftOAuthService = microsoftOAuthService ?? throw new ArgumentNullException(nameof(microsoftOAuthService));
 		_jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
 		_userRepository = repository ?? throw new ArgumentNullException(nameof(repository));
 		_frontendConfig = frontendConfig?.Value ?? throw new ArgumentNullException(nameof(frontendConfig));
@@ -46,7 +46,7 @@ public class UserAppService : IUserAppService
 		}
 	}
 
-	public Result<Uri> GetUriToInitiateOauthSignin(IdentityProvider provider, Uri? returnUrl = null)
+	public Result<Uri> GetUriToInitiateOAuthSignin(IdentityProvider provider, Uri? returnUrl = null)
 	{
 		if (returnUrl is null)
 		{
@@ -55,8 +55,8 @@ public class UserAppService : IUserAppService
 
 		var redirectUri = provider switch
 		{
-			IdentityProvider.Google => _googleOauthService.GetOAuthCodeUrl(returnUrl),
-			IdentityProvider.Microsoft => _microsoftOauthService.GetOAuthCodeUrl(returnUrl),
+			IdentityProvider.Google => _googleOAuthService.GetOAuthCodeUrl(returnUrl),
+			IdentityProvider.Microsoft => _microsoftOAuthService.GetOAuthCodeUrl(returnUrl),
 			_ => null
 		};
 
@@ -68,7 +68,7 @@ public class UserAppService : IUserAppService
 		return ResultFactory.Success(redirectUri);
 	}
 
-	public async Task<Result<FinishedOAuthResponseDto>> FinishOauthFlow(IdentityProvider provider, string code, Uri? returnUrl = null)
+	public async Task<Result<FinishedOAuthResponseDto>> FinishOAuthFlow(IdentityProvider provider, string code, Uri? returnUrl = null)
 	{
 		try
 		{
@@ -77,14 +77,14 @@ public class UserAppService : IUserAppService
 			switch (provider)
 			{
 				case IdentityProvider.Google:
-					var tokenResponse = await _googleOauthService.ExchangeCodeForToken(code).ConfigureAwait(false);
-					var payload = await _googleOauthService.GetUserInfo(tokenResponse.IdToken).ConfigureAwait(false);
+					var tokenResponse = await _googleOAuthService.ExchangeCodeForToken(code).ConfigureAwait(false);
+					var payload = await _googleOAuthService.GetUserInfo(tokenResponse.IdToken).ConfigureAwait(false);
 					await CheckAndAddNewUserAsync(payload.Email, payload.Email).ConfigureAwait(false);
 					token = _jwtService.GenerateJwtToken(payload.FamilyName, payload.GivenName, payload.Email);
 					break;
 				case IdentityProvider.Microsoft:
-					var msTokenResponse = await _microsoftOauthService.ExchangeCodeForToken(code).ConfigureAwait(false);
-					var userInfo = await _microsoftOauthService.GetUserInfo(msTokenResponse.AccessToken).ConfigureAwait(false);
+					var msTokenResponse = await _microsoftOAuthService.ExchangeCodeForToken(code).ConfigureAwait(false);
+					var userInfo = await _microsoftOAuthService.GetUserInfo(msTokenResponse.AccessToken).ConfigureAwait(false);
 					await CheckAndAddNewUserAsync(userInfo.Mail, userInfo.Mail).ConfigureAwait(false);
 					token = _jwtService.GenerateJwtToken(userInfo.Surname, userInfo.GivenName, userInfo.Mail);
 					break;
