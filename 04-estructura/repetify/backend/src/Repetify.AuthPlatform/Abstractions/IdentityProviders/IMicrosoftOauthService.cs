@@ -5,7 +5,7 @@ namespace Repetify.AuthPlatform.Abstractions.IdentityProviders;
 /// <summary>
 /// Interface for Microsoft OAuth service, extending the generic OAuth service interface.
 /// </summary>
-public interface IMicrosoftOauthService : IOauthService
+public interface IMicrosoftOAuthService : IOAuthService
 {
 	/// <summary>
 	/// Retrieves user information from Microsoft Graph API using the provided token.

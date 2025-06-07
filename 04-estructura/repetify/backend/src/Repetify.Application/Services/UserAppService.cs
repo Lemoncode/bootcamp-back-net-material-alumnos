@@ -7,7 +7,7 @@ using Repetify.Application.Extensions.Mappers;
 using Repetify.AuthPlatform.Abstractions;
 using Repetify.AuthPlatform.Abstractions.IdentityProviders;
 using Repetify.Crosscutting;
-using Repetify.Crosscutting.Enums;
+using Repetify.Crosscutting.OAuth;
 using Repetify.Crosscutting.Exceptions;
 using Repetify.Crosscutting.Extensions;
 using Repetify.Domain.Abstractions.Repositories;
@@ -18,20 +18,18 @@ namespace Repetify.Application.Services;
 
 public class UserAppService : IUserAppService
 {
-	private readonly IGoogleOauthService _googleOauthService;
-	private readonly IMicrosoftOauthService _microsoftOauthService;
+	private readonly IGoogleOAuthService _googleOauthService;
+	private readonly IMicrosoftOAuthService _microsoftOauthService;
 	private readonly IJwtService _jwtService;
 	private readonly IUserRepository _userRepository;
-	private readonly IUserValidator _userValidator;
 	private readonly FrontendConfig _frontendConfig;
 
-	public UserAppService(IGoogleOauthService googleOauthService, IMicrosoftOauthService microsoftOauthService, IJwtService jwtService, IUserRepository repository, IUserValidator validator, IOptionsSnapshot<FrontendConfig> frontendConfig)
+	public UserAppService(IGoogleOAuthService googleOauthService, IMicrosoftOAuthService microsoftOauthService, IJwtService jwtService, IUserRepository repository, IOptionsSnapshot<FrontendConfig> frontendConfig)
 	{
 		_googleOauthService = googleOauthService ?? throw new ArgumentNullException(nameof(googleOauthService));
 		_microsoftOauthService = microsoftOauthService ?? throw new ArgumentNullException(nameof(microsoftOauthService));
 		_jwtService = jwtService ?? throw new ArgumentNullException(nameof(jwtService));
 		_userRepository = repository ?? throw new ArgumentNullException(nameof(repository));
-		_userValidator = validator ?? throw new ArgumentNullException(nameof(validator));
 		_frontendConfig = frontendConfig?.Value ?? throw new ArgumentNullException(nameof(frontendConfig));
 	}
 
@@ -57,8 +55,8 @@ public class UserAppService : IUserAppService
 
 		var redirectUri = provider switch
 		{
-			IdentityProvider.Google => _googleOauthService.GetOauthCodeUrl(returnUrl),
-			IdentityProvider.Microsoft => _microsoftOauthService.GetOauthCodeUrl(returnUrl),
+			IdentityProvider.Google => _googleOauthService.GetOAuthCodeUrl(returnUrl),
+			IdentityProvider.Microsoft => _microsoftOauthService.GetOAuthCodeUrl(returnUrl),
 			_ => null
 		};
 
@@ -70,7 +68,7 @@ public class UserAppService : IUserAppService
 		return ResultFactory.Success(redirectUri);
 	}
 
-	public async Task<Result<FinishedOauthResponseDto>> FinishOauthFlow(IdentityProvider provider, string code, Uri? returnUrl = null)
+	public async Task<Result<FinishedOAuthResponseDto>> FinishOauthFlow(IdentityProvider provider, string code, Uri? returnUrl = null)
 	{
 		try
 		{
@@ -91,14 +89,14 @@ public class UserAppService : IUserAppService
 					token = _jwtService.GenerateJwtToken(userInfo.Surname, userInfo.GivenName, userInfo.Mail);
 					break;
 				default:
-					return ResultFactory.InvalidArgument<FinishedOauthResponseDto>("This identity provider is not supported.");
+					return ResultFactory.InvalidArgument<FinishedOAuthResponseDto>("This identity provider is not supported.");
 			}
 
-			return ResultFactory.Success(new FinishedOauthResponseDto { JwtToken = token, ReturnUrl = returnUrl ?? _frontendConfig.FrontendBaseUrl });
+			return ResultFactory.Success(new FinishedOAuthResponseDto { JwtToken = token, ReturnUrl = returnUrl ?? _frontendConfig.FrontendBaseUrl });
 		}
 		catch (ResultFailureException ex)
 		{
-			return ResultFactory.PropagateFailure<FinishedOauthResponseDto>(ex.Result);
+			return ResultFactory.PropagateFailure<FinishedOAuthResponseDto>(ex.Result);
 		}
 	}
 

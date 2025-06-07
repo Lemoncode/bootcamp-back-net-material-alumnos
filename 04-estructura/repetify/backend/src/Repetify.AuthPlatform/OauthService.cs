@@ -12,14 +12,14 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Repetify.AuthPlatform;
 
-public abstract class OauthService : IOauthService
+public abstract class OAuthService : IOAuthService
 {
 
-	private readonly OauthConfig _oauthConfig;
+	private readonly OAuthConfig _oauthConfig;
 
 	private readonly HttpClient _httpClient;
 
-	protected OauthService(IOptionsSnapshot<OauthConfig> oauthConfig, IHttpClientFactory httpClientFactory)
+	protected OAuthService(IOptionsSnapshot<OAuthConfig> oauthConfig, IHttpClientFactory httpClientFactory)
 	{
 		ArgumentNullException.ThrowIfNull(oauthConfig);
 		ArgumentNullException.ThrowIfNull(httpClientFactory);
@@ -28,7 +28,7 @@ public abstract class OauthService : IOauthService
 		_httpClient = httpClientFactory.CreateClient();
 	}
 
-	public Uri GetOauthCodeUrl(Uri ? returnUrl = null)
+	public Uri GetOAuthCodeUrl(Uri ? returnUrl = null)
 	{
 		var dict = new Dictionary<string, string>
 		{
@@ -44,7 +44,7 @@ public abstract class OauthService : IOauthService
 			dict.Add("state", returnUrl.AbsoluteUri);
 		}
 
-		return new(GetUrlFromDictionary(_oauthConfig.OauthCodeUrl, dict));
+		return new(GetUrlFromDictionary(_oauthConfig.OAuthCodeUrl, dict));
 	}
 
 	private static string GetUrlFromDictionary(Uri url, Dictionary<string, string> queryStringParams)
@@ -53,7 +53,7 @@ public abstract class OauthService : IOauthService
 	}
 
 	[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We don't need to catch a specific exception because we're only trying to retrieve the response content from an HTTP response. If it's not possible, the reason doesn't matter.")]
-	public async Task<OauthCodeExchangeResponse> ExchangeCodeForToken(string code)
+	public async Task<OAuthCodeExchangeResponse> ExchangeCodeForToken(string code)
 	{
 		using var content = new FormUrlEncodedContent(new Dictionary<string, string>()
 		{
@@ -66,7 +66,7 @@ public abstract class OauthService : IOauthService
 
 		try
 		{
-			var response = await _httpClient.PostAsync(_oauthConfig.OauthTokenUrl, content).ConfigureAwait(false);
+			var response = await _httpClient.PostAsync(_oauthConfig.OAuthTokenUrl, content).ConfigureAwait(false);
 			string? stringContent = null;
 			try
 			{
@@ -86,7 +86,7 @@ public abstract class OauthService : IOauthService
 				throw new GetTokenException($"Error when retrieving the token. No response from server. Response code: {response.StatusCode}.");
 			}
 
-			return JsonSerializer.Deserialize<OauthCodeExchangeResponse>(stringContent!)!;
+			return JsonSerializer.Deserialize<OAuthCodeExchangeResponse>(stringContent!)!;
 		}
 		catch (Exception ex)
 		{

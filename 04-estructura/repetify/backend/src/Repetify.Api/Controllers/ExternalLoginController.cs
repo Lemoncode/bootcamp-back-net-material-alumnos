@@ -9,7 +9,7 @@ using Repetify.AuthPlatform.Abstractions;
 using Repetify.AuthPlatform.Abstractions.IdentityProviders;
 using Repetify.AuthPlatform.Config;
 using Repetify.Crosscutting;
-using Repetify.Crosscutting.Enums;
+using Repetify.Crosscutting.OAuth;
 
 using System.ComponentModel.DataAnnotations;
 

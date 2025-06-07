@@ -5,7 +5,7 @@ namespace Repetify.AuthPlatform.Abstractions.IdentityProviders;
 /// <summary>
 /// Interface for Google OAuth service, extending the generic OAuth service interface.
 /// </summary>
-public interface IGoogleOauthService : IOauthService
+public interface IGoogleOAuthService : IOAuthService
 {
 	/// <summary>
 	/// Retrieves user information from Google using the provided OAuth token.

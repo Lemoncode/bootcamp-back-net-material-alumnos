@@ -9,7 +9,7 @@ using Repetify.AuthPlatform.Abstractions.IdentityProviders;
 using Repetify.AuthPlatform.Entities;
 using Repetify.AuthPlatform.Entities.Microsoft;
 using Repetify.Crosscutting;
-using Repetify.Crosscutting.Enums;
+using Repetify.Crosscutting.OAuth;
 using Repetify.Crosscutting.Exceptions;
 using Repetify.Domain.Abstractions.Repositories;
 using Repetify.Domain.Abstractions.Services;
@@ -19,11 +19,10 @@ namespace Repetify.Application.UnitTests.Services;
 
 public class UserAppServiceTests
 {
-	private readonly Mock<IGoogleOauthService> _googleOauthService = new();
-	private readonly Mock<IMicrosoftOauthService> _microsoftOauthService = new();
+	private readonly Mock<IGoogleOAuthService> _googleOauthService = new();
+	private readonly Mock<IMicrosoftOAuthService> _microsoftOauthService = new();
 	private readonly Mock<IJwtService> _jwtService = new();
 	private readonly Mock<IUserRepository> _userRepository = new();
-	private readonly Mock<IUserValidator> _userValidator = new();
 	private readonly IOptionsSnapshot<FrontendConfig> _frontendConfig;
 	private readonly FrontendConfig _frontendConfigValue;
 	private readonly UserAppService _service;
@@ -40,7 +39,6 @@ public class UserAppServiceTests
 			_microsoftOauthService.Object,
 			_jwtService.Object,
 			_userRepository.Object,
-			_userValidator.Object,
 			_frontendConfig
 		);
 	}
@@ -76,7 +74,7 @@ public class UserAppServiceTests
 	public void GetUriToInitiateOauthSignin_ReturnsGoogleUri_When_ProviderIsGoogle()
 	{
 		var uri = new Uri("https://google.com/oauth");
-		_googleOauthService.Setup(s => s.GetOauthCodeUrl(It.IsAny<Uri>())).Returns(uri);
+		_googleOauthService.Setup(s => s.GetOAuthCodeUrl(It.IsAny<Uri>())).Returns(uri);
 
 		var result = _service.GetUriToInitiateOauthSignin(IdentityProvider.Google);
 
@@ -88,7 +86,7 @@ public class UserAppServiceTests
 	public void GetUriToInitiateOauthSignin_ReturnsMicrosoftUri_When_ProviderIsMicrosoft()
 	{
 		var uri = new Uri("https://microsoft.com/oauth");
-		_microsoftOauthService.Setup(s => s.GetOauthCodeUrl(It.IsAny<Uri>())).Returns(uri);
+		_microsoftOauthService.Setup(s => s.GetOAuthCodeUrl(It.IsAny<Uri>())).Returns(uri);
 
 		var result = _service.GetUriToInitiateOauthSignin(IdentityProvider.Microsoft);
 
@@ -118,7 +116,7 @@ public class UserAppServiceTests
 			GivenName = "Given"
 		};
 		_googleOauthService.Setup(s => s.ExchangeCodeForToken(code))
-			.ReturnsAsync(new OauthCodeExchangeResponse { IdToken = idToken, AccessToken = "accessToken", RefreshToken = "refreshToken", TokenType = "bearer", ExpiresIn = 1800, });
+			.ReturnsAsync(new OAuthCodeExchangeResponse { IdToken = idToken, AccessToken = "accessToken", RefreshToken = "refreshToken", TokenType = "bearer", ExpiresIn = 1800, });
 		_googleOauthService.Setup(s => s.GetUserInfo(idToken)).ReturnsAsync(payload);
 		_userRepository.Setup(r => r.GetUserByEmailAsync(email))
 			.ReturnsAsync(ResultFactory.NotFound<User>("not found"));
@@ -150,7 +148,7 @@ public class UserAppServiceTests
 			PreferredLanguage = "en"
 		};
 		_microsoftOauthService.Setup(s => s.ExchangeCodeForToken(code))
-			.ReturnsAsync(new OauthCodeExchangeResponse { AccessToken = accessToken, IdToken = "myIdToken", RefreshToken = "refreshToken", TokenType = "bearer", ExpiresIn = 1800, });
+			.ReturnsAsync(new OAuthCodeExchangeResponse { AccessToken = accessToken, IdToken = "myIdToken", RefreshToken = "refreshToken", TokenType = "bearer", ExpiresIn = 1800, });
 		_microsoftOauthService.Setup(s => s.GetUserInfo(accessToken)).ReturnsAsync(userInfo);
 		_userRepository.Setup(r => r.GetUserByEmailAsync(email))
 			.ReturnsAsync(ResultFactory.NotFound<User>("not found"));
@@ -178,7 +176,7 @@ public class UserAppServiceTests
 	public async Task FinishOauthFlow_PropagatesFailure_When_OauthServiceThrowsException()
 	{
 		_googleOauthService.Setup(s => s.ExchangeCodeForToken(It.IsAny<string>()))
-			.ThrowsAsync(new ResultFailureException(ResultFactory.InvalidArgument<OauthCodeExchangeResponse>("fail")));
+			.ThrowsAsync(new ResultFailureException(ResultFactory.InvalidArgument<OAuthCodeExchangeResponse>("fail")));
 
 		var result = await _service.FinishOauthFlow(IdentityProvider.Google, "badcode");
 
