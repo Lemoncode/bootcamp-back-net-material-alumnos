@@ -16,7 +16,7 @@ namespace Repetify.Api.Controllers.Auth;
 /// <param name="frontendConfig">Configuration settings for the frontend application.</param>
 [ApiController]
 [Route("auth/external")]
-public class ExternalAuthController(IUserAppService userAppService) : Controller
+public class ExternalAuthController(IUserAppService userAppService) : ControllerBase
 {
 	private readonly IUserAppService _userAppService = userAppService;
 
