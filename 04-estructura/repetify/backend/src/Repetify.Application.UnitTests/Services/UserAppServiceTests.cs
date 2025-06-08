@@ -76,7 +76,7 @@ public class UserAppServiceTests
 		var uri = new Uri("https://google.com/oauth");
 		_googleOauthService.Setup(s => s.GetOAuthCodeUrl(It.IsAny<Uri>())).Returns(uri);
 
-		var result = _service.GetUriToInitiateOAuthSignin(IdentityProvider.Google);
+		var result = _service.InitiateOAuthSignin(IdentityProvider.Google);
 
 		Assert.True(result.IsSuccess);
 		Assert.Equal(uri, result.Value);
@@ -88,7 +88,7 @@ public class UserAppServiceTests
 		var uri = new Uri("https://microsoft.com/oauth");
 		_microsoftOauthService.Setup(s => s.GetOAuthCodeUrl(It.IsAny<Uri>())).Returns(uri);
 
-		var result = _service.GetUriToInitiateOAuthSignin(IdentityProvider.Microsoft);
+		var result = _service.InitiateOAuthSignin(IdentityProvider.Microsoft);
 
 		Assert.True(result.IsSuccess);
 		Assert.Equal(uri, result.Value);
@@ -97,7 +97,7 @@ public class UserAppServiceTests
 	[Fact]
 	public void GetUriToInitiateOauthSignin_ReturnsInvalidArgument_When_ProviderIsUnknown()
 	{
-		var result = _service.GetUriToInitiateOAuthSignin((IdentityProvider)999);
+		var result = _service.InitiateOAuthSignin((IdentityProvider)999);
 
 		Assert.False(result.IsSuccess);
 		Assert.Equal(ResultStatus.InvalidArguments, result.Status);
@@ -124,7 +124,7 @@ public class UserAppServiceTests
 		_userRepository.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 		_jwtService.Setup(j => j.GenerateJwtToken("Family", "Given", email)).Returns("jwt");
 
-		var result = await _service.FinishOAuthFlow(IdentityProvider.Google, code);
+		var result = await _service.FinishOAuthFlowAsync(IdentityProvider.Google, code);
 
 		Assert.True(result.IsSuccess);
 		Assert.Equal("jwt", result.Value.JwtToken);
@@ -156,7 +156,7 @@ public class UserAppServiceTests
 		_userRepository.Setup(r => r.SaveChangesAsync()).Returns(Task.CompletedTask);
 		_jwtService.Setup(j => j.GenerateJwtToken("Surname", "Given", email)).Returns("jwt");
 
-		var result = await _service.FinishOAuthFlow(IdentityProvider.Microsoft, code);
+		var result = await _service.FinishOAuthFlowAsync(IdentityProvider.Microsoft, code);
 
 		Assert.True(result.IsSuccess);
 		Assert.Equal("jwt", result.Value.JwtToken);
@@ -166,7 +166,7 @@ public class UserAppServiceTests
 	[Fact]
 	public async Task FinishOauthFlow_ReturnsInvalidArgument_When_ProviderIsUnknown()
 	{
-		var result = await _service.FinishOAuthFlow((IdentityProvider)999, "code");
+		var result = await _service.FinishOAuthFlowAsync((IdentityProvider)999, "code");
 
 		Assert.False(result.IsSuccess);
 		Assert.Equal(ResultStatus.InvalidArguments, result.Status);
@@ -178,7 +178,7 @@ public class UserAppServiceTests
 		_googleOauthService.Setup(s => s.ExchangeCodeForToken(It.IsAny<string>()))
 			.ThrowsAsync(new ResultFailureException(ResultFactory.InvalidArgument<OAuthCodeExchangeResponse>("fail")));
 
-		var result = await _service.FinishOAuthFlow(IdentityProvider.Google, "badcode");
+		var result = await _service.FinishOAuthFlowAsync(IdentityProvider.Google, "badcode");
 
 		Assert.False(result.IsSuccess);
 		Assert.Equal(ResultStatus.InvalidArguments, result.Status);

@@ -24,7 +24,7 @@ public interface IUserAppService
 	/// A <see cref="Result{T}"/> containing the URI to redirect the user to for OAuth authentication,
 	/// or an appropriate error status if the URI could not be generated.
 	/// </returns>
-	Result<Uri> GetUriToInitiateOAuthSignin(IdentityProvider provider, Uri? returnUrl = null);
+	Result<Uri> InitiateOAuthSignin(IdentityProvider provider, Uri? returnUrl = null);
 
 	/// <summary>
 	/// Completes the OAuth authentication flow for the specified identity provider.
@@ -37,6 +37,6 @@ public interface IUserAppService
 	/// The method exchanges the code for a token, verifies if a user with the email in the token claim exists,
 	/// creates a new user if not, and returns the appropriate response DTO.
 	/// </returns>
-	Task<Result<FinishedOAuthResponseDto>> FinishOAuthFlow(IdentityProvider provider, string code, Uri? returnUrl = null);
+	Task<Result<FinishedOAuthResponseDto>> FinishOAuthFlowAsync(IdentityProvider provider, string code, Uri? returnUrl = null);
 
 }

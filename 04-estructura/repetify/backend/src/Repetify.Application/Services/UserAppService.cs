@@ -46,7 +46,7 @@ public class UserAppService : IUserAppService
 		}
 	}
 
-	public Result<Uri> GetUriToInitiateOAuthSignin(IdentityProvider provider, Uri? returnUrl = null)
+	public Result<Uri> InitiateOAuthSignin(IdentityProvider provider, Uri? returnUrl = null)
 	{
 		if (returnUrl is null)
 		{
@@ -68,11 +68,11 @@ public class UserAppService : IUserAppService
 		return ResultFactory.Success(redirectUri);
 	}
 
-	public async Task<Result<FinishedOAuthResponseDto>> FinishOAuthFlow(IdentityProvider provider, string code, Uri? returnUrl = null)
+	public async Task<Result<FinishedOAuthResponseDto>> FinishOAuthFlowAsync(IdentityProvider provider, string code, Uri? returnUrl = null)
 	{
 		try
 		{
-			string? token = null;
+			string token;
 
 			switch (provider)
 			{
@@ -103,11 +103,14 @@ public class UserAppService : IUserAppService
 	private async Task CheckAndAddNewUserAsync(string username, string email)
 	{
 		var userResult = await GetUserByEmailAsync(email).ConfigureAwait(false);
-		if (!userResult.IsSuccess)
+		if (userResult.Status == ResultStatus.NotFound)
 		{
 			await _userRepository.AddUserAsync(new User(null, email, username)).EnsureSuccessAsync().ConfigureAwait(false);
 			await _userRepository.SaveChangesAsync().ConfigureAwait(false);
 		}
+		else
+		{
+			userResult.EnsureSuccess();
+		}
 	}
-
 }

@@ -36,7 +36,7 @@ public class ExternalLoginController(IUserAppService userAppService) : Controlle
 	[HttpGet("initiateGoogleSignin")]
 	public IActionResult InitiateGoogleSignin([FromQuery] Uri? returnUrl)
 	{
-		return _userAppService.GetUriToInitiateOAuthSignin(IdentityProvider.Google, returnUrl)
+		return _userAppService.InitiateOAuthSignin(IdentityProvider.Google, returnUrl)
 			.ToActionResult(redirectUrl =>Redirect(redirectUrl.AbsoluteUri));
 	}
 
@@ -49,7 +49,7 @@ public class ExternalLoginController(IUserAppService userAppService) : Controlle
 	[HttpGet("googleSignin")]
 	public async Task<IActionResult> GoogleSignin([FromQuery, Required] string code, [FromQuery] string? state)
 	{
-		var result = await _userAppService.FinishOAuthFlow(IdentityProvider.Google, code, state is not null ? new(state) : null).ConfigureAwait(false);
+		var result = await _userAppService.FinishOAuthFlowAsync(IdentityProvider.Google, code, state is not null ? new(state) : null).ConfigureAwait(false);
 		return result.ToActionResult(response =>
 		{
 			Response.Cookies.Append("AuthToken", response.JwtToken, new CookieOptions { HttpOnly = true, Secure = true, Expires = DateTime.Now.AddMinutes(30) });
@@ -65,7 +65,7 @@ public class ExternalLoginController(IUserAppService userAppService) : Controlle
 	[HttpGet("initiateMicrosoftSignin")]
 	public IActionResult InitiateMicrosoftSignin([FromQuery] Uri? returnUrl)
 	{
-		return _userAppService.GetUriToInitiateOAuthSignin(IdentityProvider.Microsoft, returnUrl)
+		return _userAppService.InitiateOAuthSignin(IdentityProvider.Microsoft, returnUrl)
 			.ToActionResult(redirectUri => Redirect(redirectUri.AbsoluteUri));
 	}
 
@@ -78,7 +78,7 @@ public class ExternalLoginController(IUserAppService userAppService) : Controlle
 	[HttpGet("microsoftSignin")]
 	public async Task<IActionResult> MicrosoftSignin([FromQuery, Required] string code, [FromQuery] string? state)
 	{
-		var result = await _userAppService.FinishOAuthFlow(IdentityProvider.Microsoft, code, state is not null ? new(state) : null).ConfigureAwait(false);
+		var result = await _userAppService.FinishOAuthFlowAsync(IdentityProvider.Microsoft, code, state is not null ? new(state) : null).ConfigureAwait(false);
 		return result.ToActionResult((oauthResponse) =>
 		{
 			Response.Cookies.Append("AuthToken", oauthResponse.JwtToken, new CookieOptions { HttpOnly = true, Secure = true, Expires = DateTime.Now.AddMinutes(30) });
