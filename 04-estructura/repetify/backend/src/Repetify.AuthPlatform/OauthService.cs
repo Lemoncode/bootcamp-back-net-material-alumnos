@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text.Json;
 using System.Diagnostics.CodeAnalysis;
+using System;
 
 namespace Repetify.AuthPlatform;
 
@@ -28,7 +29,7 @@ public abstract class OAuthService : IOAuthService
 		_httpClient = httpClientFactory.CreateClient();
 	}
 
-	public Uri GetOAuthCodeUrl(Uri ? returnUrl = null)
+	public Uri GetOAuthCodeUrl(Uri? returnUrl = null)
 	{
 		var dict = new Dictionary<string, string>
 		{
@@ -36,7 +37,7 @@ public abstract class OAuthService : IOAuthService
 			["redirect_uri"] = _oauthConfig.RedirectUri.AbsoluteUri,
 			["response_type"] = "code",
 			["scope"] = string.Join(' ', _oauthConfig.Scopes),
-			["access_type"] = "online"
+			["access_type"] = "online",
 		};
 
 		if (returnUrl is not null)
@@ -44,53 +45,57 @@ public abstract class OAuthService : IOAuthService
 			dict.Add("state", returnUrl.AbsoluteUri);
 		}
 
-		return new(GetUrlFromDictionary(_oauthConfig.OAuthCodeUrl, dict));
+		return new(_oauthConfig.OAuthCodeUrl + "?" +
+			string.Join(
+				'&',
+				dict.Select(d => $"{d.Key}={WebUtility.UrlEncode(d.Value)}")));
 	}
 
-	private static string GetUrlFromDictionary(Uri url, Dictionary<string, string> queryStringParams)
-	{
-		return $"{url}?{string.Join('&', queryStringParams.Select(d => $"{d.Key}={WebUtility.UrlEncode(d.Value)}"))}";
-	}
-
-	[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We don't need to catch a specific exception because we're only trying to retrieve the response content from an HTTP response. If it's not possible, the reason doesn't matter.")]
+	[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We don't need to catcha specific exception because we're only trying to retrieve the response content from an HTTP response. If it's not possible, the reason doesn't matter.")]
 	public async Task<OAuthCodeExchangeResponse> ExchangeCodeForToken(string code)
 	{
-		using var content = new FormUrlEncodedContent(new Dictionary<string, string>()
+		var form = new Dictionary<string, string>
 		{
 			["client_id"] = _oauthConfig.ClientId,
 			["client_secret"] = _oauthConfig.ClientSecret,
 			["redirect_uri"] = _oauthConfig.RedirectUri.AbsoluteUri,
 			["code"] = code,
 			["grant_type"] = "authorization_code"
-		});
+		};
+
+		using var content = new FormUrlEncodedContent(form);
+
+		HttpResponseMessage response;
+		string responseBody;
 
 		try
 		{
-			var response = await _httpClient.PostAsync(_oauthConfig.OAuthTokenUrl, content).ConfigureAwait(false);
-			string? stringContent = null;
-			try
-			{
-				stringContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-			}
-			catch
-			{
-			}
-
-			if (!response.IsSuccessStatusCode)
-			{
-				throw new GetTokenException($"Error when retrieving the token. Error code: {response.StatusCode}. Error message: {stringContent ?? "Unknown"}");
-			}
-
-			if (string.IsNullOrWhiteSpace(stringContent))
-			{
-				throw new GetTokenException($"Error when retrieving the token. No response from server. Response code: {response.StatusCode}.");
-			}
-
-			return JsonSerializer.Deserialize<OAuthCodeExchangeResponse>(stringContent!)!;
+			response = await _httpClient.PostAsync(_oauthConfig.OAuthTokenUrl, content).ConfigureAwait(false);
+			responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 		}
 		catch (Exception ex)
 		{
-			throw new GetTokenException("Error when retrieving the token.", ex);
+			throw new GetTokenException("Error making token request.", ex);
+		}
+
+		if (!response.IsSuccessStatusCode)
+		{
+			throw new GetTokenException($"Error retrieving token. HTTP {(int)response.StatusCode} - {response.ReasonPhrase}. Body: {responseBody}");
+		}
+
+		if (string.IsNullOrWhiteSpace(responseBody))
+		{
+			throw new GetTokenException($"Empty response body from token endpoint. HTTP {(int)response.StatusCode}.");
+		}
+
+		try
+		{
+			return JsonSerializer.Deserialize<OAuthCodeExchangeResponse>(responseBody)!;
+		}
+		catch (Exception ex)
+		{
+			throw new GetTokenException("Error parsing token response.", ex);
 		}
 	}
+
 }

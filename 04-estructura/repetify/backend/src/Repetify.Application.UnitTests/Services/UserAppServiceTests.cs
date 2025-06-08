@@ -149,7 +149,7 @@ public class UserAppServiceTests
 		};
 		_microsoftOauthService.Setup(s => s.ExchangeCodeForToken(code))
 			.ReturnsAsync(new OAuthCodeExchangeResponse { AccessToken = accessToken, IdToken = "myIdToken", RefreshToken = "refreshToken", TokenType = "bearer", ExpiresIn = 1800, });
-		_microsoftOauthService.Setup(s => s.GetUserInfo(accessToken)).ReturnsAsync(userInfo);
+		_microsoftOauthService.Setup(s => s.GetUserInfoAsync(accessToken)).ReturnsAsync(userInfo);
 		_userRepository.Setup(r => r.GetUserByEmailAsync(email))
 			.ReturnsAsync(ResultFactory.NotFound<User>("not found"));
 		_userRepository.Setup(r => r.AddUserAsync(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());

@@ -12,5 +12,5 @@ public interface IMicrosoftOAuthService : IOAuthService
 	/// </summary>
 	/// <param name="token">The OAuth token used to authenticate the request.</param>
 	/// <returns>A task that represents the asynchronous operation. The task result contains the user information.</returns>
-	Task<GraphUserResponse> GetUserInfo(string token);
+	Task<GraphUserResponse> GetUserInfoAsync(string token);
 }

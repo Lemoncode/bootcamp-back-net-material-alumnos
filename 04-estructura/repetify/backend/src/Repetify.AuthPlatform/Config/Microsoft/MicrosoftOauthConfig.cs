@@ -15,4 +15,7 @@ public class MicrosoftOAuthConfig : OAuthConfig
 	/// The configuration section name for Microsoft SSO.
 	/// </summary>
 	public static readonly string ConfigSection = "MicrosoftSso";
+
+	public required Uri GraphUserInfoUrl { get; init; }
+
 }

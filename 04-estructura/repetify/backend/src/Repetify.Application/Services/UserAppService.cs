@@ -84,7 +84,7 @@ public class UserAppService : IUserAppService
 					break;
 				case IdentityProvider.Microsoft:
 					var msTokenResponse = await _microsoftOAuthService.ExchangeCodeForToken(code).ConfigureAwait(false);
-					var userInfo = await _microsoftOAuthService.GetUserInfo(msTokenResponse.AccessToken).ConfigureAwait(false);
+					var userInfo = await _microsoftOAuthService.GetUserInfoAsync(msTokenResponse.AccessToken).ConfigureAwait(false);
 					await CheckAndAddNewUserAsync(userInfo.Mail, userInfo.Mail).ConfigureAwait(false);
 					token = _jwtService.GenerateJwtToken(userInfo.Surname, userInfo.GivenName, userInfo.Mail);
 					break;
