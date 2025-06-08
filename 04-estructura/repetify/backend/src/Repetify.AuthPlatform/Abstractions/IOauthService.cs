@@ -19,5 +19,5 @@ public interface IOAuthService
 	/// </summary>
 	/// <param name="code">The authorization code received from the OAuth provider.</param>
 	/// <returns>A task that represents the asynchronous operation. The task result contains the OAuth token response.</returns>
-	Task<OAuthCodeExchangeResponse> ExchangeCodeForToken(string code);
+	Task<OAuthCodeExchangeResponse> ExchangeCodeForTokenAsync(string code);
 }

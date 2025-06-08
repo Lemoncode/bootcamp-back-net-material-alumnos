@@ -52,7 +52,7 @@ public abstract class OAuthService : IOAuthService
 	}
 
 	[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We don't need to catcha specific exception because we're only trying to retrieve the response content from an HTTP response. If it's not possible, the reason doesn't matter.")]
-	public async Task<OAuthCodeExchangeResponse> ExchangeCodeForToken(string code)
+	public async Task<OAuthCodeExchangeResponse> ExchangeCodeForTokenAsync(string code)
 	{
 		var form = new Dictionary<string, string>
 		{

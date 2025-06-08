@@ -17,7 +17,7 @@ public sealed class GoogleOAuthService : OAuthService, IGoogleOAuthService
 	{
 	}
 
-	public async Task<GoogleJsonWebSignature.Payload> GetUserInfo(string token)
+	public async Task<GoogleJsonWebSignature.Payload> GetUserInfoAsync(string token)
 	{
 		try
 		{

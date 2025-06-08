@@ -115,9 +115,9 @@ public class UserAppServiceTests
 			FamilyName = "Family",
 			GivenName = "Given"
 		};
-		_googleOauthService.Setup(s => s.ExchangeCodeForToken(code))
+		_googleOauthService.Setup(s => s.ExchangeCodeForTokenAsync(code))
 			.ReturnsAsync(new OAuthCodeExchangeResponse { IdToken = idToken, AccessToken = "accessToken", RefreshToken = "refreshToken", TokenType = "bearer", ExpiresIn = 1800, });
-		_googleOauthService.Setup(s => s.GetUserInfo(idToken)).ReturnsAsync(payload);
+		_googleOauthService.Setup(s => s.GetUserInfoAsync(idToken)).ReturnsAsync(payload);
 		_userRepository.Setup(r => r.GetUserByEmailAsync(email))
 			.ReturnsAsync(ResultFactory.NotFound<User>("not found"));
 		_userRepository.Setup(r => r.AddUserAsync(It.IsAny<User>())).ReturnsAsync(ResultFactory.Success());
@@ -147,7 +147,7 @@ public class UserAppServiceTests
 			DisplayName = "Display",
 			PreferredLanguage = "en"
 		};
-		_microsoftOauthService.Setup(s => s.ExchangeCodeForToken(code))
+		_microsoftOauthService.Setup(s => s.ExchangeCodeForTokenAsync(code))
 			.ReturnsAsync(new OAuthCodeExchangeResponse { AccessToken = accessToken, IdToken = "myIdToken", RefreshToken = "refreshToken", TokenType = "bearer", ExpiresIn = 1800, });
 		_microsoftOauthService.Setup(s => s.GetUserInfoAsync(accessToken)).ReturnsAsync(userInfo);
 		_userRepository.Setup(r => r.GetUserByEmailAsync(email))
@@ -175,7 +175,7 @@ public class UserAppServiceTests
 	[Fact]
 	public async Task FinishOauthFlow_PropagatesFailure_When_OauthServiceThrowsException()
 	{
-		_googleOauthService.Setup(s => s.ExchangeCodeForToken(It.IsAny<string>()))
+		_googleOauthService.Setup(s => s.ExchangeCodeForTokenAsync(It.IsAny<string>()))
 			.ThrowsAsync(new ResultFailureException(ResultFactory.InvalidArgument<OAuthCodeExchangeResponse>("fail")));
 
 		var result = await _service.FinishOAuthFlowAsync(IdentityProvider.Google, "badcode");

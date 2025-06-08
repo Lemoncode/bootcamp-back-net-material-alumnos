@@ -12,5 +12,5 @@ public interface IGoogleOAuthService : IOAuthService
 	/// </summary>
 	/// <param name="token">The OAuth token.</param>
 	/// <returns>A task that represents the asynchronous operation. The task result contains the user information payload.</returns>
-	Task<GoogleJsonWebSignature.Payload> GetUserInfo(string token);
+	Task<GoogleJsonWebSignature.Payload> GetUserInfoAsync(string token);
 }

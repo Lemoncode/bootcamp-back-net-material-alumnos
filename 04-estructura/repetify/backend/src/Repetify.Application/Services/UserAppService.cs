@@ -77,16 +77,16 @@ public class UserAppService : IUserAppService
 			switch (provider)
 			{
 				case IdentityProvider.Google:
-					var tokenResponse = await _googleOAuthService.ExchangeCodeForToken(code).ConfigureAwait(false);
-					var payload = await _googleOAuthService.GetUserInfo(tokenResponse.IdToken).ConfigureAwait(false);
-					await CheckAndAddNewUserAsync(payload.Email, payload.Email).ConfigureAwait(false);
-					token = _jwtService.GenerateJwtToken(payload.FamilyName, payload.GivenName, payload.Email);
+					var googleTokenResponse = await _googleOAuthService.ExchangeCodeForTokenAsync(code).ConfigureAwait(false);
+					var googleUserInfo = await _googleOAuthService.GetUserInfoAsync(googleTokenResponse.IdToken).ConfigureAwait(false);
+					await CheckAndAddNewUserAsync(googleUserInfo.Email, googleUserInfo.Email).ConfigureAwait(false);
+					token = _jwtService.GenerateJwtToken(googleUserInfo.FamilyName, googleUserInfo.GivenName, googleUserInfo.Email);
 					break;
 				case IdentityProvider.Microsoft:
-					var msTokenResponse = await _microsoftOAuthService.ExchangeCodeForToken(code).ConfigureAwait(false);
-					var userInfo = await _microsoftOAuthService.GetUserInfoAsync(msTokenResponse.AccessToken).ConfigureAwait(false);
-					await CheckAndAddNewUserAsync(userInfo.Mail, userInfo.Mail).ConfigureAwait(false);
-					token = _jwtService.GenerateJwtToken(userInfo.Surname, userInfo.GivenName, userInfo.Mail);
+					var msTokenResponse = await _microsoftOAuthService.ExchangeCodeForTokenAsync(code).ConfigureAwait(false);
+					var msUserInfo = await _microsoftOAuthService.GetUserInfoAsync(msTokenResponse.AccessToken).ConfigureAwait(false);
+					await CheckAndAddNewUserAsync(msUserInfo.Mail, msUserInfo.Mail).ConfigureAwait(false);
+					token = _jwtService.GenerateJwtToken(msUserInfo.Surname, msUserInfo.GivenName, msUserInfo.Mail);
 					break;
 				default:
 					return ResultFactory.InvalidArgument<FinishedOAuthResponseDto>("This identity provider is not supported.");
