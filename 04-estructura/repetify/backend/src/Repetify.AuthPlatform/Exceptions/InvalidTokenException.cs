@@ -1,7 +1,5 @@
 ﻿namespace Repetify.AuthPlatform.Exceptions;
 
-
-[Serializable]
 public class InvalidTokenException : OAuthException
 {
 	public InvalidTokenException() { }
